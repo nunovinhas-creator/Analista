@@ -6,7 +6,10 @@ def _parse_date(s):
     if not s:
         return None
     try:
-        return datetime.fromisoformat(str(s).replace("Z", "+00:00"))
+        dt = datetime.fromisoformat(str(s).replace("Z", "+00:00"))
+        if dt.tzinfo is None:
+            dt = dt.replace(tzinfo=timezone.utc)
+        return dt
     except Exception:
         return None
 
@@ -43,14 +46,15 @@ def analyze_football(history, trebles):
         }
 
     # Por mercado
+    # hit_xg não existe no schema actual — o resultado de xG está em hit_goal_range
     markets = [("1x2", "pick_1x2", "hit_1x2"), ("o25", "pick_o25", "hit_o25"),
-               ("btts", "pick_btts", "hit_btts"), ("xg", "pick_xg", "hit_xg")]
+               ("btts", "pick_btts", "hit_btts"), ("xg", "pick_xg", "hit_goal_range")]
     per_market = {m: _market_segment(records, pk, hk) for m, pk, hk in markets}
 
     # Por nível de confiança
     by_confidence = {}
     for conf in ["ALTA", "MÉDIA", "BAIXA"]:
-        subset = [r for r in records if r.get("confidence") == conf]
+        subset = [r for r in records if r.get("conf") == conf]
         all_picks = sum(1 for r in subset for pk, hk in [("pick_1x2","hit_1x2"),("pick_o25","hit_o25"),("pick_btts","hit_btts")] if r.get(pk))
         all_wins  = sum(1 for r in subset for pk, hk in [("pick_1x2","hit_1x2"),("pick_o25","hit_o25"),("pick_btts","hit_btts")] if r.get(pk) and r.get(hk))
         by_confidence[conf] = {
@@ -78,24 +82,37 @@ def analyze_football(history, trebles):
 
     # Trebles
     t_hist = trebles.get("history", [])
-    t_won = [t for t in t_hist if t.get("hit") is True]
-    treble_roi = sum(t.get("profit_1u", t.get("combined_odds", 1) - 1) for t in t_won) - (len(t_hist) - len(t_won))
+    t_won  = [t for t in t_hist if t.get("hit") is True]
+    # combined_odds e profit_1u podem ser null — usa fallback 0 para perdas, odds-1 para ganhos
+    treble_roi = 0.0
+    for t in t_hist:
+        if t.get("hit"):
+            profit = t.get("profit_1u")
+            if profit is None:
+                odds = t.get("combined_odds") or 0
+                profit = (odds - 1) if odds else 0
+            treble_roi += profit
+        else:
+            treble_roi -= 1
+    odds_list = [t["combined_odds"] for t in t_hist if t.get("combined_odds") is not None]
     treble_stats = {
         "total":    len(t_hist),
         "won":      len(t_won),
         "win_rate": len(t_won) / len(t_hist) if t_hist else 0.0,
         "roi":      treble_roi,
         "roi_pct":  (treble_roi / len(t_hist) * 100) if t_hist else 0.0,
-        "avg_odds": sum(t.get("combined_odds", 0) for t in t_hist) / len(t_hist) if t_hist else 0.0,
+        "avg_odds": sum(odds_list) / len(odds_list) if odds_list else 0.0,
         "pending":  len(trebles.get("pending", [])),
     }
 
     # Últimos 7 dias
     cutoff = datetime.now(timezone.utc) - timedelta(days=7)
     dates_processed = history.get("dates_processed", [])
-    recent_dates = {d for d in dates_processed if (_parse_date(d) or datetime.min.replace(tzinfo=timezone.utc)) >= cutoff}
+    _min_aware = datetime.min.replace(tzinfo=timezone.utc)
+    recent_dates = {d for d in dates_processed if (_parse_date(d) or _min_aware) >= cutoff}
     recent_records = [r for r in records if r.get("date", "")[:10] in recent_dates]
     recent_pm = {m: _market_segment(recent_records, pk, hk) for m, pk, hk in markets}
+
 
     # Stats diárias
     daily: dict = {}
@@ -129,7 +146,11 @@ def analyze_football(history, trebles):
     cum_treble, cum_treble_series = 0.0, []
     for t in t_hist:
         if t.get("hit"):
-            cum_treble += t.get("profit_1u", t.get("combined_odds", 1) - 1)
+            profit = t.get("profit_1u")
+            if profit is None:
+                odds = t.get("combined_odds") or 0
+                profit = (odds - 1) if odds else 0
+            cum_treble += profit
         else:
             cum_treble -= 1
         cum_treble_series.append(round(cum_treble, 2))

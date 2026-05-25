@@ -1,0 +1,116 @@
+<!DOCTYPE html>
+<html lang="pt">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Matemática Da Bola — Analista</title>
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+body{background:#0d1117;color:#e6edf3;font-family:'Segoe UI',sans-serif;padding:20px;font-size:14px}
+h1{font-size:1.5rem;color:#58a6ff;margin-bottom:4px}
+.sub{color:#8b949e;font-size:.82rem;margin-bottom:20px}
+.kpi-bar{display:flex;gap:10px;flex-wrap:wrap;margin-bottom:22px}
+.kpi{background:#161b22;border:1px solid #30363d;border-radius:8px;padding:12px 18px;min-width:120px}
+.kpi-l{font-size:.72rem;color:#8b949e;text-transform:uppercase;letter-spacing:.05em}
+.kpi-v{font-size:1.5rem;font-weight:700;margin-top:3px}
+.charts{display:grid;grid-template-columns:1fr 1fr 1fr;gap:12px;margin-bottom:20px}
+.card{background:#161b22;border:1px solid #30363d;border-radius:8px;padding:16px;margin-bottom:14px}
+.card h3{font-size:.82rem;color:#8b949e;margin-bottom:10px;text-transform:uppercase;letter-spacing:.04em}
+table{width:100%;border-collapse:collapse;font-size:.83rem}
+th{text-align:left;color:#8b949e;padding:5px 8px;border-bottom:1px solid #30363d;font-weight:500}
+td{padding:5px 8px;border-bottom:1px solid #21262d}
+tr:last-child td{border-bottom:none}
+@media(max-width:750px){.charts{grid-template-columns:1fr}}
+</style>
+</head>
+<body>
+<h1>⚽ Matemática Da Bola</h1>
+<p class="sub">Actualizado: 25/05/2026 10:14 UTC · 195 registos · 7 dias processados</p>
+
+<div class="kpi-bar">
+  <div class="kpi"><div class="kpi-l">O2.5 WR</div><div class="kpi-v" style="color:#3fb950">64.1%</div></div>
+  <div class="kpi"><div class="kpi-l">BTTS WR</div><div class="kpi-v" style="color:#3fb950">64.3%</div></div>
+  <div class="kpi"><div class="kpi-l">1X2 WR</div><div class="kpi-v" style="color:#3fb950">88.9%</div></div>
+  <div class="kpi"><div class="kpi-l">Triplas WR</div><div class="kpi-v" style="color:#3fb950">80.0%</div></div>
+  <div class="kpi"><div class="kpi-l">Triplas ROI</div><div class="kpi-v" style="color:#f85149">-1.0u</div></div>
+  <div class="kpi"><div class="kpi-l">O2.5 7d WR</div><div class="kpi-v" style="color:#3fb950">64.1%</div></div>
+  <div class="kpi"><div class="kpi-l">BTTS 7d WR</div><div class="kpi-v" style="color:#3fb950">64.3%</div></div>
+</div>
+
+<div class="charts">
+  <div class="card"><h3>ROI Acumulado — Over 2.5</h3><canvas id="cO25" height="160"></canvas></div>
+  <div class="card"><h3>ROI Acumulado — BTTS</h3><canvas id="cBtts" height="160"></canvas></div>
+  <div class="card"><h3>ROI Acumulado — Triplas</h3><canvas id="cTreble" height="160"></canvas></div>
+</div>
+
+<div class="card">
+  <h3>Performance por Mercado</h3>
+  <table>
+    <tr><th>Mercado</th><th>Picks</th><th>Win Rate</th><th>ROI (flat)</th></tr>
+    <tr><td><b>Over 2.5</b></td><td>39</td><td style='color:#3fb950'>64.1%</td><td style='color:#3fb950'>+11u (+28.2%)</td></tr>
+    <tr><td><b>BTTS</b></td><td>42</td><td style='color:#3fb950'>64.3%</td><td style='color:#3fb950'>+12u (+28.6%)</td></tr>
+    <tr><td><b>1X2</b></td><td>9</td><td style='color:#3fb950'>88.9%</td><td style='color:#3fb950'>+7u (+77.8%)</td></tr>
+    <tr><td><b>xG</b></td><td>81</td><td style='color:#f85149'>42.0%</td><td style='color:#f85149'>-13u (-16.0%)</td></tr>
+  </table>
+</div>
+
+<div class="card">
+  <h3>Calibração por Confiança</h3>
+  <table>
+    <tr><th>Nível</th><th>Jogos</th><th>Picks</th><th>WR (todos os mercados)</th></tr>
+    <tr><td><b>ALTA</b></td><td>28</td><td>20</td><td style='color:#3fb950'>60.0%</td></tr><tr><td><b>MÉDIA</b></td><td>88</td><td>70</td><td style='color:#3fb950'>68.6%</td></tr>
+  </table>
+</div>
+
+<div class="card">
+  <h3>Sistema de Triplas — 5 triplas (1 pendentes)</h3>
+  <table>
+    <tr><th>Total</th><th>Ganhas</th><th>WR</th><th>ROI</th><th>Odds médias</th></tr>
+    <tr>
+      <td>5</td>
+      <td>4</td>
+      <td style="color:#3fb950">80.0%</td>
+      <td style="color:#f85149">-1.00u (-20.0%)</td>
+      <td>0.00x</td>
+    </tr>
+  </table>
+</div>
+
+<div class="card">
+  <h3>Por Liga</h3>
+  <table>
+    <tr><th>Liga</th><th>Jogos</th><th>O2.5 WR (picks)</th><th>BTTS WR (picks)</th></tr>
+    <tr><td>Chinese Super League</td><td>16</td><td style='color:#f85149'>50.0% (8)</td><td style='color:#3fb950'>71.4% (7)</td></tr><tr><td>Pro League</td><td>13</td><td style='color:#3fb950'>66.7% (6)</td><td style='color:#f85149'>33.3% (6)</td></tr><tr><td>Premier League</td><td>12</td><td style='color:#f85149'>0.0% (3)</td><td style='color:#3fb950'>66.7% (3)</td></tr><tr><td>Segunda División</td><td>11</td><td style='color:#f85149'>50.0% (2)</td><td style='color:#3fb950'>66.7% (3)</td></tr><tr><td>Serie A</td><td>10</td><td style='color:#f85149'>50.0% (2)</td><td style='color:#f85149'>0.0% (0)</td></tr><tr><td>La Liga</td><td>10</td><td style='color:#f85149'>0.0% (0)</td><td style='color:#3fb950'>66.7% (3)</td></tr><tr><td>Saudi Pro League</td><td>9</td><td style='color:#f85149'>0.0% (2)</td><td style='color:#f85149'>50.0% (2)</td></tr><tr><td>Brasileirão Serie B</td><td>9</td><td style='color:#f85149'>0.0% (0)</td><td style='color:#f85149'>0.0% (1)</td></tr><tr><td>Ekstraklasa</td><td>9</td><td style='color:#3fb950'>100.0% (2)</td><td style='color:#3fb950'>66.7% (6)</td></tr><tr><td>Nigeria Premier Football League</td><td>9</td><td style='color:#3fb950'>100.0% (1)</td><td style='color:#f85149'>0.0% (0)</td></tr><tr><td>Veikkausliiga</td><td>8</td><td style='color:#f85149'>0.0% (0)</td><td style='color:#f85149'>0.0% (0)</td></tr><tr><td>Allsvenskan</td><td>8</td><td style='color:#3fb950'>100.0% (2)</td><td style='color:#3fb950'>100.0% (3)</td></tr>
+  </table>
+</div>
+
+<script>
+const gridColor = '#21262d', tickColor = '#8b949e';
+const lineOpts = {
+  plugins: {legend: {display: false}},
+  scales: {
+    x: {display: false},
+    y: {grid: {color: gridColor}, ticks: {color: tickColor}}
+  }
+};
+
+function lineDataset(data, color) {
+  return {
+    data, borderColor: color, backgroundColor: color.replace(')', ', .08)').replace('rgb', 'rgba'),
+    borderWidth: 2, pointRadius: 0, fill: true, tension: .3
+  };
+}
+
+new Chart(document.getElementById('cO25').getContext('2d'), {
+  type:'line', data:{labels: Array.from({length:39},(_,i)=>i+1), datasets:[lineDataset([-1.0, -2.0, -1.0, 0.0, 1.0, 2.0, 3.0, 4.0, 3.0, 2.0, 1.0, 2.0, 3.0, 4.0, 3.0, 4.0, 3.0, 4.0, 5.0, 6.0, 5.0, 6.0, 7.0, 6.0, 7.0, 6.0, 7.0, 8.0, 9.0, 8.0, 9.0, 8.0, 9.0, 8.0, 9.0, 8.0, 9.0, 10.0, 11.0], '#3fb950')]}, options:lineOpts
+});
+new Chart(document.getElementById('cBtts').getContext('2d'), {
+  type:'line', data:{labels: Array.from({length:42},(_,i)=>i+1), datasets:[lineDataset([1.0, 2.0, 3.0, 4.0, 5.0, 6.0, 5.0, 6.0, 7.0, 8.0, 9.0, 10.0, 11.0, 12.0, 13.0, 14.0, 13.0, 14.0, 13.0, 14.0, 13.0, 12.0, 11.0, 10.0, 11.0, 12.0, 11.0, 10.0, 11.0, 10.0, 11.0, 10.0, 11.0, 12.0, 11.0, 12.0, 13.0, 12.0, 11.0, 10.0, 11.0, 12.0], '#f0883e')]}, options:lineOpts
+});
+new Chart(document.getElementById('cTreble').getContext('2d'), {
+  type:'line', data:{labels: Array.from({length:5},(_,i)=>i+1), datasets:[lineDataset([0.0, 0.0, 0.0, -1.0, -1.0], '#a371f7')]}, options:lineOpts
+});
+</script>
+</body>
+</html>

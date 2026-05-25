@@ -96,6 +96,20 @@ def build_html_email(over25_stats: dict, football_stats: dict, ai_report: str) -
 
     ai_html = _md_to_html(ai_report) if ai_report else "<p style='color:#888'>Análise IA não disponível.</p>"
 
+    # Tabela breakdown por movimento (gerada fora do f-string para evitar backslash)
+    mov_rows = ""
+    for k, v in o.get("by_movement", {}).items():
+        if v.get("count", 0) == 0:
+            continue
+        mc  = _c(v["win_rate"], .52)
+        rc  = _c(v.get("roi", 0))
+        roi_v = v.get("roi", 0)
+        mov_rows += (
+            f"<tr><td style='padding:5px 10px'>{k}</td>"
+            f"<td style='padding:5px 10px;color:{mc}'>{_pct(v['win_rate'])}</td>"
+            f"<td style='padding:5px 10px;color:{rc}'>{roi_v:+.2f}u</td></tr>"
+        )
+
     section_style = "background:#fff;border:1px solid #e0e0e0;border-radius:8px;padding:20px;margin-bottom:16px;"
     header_style  = "background:#1a1a2e;color:#58a6ff;padding:20px 24px;border-radius:8px 8px 0 0;margin-bottom:16px;"
 
@@ -124,7 +138,7 @@ def build_html_email(over25_stats: dict, football_stats: dict, ai_report: str) -
           <th style="padding:6px 10px;text-align:left;border-bottom:1px solid #eee">WR</th>
           <th style="padding:6px 10px;text-align:left;border-bottom:1px solid #eee">ROI</th>
         </tr>
-        {"".join(f"<tr><td style='padding:5px 10px'>{k}</td><td style='padding:5px 10px;color:{_c(v[\"win_rate\"],.52)}'>{_pct(v['win_rate'])}</td><td style='padding:5px 10px;color:{_c(v.get(\"roi\",0))}'>{v.get('roi',0):+.2f}u</td></tr>" for k, v in o.get('by_movement', {}).items() if v.get('count', 0) > 0)}
+        {mov_rows}
       </table>
     </div>
   </div>

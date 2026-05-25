@@ -1,4 +1,5 @@
 # analyze_over25.py — Métricas e análise do over25-scanner
+# Nota: todos os campos numéricos chegam como strings do JSON do scanner
 from datetime import datetime, timezone, timedelta
 
 
@@ -11,12 +12,20 @@ def _parse_date(s):
         return None
 
 
-def _safe_odds(p):
+def _flt(p, key, default=0.0):
+    """Converte campo string para float com fallback seguro."""
+    v = p.get(key)
+    if v is None or v == "":
+        return default
     try:
-        v = float(p.get("odds_over", 0))
-        return v if 1.01 <= v <= 50.0 else None
+        return float(v)
     except Exception:
-        return None
+        return default
+
+
+def _safe_odds(p):
+    v = _flt(p, "odds_over")
+    return v if 1.01 <= v <= 50.0 else None
 
 
 def _roi_for_list(picks):
@@ -61,8 +70,8 @@ def analyze_over25(picks, picks_1x2):
         else:
             break
 
-    # CLV médio
-    clv_vals = [float(p["clv"]) for p in picks if p.get("clv") is not None]
+    # CLV médio (campo vem como string, "" significa sem dados)
+    clv_vals = [_flt(p, "clv") for p in picks if p.get("clv") not in (None, "")]
     avg_clv = sum(clv_vals) / len(clv_vals) if clv_vals else None
 
     # Últimos 7 dias
@@ -78,15 +87,15 @@ def analyze_over25(picks, picks_1x2):
         "DRIFTING":   _segment([p for p in picks if p.get("movimento") == "DRIFTING"]),
     }
 
-    # Por score do sistema
+    # Por score do sistema (campo é string, ex: "58")
     by_score = {}
     for lo, hi, label in [(0, 40, "0–40"), (40, 60, "40–60"), (60, 75, "60–75"), (75, 101, "75–100")]:
-        by_score[label] = _segment([p for p in picks if lo <= (p.get("score_sistema") or 0) < hi])
+        by_score[label] = _segment([p for p in picks if lo <= _flt(p, "score_sistema") < hi])
 
-    # Por xG total
+    # Por xG total (campo é string, ex: "4.19")
     by_xg = {}
     for lo, hi, label in [(0, 2.0, "< 2.0"), (2.0, 2.5, "2.0–2.5"), (2.5, 3.0, "2.5–3.0"), (3.0, 99, "≥ 3.0")]:
-        by_xg[label] = _segment([p for p in picks if lo <= (p.get("xg_total") or 0) < hi])
+        by_xg[label] = _segment([p for p in picks if lo <= _flt(p, "xg_total") < hi])
 
     # Por liga (top 12 por volume)
     leagues: dict = {}
@@ -125,18 +134,15 @@ def analyze_over25(picks, picks_1x2):
             cum += (odds - 1) if p["result_over25"] == "WIN" else -1
         cumulative_roi.append(round(cum, 3))
 
-    # Análise 1X2 sharp (se disponível)
-    p1x2_resolved = [p for p in picks_1x2 if p.get("result") in ("WIN", "LOSS")] if picks_1x2 else []
-    wins_1x2 = sum(1 for p in p1x2_resolved if p["result"] == "WIN")
+    # Análise 1X2 sharp — campos reais: resultado_outcome, odds_entrada
+    p1x2_resolved = [p for p in picks_1x2 if p.get("resultado_outcome") in ("WIN", "LOSS")] if picks_1x2 else []
+    wins_1x2 = sum(1 for p in p1x2_resolved if p["resultado_outcome"] == "WIN")
     roi_1x2, cnt_1x2 = 0.0, 0
     for p in p1x2_resolved:
-        try:
-            odds = float(p.get("odds", 0))
-        except Exception:
-            odds = 0
+        odds = _flt(p, "odds_entrada")
         if 1.01 <= odds <= 50.0:
             cnt_1x2 += 1
-            roi_1x2 += (odds - 1) if p["result"] == "WIN" else -1
+            roi_1x2 += (odds - 1) if p["resultado_outcome"] == "WIN" else -1
 
     return {
         "total": len(picks),

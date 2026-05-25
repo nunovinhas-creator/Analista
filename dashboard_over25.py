@@ -101,10 +101,13 @@ def gen_dashboard_over25(stats):
     for lg, s in stats.get("by_league", {}).items():
         if s["count"] == 0:
             continue
+        lg_wrc  = _color(s["win_rate"], 0.52)
+        lg_roic = _color(s.get("roi", 0))
+        lg_roi  = s.get("roi", 0)
         league_rows += (
             f"<tr><td>{lg}</td><td>{s['count']}</td>"
-            f"<td style='color:{_color(s[\"win_rate\"], 0.52)}'>{_pct(s['win_rate'])}</td>"
-            f"<td style='color:{_color(s.get(\"roi\", 0))}'>{s.get('roi', 0):+.2f}u</td></tr>"
+            f"<td style='color:{lg_wrc}'>{_pct(s['win_rate'])}</td>"
+            f"<td style='color:{lg_roic}'>{lg_roi:+.2f}u</td></tr>"
         )
 
     html = f"""<!DOCTYPE html>
