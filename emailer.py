@@ -1,7 +1,6 @@
 # emailer.py — Envia relatório diário por email via Gmail SMTP
 import os
 import smtplib
-import re
 from datetime import datetime, timezone
 from email.mime.multipart import MIMEMultipart
 from email.mime.text import MIMEText
