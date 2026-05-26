@@ -14,17 +14,73 @@ def _parse_date(s):
         return None
 
 
+def _wilson_ci(wins, n, z=1.96):
+    """Intervalo de confiança Wilson 95%."""
+    if n == 0:
+        return 0.0, 1.0
+    p = wins / n
+    denom = 1 + z**2 / n
+    centre = (p + z**2 / (2 * n)) / denom
+    margin = (z * (p * (1 - p) / n + z**2 / (4 * n**2)) ** 0.5) / denom
+    return round(max(0.0, centre - margin), 3), round(min(1.0, centre + margin), 3)
+
+
 def _market_segment(records, pick_key, hit_key):
     picks = [r for r in records if r.get(pick_key)]
     wins  = [r for r in picks  if r.get(hit_key)]
-    roi   = len(wins) - (len(picks) - len(wins))  # odds 2.0 implícitas (flat)
+    n, k  = len(picks), len(wins)
+    roi   = k - (n - k)  # odds 2.0 implícitas (flat)
+    ci_low, ci_high = _wilson_ci(k, n)
     return {
-        "picks":    len(picks),
-        "wins":     len(wins),
-        "win_rate": len(wins) / len(picks) if picks else 0.0,
+        "picks":    n,
+        "wins":     k,
+        "win_rate": k / n if n else 0.0,
+        "ci_low":   ci_low,
+        "ci_high":  ci_high,
+        "reliable": n >= 20,
         "roi":      roi,
-        "roi_pct":  (roi / len(picks) * 100) if picks else 0.0,
+        "roi_pct":  (roi / n * 100) if n else 0.0,
     }
+
+
+def _brier_score(records, prob_key, hit_key):
+    """Brier Score: qualidade de calibração (0=perfeito, 0.25=aleatório)."""
+    scores = []
+    for r in records:
+        prob = r.get(prob_key)
+        hit  = r.get(hit_key)
+        if prob is not None and hit is not None:
+            try:
+                scores.append((float(prob) - (1 if hit else 0)) ** 2)
+            except (ValueError, TypeError):
+                pass
+    return round(sum(scores) / len(scores), 4) if scores else None
+
+
+def _calibration_data(records, prob_key, hit_key, n_bins=5):
+    """Dados para reliability diagram: prob prevista vs WR real por banda."""
+    bins = [(i / n_bins, (i + 1) / n_bins) for i in range(n_bins)]
+    result = []
+    for lo, hi in bins:
+        subset = []
+        for r in records:
+            prob = r.get(prob_key)
+            hit  = r.get(hit_key)
+            if prob is not None and hit is not None:
+                try:
+                    if lo <= float(prob) < hi:
+                        subset.append(r)
+                except (ValueError, TypeError):
+                    pass
+        hits = sum(1 for r in subset if r.get(hit_key))
+        mid  = round((lo + hi) / 2, 2)
+        result.append({
+            "band":      f"{lo:.0%}–{hi:.0%}",
+            "predicted": mid,
+            "actual":    round(hits / len(subset), 3) if subset else None,
+            "n":         len(subset),
+        })
+    return result
 
 
 def analyze_football(history, trebles):
@@ -43,25 +99,43 @@ def analyze_football(history, trebles):
             "cum_o25_series": [],
             "cum_btts_series": [],
             "cum_treble_series": [],
+            "brier_scores": {},
+            "calibration": {},
         }
 
-    # Por mercado
     # hit_xg não existe no schema actual — o resultado de xG está em hit_goal_range
     markets = [("1x2", "pick_1x2", "hit_1x2"), ("o25", "pick_o25", "hit_o25"),
                ("btts", "pick_btts", "hit_btts"), ("xg", "pick_xg", "hit_goal_range")]
     per_market = {m: _market_segment(records, pk, hk) for m, pk, hk in markets}
 
+    # Brier Scores (calibração preditiva do modelo)
+    brier_scores = {
+        "o25":  _brier_score(records, "prob_o25",  "hit_o25"),
+        "btts": _brier_score(records, "prob_btts", "hit_btts"),
+    }
+
+    # Reliability diagram data
+    calibration = {
+        "o25":  _calibration_data(records, "prob_o25",  "hit_o25"),
+        "btts": _calibration_data(records, "prob_btts", "hit_btts"),
+    }
+
     # Por nível de confiança
     by_confidence = {}
     for conf in ["ALTA", "MÉDIA", "BAIXA"]:
         subset = [r for r in records if r.get("conf") == conf]
-        all_picks = sum(1 for r in subset for pk, hk in [("pick_1x2","hit_1x2"),("pick_o25","hit_o25"),("pick_btts","hit_btts")] if r.get(pk))
-        all_wins  = sum(1 for r in subset for pk, hk in [("pick_1x2","hit_1x2"),("pick_o25","hit_o25"),("pick_btts","hit_btts")] if r.get(pk) and r.get(hk))
+        combos = [("pick_1x2", "hit_1x2"), ("pick_o25", "hit_o25"), ("pick_btts", "hit_btts")]
+        all_picks = sum(1 for r in subset for pk, hk in combos if r.get(pk))
+        all_wins  = sum(1 for r in subset for pk, hk in combos if r.get(pk) and r.get(hk))
+        ci_low, ci_high = _wilson_ci(all_wins, all_picks)
         by_confidence[conf] = {
-            "records": len(subset),
-            "picks":   all_picks,
-            "wins":    all_wins,
+            "records":  len(subset),
+            "picks":    all_picks,
+            "wins":     all_wins,
             "win_rate": all_wins / all_picks if all_picks else 0.0,
+            "ci_low":   ci_low,
+            "ci_high":  ci_high,
+            "reliable": all_picks >= 20,
         }
 
     # Por liga (top 12 por volume de registos)
@@ -75,14 +149,14 @@ def analyze_football(history, trebles):
         o25 = _market_segment(recs, "pick_o25", "hit_o25")
         bts = _market_segment(recs, "pick_btts", "hit_btts")
         by_league[lg] = {
-            "records":   len(recs),
-            "o25_picks": o25["picks"], "o25_wr": o25["win_rate"],
-            "btts_picks": bts["picks"], "btts_wr": bts["win_rate"],
+            "records":       len(recs),
+            "o25_picks":     o25["picks"],  "o25_wr":   o25["win_rate"],
+            "btts_picks":    bts["picks"],  "btts_wr":  bts["win_rate"],
+            "o25_reliable":  o25["reliable"],
+            "btts_reliable": bts["reliable"],
         }
 
     # Trebles
-    # A BSD API não guarda odds nas triplas — estima a partir das probabilidades dos picks
-    # odds_estimadas = produto de (1/prob) para cada pick (fair value, sem margem)
     def _est_odds(t):
         stored = t.get("combined_odds")
         if stored:
@@ -108,17 +182,21 @@ def analyze_football(history, trebles):
             profit = t.get("profit_1u")
             treble_roi += profit if profit is not None else -1.0
 
-    est_odds_list = [_est_odds(t) for t in t_hist]
-    est_odds_list = [o for o in est_odds_list if o]
+    est_odds_list = [o for o in (_est_odds(t) for t in t_hist) if o]
+    n_tr, k_tr = len(t_hist), len(t_won)
+    ci_tr_l, ci_tr_h = _wilson_ci(k_tr, n_tr)
     treble_stats = {
-        "total":      len(t_hist),
-        "won":        len(t_won),
-        "win_rate":   len(t_won) / len(t_hist) if t_hist else 0.0,
-        "roi":        treble_roi,
-        "roi_pct":    (treble_roi / len(t_hist) * 100) if t_hist else 0.0,
-        "avg_odds":   sum(est_odds_list) / len(est_odds_list) if est_odds_list else 0.0,
+        "total":          n_tr,
+        "won":            k_tr,
+        "win_rate":       k_tr / n_tr if n_tr else 0.0,
+        "ci_low":         ci_tr_l,
+        "ci_high":        ci_tr_h,
+        "reliable":       n_tr >= 10,
+        "roi":            treble_roi,
+        "roi_pct":        (treble_roi / n_tr * 100) if n_tr else 0.0,
+        "avg_odds":       sum(est_odds_list) / len(est_odds_list) if est_odds_list else 0.0,
         "odds_estimated": not any(t.get("combined_odds") for t in t_hist),
-        "pending":    len(trebles.get("pending", [])),
+        "pending":        len(trebles.get("pending", [])),
     }
 
     # Últimos 7 dias
@@ -128,7 +206,6 @@ def analyze_football(history, trebles):
     recent_dates = {d for d in dates_processed if (_parse_date(d) or _min_aware) >= cutoff}
     recent_records = [r for r in records if r.get("date", "")[:10] in recent_dates]
     recent_pm = {m: _market_segment(recent_records, pk, hk) for m, pk, hk in markets}
-
 
     # Stats diárias
     daily: dict = {}
@@ -184,4 +261,6 @@ def analyze_football(history, trebles):
         "cum_o25_series":   cum_o25_series,
         "cum_btts_series":  cum_btts_series,
         "cum_treble_series": cum_treble_series,
+        "brier_scores":     brier_scores,
+        "calibration":      calibration,
     }

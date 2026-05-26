@@ -27,22 +27,31 @@ tr:last-child td{border-bottom:none}
 </head>
 <body>
 <h1>🎯 Over 2.5 Scanner</h1>
-<p class="sub">Actualizado: 26/05/2026 07:29 UTC · 1 resolvidos · 3 pendentes · 4 total</p>
+<p class="sub">Actualizado: 26/05/2026 13:03 UTC · 1 resolvidos · 6 pendentes · 7 total</p>
 
+<div style='background:#1c2128;border:1px solid #f85149;border-radius:8px;padding:12px 16px;margin-bottom:16px;color:#f85149;font-size:.85rem;'><b>⚠️ CLV Médio: -4.31%</b> — as odds fecham acima da entrada. Sistema a apostar depois do mercado mover. Apostar mais cedo após publicação do pick para capturar edge real.</div>
 
 
 <div class="kpi-bar">
-  <div class="kpi"><div class="kpi-l">Win Rate</div><div class="kpi-v" style="color:#3fb950">100.0%</div></div>
-  <div class="kpi"><div class="kpi-l">ROI Total</div><div class="kpi-v" style="color:#3fb950">+0.95u</div></div>
-  <div class="kpi"><div class="kpi-l">Yield</div><div class="kpi-v" style="color:#3fb950">+95.2%</div></div>
-  <div class="kpi"><div class="kpi-l">Streak</div><div class="kpi-v" style="color:#3fb950">+1</div></div>
+  <div class="kpi"><div class="kpi-l">Win Rate</div>
+    <div class="kpi-v" style="color:#3fb950">100.0%<span style='font-size:.72rem;color:#6e7681;display:block;margin-top:1px'>[21%–100%]</span></div></div>
+  <div class="kpi"><div class="kpi-l">ROI Total</div>
+    <div class="kpi-v" style="color:#3fb950">+0.95u</div></div>
+  <div class="kpi"><div class="kpi-l">Yield</div>
+    <div class="kpi-v" style="color:#3fb950">+95.2%</div></div>
+  <div class="kpi"><div class="kpi-l">Streak</div>
+    <div class="kpi-v" style="color:#3fb950">+1</div></div>
+  <div class="kpi"><div class="kpi-l">Max Drawdown</div>
+    <div class="kpi-v" style="color:#3fb950">-0.00u</div></div>
   <div class='kpi'><div class='kpi-l'>CLV Médio</div><div class='kpi-v' style='color:#f85149'>-4.31%</div></div>
-  <div class="kpi"><div class="kpi-l">WR 7 dias</div><div class="kpi-v" style="color:#3fb950">100.0%</div></div>
-  <div class="kpi"><div class="kpi-l">ROI 7 dias</div><div class="kpi-v" style="color:#3fb950">+0.95u</div></div></div>
+  <div class="kpi"><div class="kpi-l">WR 7 dias</div>
+    <div class="kpi-v" style="color:#3fb950">100.0%</div></div>
+  <div class="kpi"><div class="kpi-l">ROI 7 dias</div>
+    <div class="kpi-v" style="color:#3fb950">+0.95u</div></div></div>
 
 
 <div class="charts">
-  <div class="card"><h3>ROI Acumulado</h3><canvas id="cRoi" height="160"></canvas></div>
+  <div class="card"><h3>ROI Acumulado + WR Móvel (20 picks)</h3><canvas id="cRoi" height="160"></canvas></div>
   <div class="card"><h3>Performance Diária — últimos 30 dias</h3><canvas id="cDaily" height="160"></canvas></div>
 </div>
 
@@ -50,31 +59,38 @@ tr:last-child td{border-bottom:none}
   <h3>Por Movimento de Odds</h3>
   <table>
     <tr><th>Segmento</th><th>Picks</th><th>WR</th><th>ROI</th></tr>
-    <tr><td>DRIFTING</td><td>1</td><td style='color:#3fb950'>100.0%</td><td style='color:#3fb950'>+0.95u (+95.2%)</td></tr>
+    <tr style='opacity:.55;font-style:italic'><td>DRIFTING<span style='color:#d29922;font-size:.68rem;margin-left:3px' title='Menos de 20 picks resolvidos'>⚠ n&lt;20</span></td><td>1</td><td style='color:#6e7681'>100.0% <span style='font-size:.70rem;color:#6e7681'>[21%–100%]</span></td><td style='color:#6e7681'>+0.95u (+95.2%)</td></tr>
   </table>
 </div>
 <div class="card">
   <h3>Por Score do Sistema</h3>
   <table>
     <tr><th>Segmento</th><th>Picks</th><th>WR</th><th>ROI</th></tr>
-    <tr><td>40–60</td><td>1</td><td style='color:#3fb950'>100.0%</td><td style='color:#3fb950'>+0.95u (+95.2%)</td></tr>
+    <tr style='opacity:.55;font-style:italic'><td>40–60<span style='color:#d29922;font-size:.68rem;margin-left:3px' title='Menos de 20 picks resolvidos'>⚠ n&lt;20</span></td><td>1</td><td style='color:#6e7681'>100.0% <span style='font-size:.70rem;color:#6e7681'>[21%–100%]</span></td><td style='color:#6e7681'>+0.95u (+95.2%)</td></tr>
   </table>
 </div>
 <div class="card">
   <h3>Por xG Total</h3>
   <table>
     <tr><th>Segmento</th><th>Picks</th><th>WR</th><th>ROI</th></tr>
-    <tr><td>≥ 3.0</td><td>1</td><td style='color:#3fb950'>100.0%</td><td style='color:#3fb950'>+0.95u (+95.2%)</td></tr>
+    <tr style='opacity:.55;font-style:italic'><td>≥ 3.0<span style='color:#d29922;font-size:.68rem;margin-left:3px' title='Menos de 20 picks resolvidos'>⚠ n&lt;20</span></td><td>1</td><td style='color:#6e7681'>100.0% <span style='font-size:.70rem;color:#6e7681'>[21%–100%]</span></td><td style='color:#6e7681'>+0.95u (+95.2%)</td></tr>
+  </table>
+</div>
+<div class="card">
+  <h3>Por Banda de Odds</h3>
+  <table>
+    <tr><th>Segmento</th><th>Picks</th><th>WR</th><th>ROI</th></tr>
+    <tr style='opacity:.55;font-style:italic'><td>1.80–2.00<span style='color:#d29922;font-size:.68rem;margin-left:3px' title='Menos de 20 picks resolvidos'>⚠ n&lt;20</span></td><td>1</td><td style='color:#6e7681'>100.0% <span style='font-size:.70rem;color:#6e7681'>[21%–100%]</span></td><td style='color:#6e7681'>+0.95u (+95.2%)</td></tr>
   </table>
 </div><div class="card"><h3>Por Liga</h3>
-  <table><tr><th>Liga</th><th>Picks</th><th>WR</th><th>ROI</th></tr><tr><td>Desconhecida</td><td>1</td><td style='color:#3fb950'>100.0%</td><td style='color:#3fb950'>+0.95u</td></tr></table>
+  <table><tr><th>Liga</th><th>Picks</th><th>WR</th><th>ROI</th></tr><tr style='opacity:.55;font-style:italic'><td>Desconhecida<span style='color:#d29922;font-size:.68rem'> ⚠</span></td><td>1</td><td style='color:#6e7681'>100.0% <span style='font-size:.70rem;color:#6e7681'>[21%–100%]</span></td><td style='color:#6e7681'>+0.95u</td></tr></table>
 </div>
 
 <div class="card">
   <h3>Picks Recentes</h3>
   <table>
     <tr><th>Jogo</th><th>Mov.</th><th>Score</th><th>Prob</th><th>Odds</th><th>xG</th><th>Sharp</th><th>Result.</th></tr>
-    <tr><td><b>Saint-Étienne</b> vs Nice<br><span style='color:#8b949e;font-size:.78rem'>—</span></td><td style='color:#f0883e'>DRIFTING</td><td>45</td><td>69%</td><td>1.7090</td><td>2.89</td><td style='color:#8b949e;font-size:.8rem'>WATCH</td><td><span style='color:#d29922'>Pendente</span></td></tr><tr><td><b>DUX Logroño</b> vs Athletic Club<br><span style='color:#8b949e;font-size:.78rem'>—</span></td><td style='color:#f0883e'>DRIFTING</td><td>41</td><td>60%</td><td>2.0100</td><td>3.40</td><td style='color:#8b949e;font-size:.8rem'></td><td><span style='color:#d29922'>Pendente</span></td></tr><tr><td><b>FC Badalona</b> vs Real Madrid<br><span style='color:#8b949e;font-size:.78rem'>—</span></td><td style='color:#f0883e'>DRIFTING</td><td>45</td><td>77%</td><td>1.6000</td><td>3.15</td><td style='color:#8b949e;font-size:.8rem'></td><td><span style='color:#d29922'>Pendente</span></td></tr><tr><td><b>SC Paderborn 07</b> vs VfL Wolfsburg<br><span style='color:#8b949e;font-size:.78rem'>—</span></td><td style='color:#f0883e'>DRIFTING</td><td>58</td><td>80%</td><td>1.9520</td><td>4.19</td><td style='color:#8b949e;font-size:.8rem'>WATCH</td><td><span style='color:#3fb950;font-weight:700'>WIN</span></td></tr>
+    <tr><td><b>Saint-Étienne</b> vs Nice<br><span style='color:#8b949e;font-size:.78rem'>—</span></td><td style='color:#f0883e'>DRIFTING</td><td>45</td><td>69%</td><td>1.7090</td><td>2.89</td><td style='color:#8b949e;font-size:.8rem'>WATCH</td><td><span style='color:#d29922'>Pendente</span></td></tr><tr><td><b>DUX Logroño</b> vs Athletic Club<br><span style='color:#8b949e;font-size:.78rem'>—</span></td><td style='color:#f0883e'>DRIFTING</td><td>41</td><td>60%</td><td>2.0100</td><td>3.40</td><td style='color:#8b949e;font-size:.8rem'></td><td><span style='color:#d29922'>Pendente</span></td></tr><tr><td><b>FC Badalona</b> vs Real Madrid<br><span style='color:#8b949e;font-size:.78rem'>—</span></td><td style='color:#f0883e'>DRIFTING</td><td>45</td><td>77%</td><td>1.6000</td><td>3.15</td><td style='color:#8b949e;font-size:.8rem'></td><td><span style='color:#d29922'>Pendente</span></td></tr><tr><td><b>Alhama Club de Fútbol</b> vs Levante UD<br><span style='color:#8b949e;font-size:.78rem'>—</span></td><td style='color:#f0883e'>DRIFTING</td><td>50</td><td>69%</td><td>2.1100</td><td>3.50</td><td style='color:#8b949e;font-size:.8rem'>WATCH</td><td><span style='color:#d29922'>Pendente</span></td></tr><tr><td><b>FC Honka</b> vs VJS<br><span style='color:#8b949e;font-size:.78rem'>—</span></td><td style='color:#f0883e'>DRIFTING</td><td>50</td><td>73%</td><td>1.5120</td><td>4.81</td><td style='color:#8b949e;font-size:.8rem'></td><td><span style='color:#d29922'>Pendente</span></td></tr><tr><td><b>IFK Mariehamn</b> vs FC Lahti<br><span style='color:#8b949e;font-size:.78rem'>—</span></td><td style='color:#3fb950'>SHORTENING</td><td>46</td><td>60%</td><td>1.8920</td><td>4.74</td><td style='color:#8b949e;font-size:.8rem'>SHARP</td><td><span style='color:#d29922'>Pendente</span></td></tr><tr><td><b>SC Paderborn 07</b> vs VfL Wolfsburg<br><span style='color:#8b949e;font-size:.78rem'>—</span></td><td style='color:#f0883e'>DRIFTING</td><td>58</td><td>80%</td><td>1.9520</td><td>4.19</td><td style='color:#8b949e;font-size:.8rem'>WATCH</td><td><span style='color:#3fb950;font-weight:700'>WIN</span></td></tr>
   </table>
 </div>
 
@@ -84,28 +100,41 @@ tr:last-child td{border-bottom:none}
   <table>
     <tr><th>Picks</th><th>WR</th><th>ROI</th><th>Yield</th></tr>
     <tr>
-      <td>17</td>
-      <td style="color:#f85149">47.1%</td>
-      <td style="color:#3fb950">+4.17u</td>
-      <td style="color:#3fb950">+24.5%</td>
+      <td>19<span style='color:#d29922;font-size:.75rem'> ⚠ n&lt;20</span></td>
+      <td style="color:#3fb950">52.6%
+        <span style='font-size:.72rem;color:#6e7681'>[32%–73%]</span></td>
+      <td style="color:#3fb950">+8.83u</td>
+      <td style="color:#3fb950">+46.5%</td>
     </tr>
   </table>
 </div>
 
 <script>
-const baseOpts = {
-  plugins: {legend: {display: false}},
-  scales: { x: {display: false}, y: {grid: {color:'#21262d'}, ticks: {color:'#8b949e'}} }
-};
 new Chart(document.getElementById('cRoi').getContext('2d'), {
-  type:'line', data:{labels:[1], datasets:[{data:[0.952],
-  borderColor:'#58a6ff',backgroundColor:'rgba(88,166,255,.08)',borderWidth:2,pointRadius:0,fill:true,tension:.3}]},
-  options:baseOpts
+  type:'line',
+  data:{
+    labels:[1],
+    datasets:[
+      {data:[0.952],label:'ROI',borderColor:'#58a6ff',backgroundColor:'rgba(88,166,255,.08)',
+       borderWidth:2,pointRadius:0,fill:true,tension:.3,yAxisID:'y'},
+      {data:[1.0],label:'WR Móvel',borderColor:'#f0883e',borderWidth:1.5,
+       pointRadius:0,tension:.3,fill:false,yAxisID:'y1',borderDash:[4,2]}
+    ]
+  },
+  options:{
+    plugins:{legend:{display:true,labels:{color:'#8b949e',boxWidth:12,font:{size:11}}}},
+    scales:{
+      x:{display:false},
+      y:{grid:{color:'#21262d'},ticks:{color:'#8b949e'}},
+      y1:{position:'right',min:0,max:1,grid:{display:false},
+           ticks:{color:'#f0883e',callback:function(v){return (v*100).toFixed(0)+'%'}}}
+    }
+  }
 });
 new Chart(document.getElementById('cDaily').getContext('2d'), {
-  type:'bar', data:{labels:["2026-05-25"], datasets:[{data:[0.95],
-  backgroundColor:["rgba(63,185,80,.75)"],borderRadius:3}]},
-  options:baseOpts
+  type:'bar',
+  data:{labels:["2026-05-25"],datasets:[{data:[0.95],backgroundColor:["rgba(63,185,80,.75)"],borderRadius:3}]},
+  options:{plugins:{legend:{display:false}},scales:{x:{display:false},y:{grid:{color:'#21262d'},ticks:{color:'#8b949e'}}}}
 });</script>
 </body>
 </html>

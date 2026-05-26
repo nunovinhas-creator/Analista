@@ -15,14 +15,20 @@ def _color(v, threshold=0.0):
 
 
 def _market_row(name, s):
-    if s["picks"] == 0:
+    if s.get("picks", 0) == 0:
         return ""
-    wrc  = _color(s["win_rate"], 0.52)
-    roic = _color(s["roi"])
+    reliable = s.get("reliable", True)
+    row_s    = "opacity:.6;font-style:italic" if not reliable else ""
+    warn     = "<span style='color:#d29922;font-size:.68rem'> ⚠</span>" if not reliable else ""
+    wrc      = _color(s["win_rate"], 0.52) if reliable else "#6e7681"
+    roic     = _color(s["roi"]) if reliable else "#6e7681"
+    ci_l     = s.get("ci_low", 0)
+    ci_h     = s.get("ci_high", 1)
+    ci_str   = f" <span style='font-size:.70rem;color:#6e7681'>[{ci_l:.0%}–{ci_h:.0%}]</span>"
     return (
-        f"<tr><td><b>{name}</b></td>"
+        f"<tr style='{row_s}'><td><b>{name}</b>{warn}</td>"
         f"<td>{s['picks']}</td>"
-        f"<td style='color:{wrc}'>{_pct(s['win_rate'])}</td>"
+        f"<td style='color:{wrc}'>{_pct(s['win_rate'])}{ci_str}</td>"
         f"<td style='color:{roic}'>{s['roi']:+.0f}u ({s['roi_pct']:+.1f}%)</td></tr>"
     )
 
@@ -44,50 +50,99 @@ def gen_dashboard_football(stats):
     tr   = stats.get("trebles", {})
     r7   = stats.get("recent_7d", {})
     conf = stats.get("by_confidence", {})
-
-    # Melhor mercado por WR
-    best_market = max(pm.items(), key=lambda x: x[1]["win_rate"] if x[1]["picks"] > 0 else 0, default=("—", {}))
+    bs   = stats.get("brier_scores", {})
+    cal  = stats.get("calibration", {})
 
     # JSON para gráficos
     cum_o25_json    = json.dumps(stats.get("cum_o25_series", []))
     cum_btts_json   = json.dumps(stats.get("cum_btts_series", []))
     cum_treble_json = json.dumps(stats.get("cum_treble_series", []))
 
-    daily = stats.get("daily", {})
+    daily  = stats.get("daily", {})
     last30 = list(daily.keys())[-30:]
     d_labels_json = json.dumps(last30)
     d_o25_json  = json.dumps([round(daily[d]["o25_wins"] / daily[d]["o25_picks"] * 100 if daily[d]["o25_picks"] else 0, 1) for d in last30])
     d_btts_json = json.dumps([round(daily[d]["btts_wins"] / daily[d]["btts_picks"] * 100 if daily[d]["btts_picks"] else 0, 1) for d in last30])
 
-    # Tabela por confiança
+    # Tabela por confiança com IC
     conf_rows = ""
     for level in ["ALTA", "MÉDIA", "BAIXA"]:
         s = conf.get(level, {})
         if s.get("picks", 0) == 0:
             continue
-        wrc = _color(s["win_rate"], 0.55)
+        reliable = s.get("reliable", True)
+        row_s    = "opacity:.6;font-style:italic" if not reliable else ""
+        warn     = "<span style='color:#d29922;font-size:.68rem'> ⚠</span>" if not reliable else ""
+        wrc      = _color(s["win_rate"], 0.55) if reliable else "#6e7681"
+        ci_l, ci_h = s.get("ci_low", 0), s.get("ci_high", 1)
         conf_rows += (
-            f"<tr><td><b>{level}</b></td>"
+            f"<tr style='{row_s}'><td><b>{level}</b>{warn}</td>"
             f"<td>{s['records']}</td>"
             f"<td>{s['picks']}</td>"
-            f"<td style='color:{wrc}'>{_pct(s['win_rate'])}</td></tr>"
+            f"<td style='color:{wrc}'>{_pct(s['win_rate'])}"
+            f" <span style='font-size:.70rem;color:#6e7681'>[{ci_l:.0%}–{ci_h:.0%}]</span></td></tr>"
         )
 
-    # Tabela por liga
+    # Tabela por liga com flag de fiabilidade
     league_rows = ""
     for lg, s in stats.get("by_league", {}).items():
-        o25c  = _color(s["o25_wr"], 0.52)
-        bttsc = _color(s["btts_wr"], 0.55)
+        o25c  = _color(s["o25_wr"], 0.52)  if s.get("o25_reliable")  else "#6e7681"
+        bttsc = _color(s["btts_wr"], 0.55) if s.get("btts_reliable") else "#6e7681"
+        o25w  = "" if s.get("o25_reliable")  else "<span style='color:#d29922;font-size:.68rem'>⚠</span>"
+        bttsw = "" if s.get("btts_reliable") else "<span style='color:#d29922;font-size:.68rem'>⚠</span>"
         league_rows += (
             f"<tr><td>{lg}</td><td>{s['records']}</td>"
-            f"<td style='color:{o25c}'>{_pct(s['o25_wr'])} ({s['o25_picks']})</td>"
-            f"<td style='color:{bttsc}'>{_pct(s['btts_wr'])} ({s['btts_picks']})</td></tr>"
+            f"<td style='color:{o25c}'>{_pct(s['o25_wr'])} ({s['o25_picks']}){o25w}</td>"
+            f"<td style='color:{bttsc}'>{_pct(s['btts_wr'])} ({s['btts_picks']}){bttsw}</td></tr>"
         )
 
-    # KPIs recentes 7d
-    r7pm = r7.get("per_market", {})
+    # Calibração O2.5 (reliability diagram como tabela)
+    calib_rows = ""
+    for band in cal.get("o25", []):
+        if band["n"] == 0 or band["actual"] is None:
+            continue
+        diff  = band["actual"] - band["predicted"]
+        dc    = "#3fb950" if diff > 0.03 else ("#f85149" if diff < -0.03 else "#e6edf3")
+        arrow = "↑" if diff > 0.03 else ("↓" if diff < -0.03 else "≈")
+        calib_rows += (
+            f"<tr><td>{band['band']}</td>"
+            f"<td>{band['n']}</td>"
+            f"<td>{band['predicted']:.0%}</td>"
+            f"<td style='color:{dc}'>{band['actual']:.0%} {arrow}</td>"
+            f"<td style='color:{dc}'>{diff:+.1%}</td></tr>"
+        )
+
+    bs_o25  = bs.get("o25")
+    bs_btts = bs.get("btts")
+    brier_note = ""
+    if bs_o25 is not None:
+        interp = "excelente" if bs_o25 < 0.15 else ("bom" if bs_o25 < 0.20 else ("aceitável" if bs_o25 < 0.25 else "fraco"))
+        brier_note = (f"<p style='color:#8b949e;font-size:.72rem;margin-top:8px'>"
+                      f"Brier Score O2.5: <b>{bs_o25:.4f}</b> ({interp})"
+                      + (f" · BTTS: <b>{bs_btts:.4f}</b>" if bs_btts is not None else "")
+                      + " — 0=perfeito, 0.25=aleatório</p>")
+
+    calibration_card = ""
+    if calib_rows:
+        calibration_card = f"""
+<div class="card">
+  <h3>Calibração do Modelo — Reliability Diagram O2.5</h3>
+  <table>
+    <tr><th>Banda Prob</th><th>N</th><th>Previsto</th><th>Real</th><th>Desvio</th></tr>
+    {calib_rows}
+  </table>
+  {brier_note}
+</div>"""
+
+    # KPIs 7d
+    r7pm    = r7.get("per_market", {})
     r7_o25  = r7pm.get("o25",  {})
     r7_btts = r7pm.get("btts", {})
+
+    # Triplas IC
+    tr_ci_l = tr.get("ci_low", 0)
+    tr_ci_h = tr.get("ci_high", 1)
+    tr_rel  = "" if tr.get("reliable") else "<span style='color:#d29922;font-size:.75rem'> ⚠ n&lt;10</span>"
 
     html = f"""<!DOCTYPE html>
 <html lang="pt">
@@ -145,6 +200,7 @@ tr:last-child td{{border-bottom:none}}
     {_market_row("1X2", pm.get("1x2", {}))}
     {_market_row("xG", pm.get("xg", {}))}
   </table>
+  <p style="color:#8b949e;font-size:.72rem;margin-top:8px">⚠ n&lt;20 = amostra insuficiente (itálico) · IC 95% Wilson entre parênteses rectos</p>
 </div>
 
 <div class="card">
@@ -155,15 +211,18 @@ tr:last-child td{{border-bottom:none}}
   </table>
 </div>
 
+{calibration_card}
+
 <div class="card">
   <h3>Sistema de Triplas — {tr.get('total', 0)} triplas ({tr.get('pending', 0)} pendentes)</h3>
   {'<p style="color:#d29922;font-size:.78rem;margin-bottom:8px">* Odds estimadas a partir das probabilidades do modelo (BSD API não guarda odds das triplas)</p>' if tr.get('odds_estimated') else ''}
   <table>
     <tr><th>Total</th><th>Ganhas</th><th>WR</th><th>ROI *</th><th>Odds médias *</th></tr>
     <tr>
-      <td>{tr.get('total',0)}</td>
+      <td>{tr.get('total',0)}{tr_rel}</td>
       <td>{tr.get('won',0)}</td>
-      <td style="color:{_color(tr.get('win_rate',0),.3)}">{_pct(tr.get('win_rate',0))}</td>
+      <td style="color:{_color(tr.get('win_rate',0),.3)}">{_pct(tr.get('win_rate',0))}
+        <span style='font-size:.72rem;color:#6e7681'>[{tr_ci_l:.0%}–{tr_ci_h:.0%}]</span></td>
       <td style="color:{_color(tr.get('roi',0))}">{tr.get('roi',0):+.2f}u ({tr.get('roi_pct',0):+.1f}%)</td>
       <td>{tr.get('avg_odds',0):.2f}x</td>
     </tr>

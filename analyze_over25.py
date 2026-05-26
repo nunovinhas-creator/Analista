@@ -13,7 +13,6 @@ def _parse_date(s):
 
 
 def _flt(p, key, default=0.0):
-    """Converte campo string para float com fallback seguro."""
     v = p.get(key)
     if v is None or v == "":
         return default
@@ -26,6 +25,31 @@ def _flt(p, key, default=0.0):
 def _safe_odds(p):
     v = _flt(p, "odds_over")
     return v if 1.01 <= v <= 50.0 else None
+
+
+def _wilson_ci(wins, n, z=1.96):
+    """Intervalo de confiança Wilson 95% — mais fiável que normal para proporções pequenas."""
+    if n == 0:
+        return 0.0, 1.0
+    p = wins / n
+    denom = 1 + z**2 / n
+    centre = (p + z**2 / (2 * n)) / denom
+    margin = (z * (p * (1 - p) / n + z**2 / (4 * n**2)) ** 0.5) / denom
+    return round(max(0.0, centre - margin), 3), round(min(1.0, centre + margin), 3)
+
+
+def _max_drawdown(cum_series):
+    """Drawdown máximo a partir da série de ROI acumulado."""
+    if not cum_series:
+        return 0.0
+    peak, max_dd = cum_series[0], 0.0
+    for v in cum_series:
+        if v > peak:
+            peak = v
+        dd = peak - v
+        if dd > max_dd:
+            max_dd = dd
+    return round(max_dd, 2)
 
 
 def _roi_for_list(picks):
@@ -45,13 +69,27 @@ def _segment(subset):
     resolved = [p for p in subset if p.get("result_over25") in ("WIN", "LOSS")]
     wins = sum(1 for p in resolved if p["result_over25"] == "WIN")
     roi, cnt = _roi_for_list(resolved)
+    n, k = len(resolved), wins
+    ci_low, ci_high = _wilson_ci(k, n)
     return {
-        "count": len(resolved),
-        "wins": wins,
-        "win_rate": wins / len(resolved) if resolved else 0.0,
-        "roi": roi,
-        "roi_pct": (roi / cnt * 100) if cnt else 0.0,
+        "count":    n,
+        "wins":     k,
+        "win_rate": k / n if n else 0.0,
+        "ci_low":   ci_low,
+        "ci_high":  ci_high,
+        "reliable": n >= 20,
+        "roi":      roi,
+        "roi_pct":  (roi / cnt * 100) if cnt else 0.0,
     }
+
+
+def _kelly_pick(wr, odds, cap=3.0):
+    """Quarter Kelly para um pick individual, com tecto de 3% da banca."""
+    if not odds or odds <= 1.01 or wr <= 0:
+        return 0.0
+    b = odds - 1
+    f = (wr * b - (1 - wr)) / b
+    return round(min(max(f / 4, 0.0) * 100, cap), 1)
 
 
 def analyze_over25(picks, picks_1x2):
@@ -59,7 +97,11 @@ def analyze_over25(picks, picks_1x2):
     wins = sum(1 for p in resolved if p["result_over25"] == "WIN")
     total_roi, bet_count = _roi_for_list(resolved)
 
-    # Série de vitórias/derrotas atual
+    n, k = len(resolved), wins
+    wr = k / n if n else 0.0
+    ci_low, ci_high = _wilson_ci(k, n)
+
+    # Série de vitórias/derrotas actual
     streak, streak_type = 0, None
     for p in reversed(resolved):
         r = p["result_over25"]
@@ -70,7 +112,7 @@ def analyze_over25(picks, picks_1x2):
         else:
             break
 
-    # CLV médio (campo vem como string, "" significa sem dados)
+    # CLV médio (campo vem como string; "" = sem dados)
     clv_vals = [_flt(p, "clv") for p in picks if p.get("clv") not in (None, "")]
     avg_clv = sum(clv_vals) / len(clv_vals) if clv_vals else None
 
@@ -87,15 +129,21 @@ def analyze_over25(picks, picks_1x2):
         "DRIFTING":   _segment([p for p in picks if p.get("movimento") == "DRIFTING"]),
     }
 
-    # Por score do sistema (campo é string, ex: "58")
+    # Por score do sistema
     by_score = {}
     for lo, hi, label in [(0, 40, "0–40"), (40, 60, "40–60"), (60, 75, "60–75"), (75, 101, "75–100")]:
         by_score[label] = _segment([p for p in picks if lo <= _flt(p, "score_sistema") < hi])
 
-    # Por xG total (campo é string, ex: "4.19")
+    # Por xG total
     by_xg = {}
     for lo, hi, label in [(0, 2.0, "< 2.0"), (2.0, 2.5, "2.0–2.5"), (2.5, 3.0, "2.5–3.0"), (3.0, 99, "≥ 3.0")]:
         by_xg[label] = _segment([p for p in picks if lo <= _flt(p, "xg_total") < hi])
+
+    # Por banda de odds
+    by_odds = {}
+    for lo, hi, label in [(1.0, 1.60, "< 1.60"), (1.60, 1.80, "1.60–1.80"), (1.80, 2.00, "1.80–2.00"), (2.00, 50.0, "≥ 2.00")]:
+        subset = [p for p in picks if _safe_odds(p) is not None and lo <= _safe_odds(p) < hi]
+        by_odds[label] = _segment(subset)
 
     # Por liga (top 12 por volume)
     leagues: dict = {}
@@ -108,7 +156,7 @@ def analyze_over25(picks, picks_1x2):
         if len(v) >= 3
     }
 
-    # Stats diárias para gráfico de barras
+    # Stats diárias
     daily: dict = {}
     for p in resolved:
         d = _parse_date(p.get("data"))
@@ -124,7 +172,7 @@ def analyze_over25(picks, picks_1x2):
             daily[day]["roi"] += (odds - 1) if p["result_over25"] == "WIN" else -1
     daily = dict(sorted(daily.items()))
 
-    # Série ROI acumulado para gráfico de linha
+    # Série ROI acumulado
     cumulative_roi: list = []
     cum = 0.0
     sorted_resolved = sorted(resolved, key=lambda x: _parse_date(x.get("data")) or _min)
@@ -134,7 +182,19 @@ def analyze_over25(picks, picks_1x2):
             cum += (odds - 1) if p["result_over25"] == "WIN" else -1
         cumulative_roi.append(round(cum, 3))
 
-    # Análise 1X2 sharp — campos reais: resultado_outcome, odds_entrada
+    # Rolling Win Rate — janela 20 picks
+    rolling_wr_series = []
+    window = 20
+    for i in range(len(sorted_resolved)):
+        start = max(0, i - window + 1)
+        sub = sorted_resolved[start:i + 1]
+        w = sum(1 for p in sub if p["result_over25"] == "WIN")
+        rolling_wr_series.append(round(w / len(sub), 3))
+
+    # Drawdown máximo
+    max_drawdown = _max_drawdown(cumulative_roi)
+
+    # Análise 1X2 sharp
     p1x2_resolved = [p for p in picks_1x2 if p.get("resultado_outcome") in ("WIN", "LOSS")] if picks_1x2 else []
     wins_1x2 = sum(1 for p in p1x2_resolved if p["resultado_outcome"] == "WIN")
     roi_1x2, cnt_1x2 = 0.0, 0
@@ -143,42 +203,83 @@ def analyze_over25(picks, picks_1x2):
         if 1.01 <= odds <= 50.0:
             cnt_1x2 += 1
             roi_1x2 += (odds - 1) if p["resultado_outcome"] == "WIN" else -1
+    n_1x2, k_1x2 = len(p1x2_resolved), wins_1x2
+    ci_1x2_l, ci_1x2_h = _wilson_ci(k_1x2, n_1x2)
+
+    # Picks pendentes com Kelly recomendado
+    pending_with_kelly = []
+    for p in picks:
+        if p.get("result_over25") in ("WIN", "LOSS"):
+            continue
+        odds = _safe_odds(p)
+        if n >= 10:
+            kq = _kelly_pick(wr, odds)
+            if avg_clv is not None and avg_clv < 0 and kq > 0:
+                kq = round(kq * 0.5, 1)
+            note = "CLV negativo: stake reduzido 50%" if (avg_clv is not None and avg_clv < 0) else ""
+        else:
+            kq = 0.0
+            note = "n<10 resolvidos — sem recomendação"
+        pending_with_kelly.append({
+            "casa":      p.get("casa") or "—",
+            "fora":      p.get("fora") or "—",
+            "liga":      p.get("liga") or "—",
+            "odds":      odds or 0.0,
+            "score":     _flt(p, "score_sistema"),
+            "movimento": p.get("movimento") or "—",
+            "xg":        _flt(p, "xg_total"),
+            "prob":      _flt(p, "prob_over25"),
+            "kelly_pct": kq,
+            "kelly_ok":  kq >= 0.5,
+            "kelly_note": note,
+        })
 
     return {
-        "total": len(picks),
-        "resolved": len(resolved),
-        "pending": len(picks) - len(resolved),
-        "wins": wins,
-        "losses": len(resolved) - wins,
-        "win_rate": wins / len(resolved) if resolved else 0.0,
-        "roi": total_roi,
-        "roi_pct": (total_roi / bet_count * 100) if bet_count else 0.0,
-        "bet_count": bet_count,
-        "streak": streak,
+        "total":       len(picks),
+        "resolved":    n,
+        "pending":     len(picks) - n,
+        "wins":        k,
+        "losses":      n - k,
+        "win_rate":    wr,
+        "ci_low":      ci_low,
+        "ci_high":     ci_high,
+        "roi":         total_roi,
+        "roi_pct":     (total_roi / bet_count * 100) if bet_count else 0.0,
+        "bet_count":   bet_count,
+        "streak":      streak,
         "streak_type": streak_type,
-        "avg_clv": avg_clv,
+        "avg_clv":     avg_clv,
+        "max_drawdown": max_drawdown,
         "recent_7d": {
-            "count": len(recent),
-            "wins": wins_recent,
+            "count":    len(recent),
+            "wins":     wins_recent,
             "win_rate": wins_recent / len(recent) if recent else 0.0,
-            "roi": roi_recent,
-            "roi_pct": (roi_recent / cnt_recent * 100) if cnt_recent else 0.0,
+            "roi":      roi_recent,
+            "roi_pct":  (roi_recent / cnt_recent * 100) if cnt_recent else 0.0,
         },
         "by_movement": by_movement,
         "by_score":    by_score,
         "by_xg":       by_xg,
+        "by_odds":     by_odds,
         "by_league":   by_league,
         "daily":       daily,
-        "cumulative_roi": cumulative_roi,
+        "cumulative_roi":    cumulative_roi,
+        "rolling_wr_series": rolling_wr_series,
         "picks_1x2": {
-            "resolved": len(p1x2_resolved),
-            "wins": wins_1x2,
-            "win_rate": wins_1x2 / len(p1x2_resolved) if p1x2_resolved else 0.0,
-            "roi": roi_1x2,
-            "roi_pct": (roi_1x2 / cnt_1x2 * 100) if cnt_1x2 else 0.0,
+            "resolved": n_1x2,
+            "wins":     k_1x2,
+            "win_rate": k_1x2 / n_1x2 if n_1x2 else 0.0,
+            "ci_low":   ci_1x2_l,
+            "ci_high":  ci_1x2_h,
+            "reliable": n_1x2 >= 20,
+            "roi":      roi_1x2,
+            "roi_pct":  (roi_1x2 / cnt_1x2 * 100) if cnt_1x2 else 0.0,
         },
-        # Picks para tabela no dashboard (pendentes + recentes)
         "all_picks_raw": sorted(picks, key=lambda x: _parse_date(x.get("data")) or _min, reverse=True)[:30],
-        "pending_picks": sorted([p for p in picks if p.get("result_over25") not in ("WIN", "LOSS")],
-                                key=lambda x: _parse_date(x.get("data")) or _min, reverse=True),
+        "pending_picks": sorted(
+            [p for p in picks if p.get("result_over25") not in ("WIN", "LOSS")],
+            key=lambda x: _parse_date(x.get("data")) or _min,
+            reverse=True,
+        ),
+        "pending_with_kelly": pending_with_kelly,
     }
