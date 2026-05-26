@@ -1,4 +1,110 @@
-<!DOCTYPE html><html lang="pt"><head><meta charset="UTF-8">
-<title>Over 2.5 Scanner</title>
-<style>body{background:#0d1117;color:#8b949e;font-family:sans-serif;display:flex;align-items:center;justify-content:center;height:100vh;margin:0;}</style>
-</head><body><p>Sem dados disponíveis — 25/05/2026 21:41 UTC</p></body></html>
+<!DOCTYPE html>
+<html lang="pt">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Over 2.5 Scanner — Analista</title>
+<script src='https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js'></script>
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+body{background:#0d1117;color:#e6edf3;font-family:'Segoe UI',sans-serif;padding:20px;font-size:14px}
+h1{font-size:1.5rem;color:#58a6ff;margin-bottom:4px}
+.sub{color:#8b949e;font-size:.82rem;margin-bottom:20px}
+.kpi-bar{display:flex;gap:10px;flex-wrap:wrap;margin-bottom:22px}
+.kpi{background:#161b22;border:1px solid #30363d;border-radius:8px;padding:12px 18px;min-width:120px}
+.kpi-l{font-size:.72rem;color:#8b949e;text-transform:uppercase;letter-spacing:.05em}
+.kpi-v{font-size:1.5rem;font-weight:700;margin-top:3px}
+.charts{display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-bottom:20px}
+.card{background:#161b22;border:1px solid #30363d;border-radius:8px;padding:16px;margin-bottom:14px}
+.card h3{font-size:.82rem;color:#8b949e;margin-bottom:10px;text-transform:uppercase;letter-spacing:.04em}
+table{width:100%;border-collapse:collapse;font-size:.83rem}
+th{text-align:left;color:#8b949e;padding:5px 8px;border-bottom:1px solid #30363d;font-weight:500}
+td{padding:5px 8px;border-bottom:1px solid #21262d;vertical-align:top}
+tr:last-child td{border-bottom:none}
+@media(max-width:650px){.charts{grid-template-columns:1fr}}
+</style>
+</head>
+<body>
+<h1>🎯 Over 2.5 Scanner</h1>
+<p class="sub">Actualizado: 26/05/2026 07:25 UTC · 1 resolvidos · 3 pendentes · 4 total</p>
+
+
+
+<div class="kpi-bar">
+  <div class="kpi"><div class="kpi-l">Win Rate</div><div class="kpi-v" style="color:#3fb950">100.0%</div></div>
+  <div class="kpi"><div class="kpi-l">ROI Total</div><div class="kpi-v" style="color:#3fb950">+0.95u</div></div>
+  <div class="kpi"><div class="kpi-l">Yield</div><div class="kpi-v" style="color:#3fb950">+95.2%</div></div>
+  <div class="kpi"><div class="kpi-l">Streak</div><div class="kpi-v" style="color:#3fb950">+1</div></div>
+  <div class='kpi'><div class='kpi-l'>CLV Médio</div><div class='kpi-v' style='color:#f85149'>-4.31%</div></div>
+  <div class="kpi"><div class="kpi-l">WR 7 dias</div><div class="kpi-v" style="color:#3fb950">100.0%</div></div>
+  <div class="kpi"><div class="kpi-l">ROI 7 dias</div><div class="kpi-v" style="color:#3fb950">+0.95u</div></div></div>
+
+
+<div class="charts">
+  <div class="card"><h3>ROI Acumulado</h3><canvas id="cRoi" height="160"></canvas></div>
+  <div class="card"><h3>Performance Diária — últimos 30 dias</h3><canvas id="cDaily" height="160"></canvas></div>
+</div>
+
+<div class="card">
+  <h3>Por Movimento de Odds</h3>
+  <table>
+    <tr><th>Segmento</th><th>Picks</th><th>WR</th><th>ROI</th></tr>
+    <tr><td>DRIFTING</td><td>1</td><td style='color:#3fb950'>100.0%</td><td style='color:#3fb950'>+0.95u (+95.2%)</td></tr>
+  </table>
+</div>
+<div class="card">
+  <h3>Por Score do Sistema</h3>
+  <table>
+    <tr><th>Segmento</th><th>Picks</th><th>WR</th><th>ROI</th></tr>
+    <tr><td>40–60</td><td>1</td><td style='color:#3fb950'>100.0%</td><td style='color:#3fb950'>+0.95u (+95.2%)</td></tr>
+  </table>
+</div>
+<div class="card">
+  <h3>Por xG Total</h3>
+  <table>
+    <tr><th>Segmento</th><th>Picks</th><th>WR</th><th>ROI</th></tr>
+    <tr><td>≥ 3.0</td><td>1</td><td style='color:#3fb950'>100.0%</td><td style='color:#3fb950'>+0.95u (+95.2%)</td></tr>
+  </table>
+</div><div class="card"><h3>Por Liga</h3>
+  <table><tr><th>Liga</th><th>Picks</th><th>WR</th><th>ROI</th></tr><tr><td>Desconhecida</td><td>1</td><td style='color:#3fb950'>100.0%</td><td style='color:#3fb950'>+0.95u</td></tr></table>
+</div>
+
+<div class="card">
+  <h3>Picks Recentes</h3>
+  <table>
+    <tr><th>Jogo</th><th>Mov.</th><th>Score</th><th>Prob</th><th>Odds</th><th>xG</th><th>Sharp</th><th>Result.</th></tr>
+    <tr><td><b>Saint-Étienne</b> vs Nice<br><span style='color:#8b949e;font-size:.78rem'>—</span></td><td style='color:#f0883e'>DRIFTING</td><td>45</td><td>69%</td><td>1.7090</td><td>2.89</td><td style='color:#8b949e;font-size:.8rem'>WATCH</td><td><span style='color:#d29922'>Pendente</span></td></tr><tr><td><b>DUX Logroño</b> vs Athletic Club<br><span style='color:#8b949e;font-size:.78rem'>—</span></td><td style='color:#f0883e'>DRIFTING</td><td>41</td><td>60%</td><td>2.0100</td><td>3.40</td><td style='color:#8b949e;font-size:.8rem'></td><td><span style='color:#d29922'>Pendente</span></td></tr><tr><td><b>FC Badalona</b> vs Real Madrid<br><span style='color:#8b949e;font-size:.78rem'>—</span></td><td style='color:#f0883e'>DRIFTING</td><td>45</td><td>77%</td><td>1.6000</td><td>3.15</td><td style='color:#8b949e;font-size:.8rem'></td><td><span style='color:#d29922'>Pendente</span></td></tr><tr><td><b>SC Paderborn 07</b> vs VfL Wolfsburg<br><span style='color:#8b949e;font-size:.78rem'>—</span></td><td style='color:#f0883e'>DRIFTING</td><td>58</td><td>80%</td><td>1.9520</td><td>4.19</td><td style='color:#8b949e;font-size:.8rem'>WATCH</td><td><span style='color:#3fb950;font-weight:700'>WIN</span></td></tr>
+  </table>
+</div>
+
+
+<div class="card">
+  <h3>Sharp 1X2</h3>
+  <table>
+    <tr><th>Picks</th><th>WR</th><th>ROI</th><th>Yield</th></tr>
+    <tr>
+      <td>17</td>
+      <td style="color:#f85149">47.1%</td>
+      <td style="color:#3fb950">+4.17u</td>
+      <td style="color:#3fb950">+24.5%</td>
+    </tr>
+  </table>
+</div>
+
+<script>
+const baseOpts = {
+  plugins: {legend: {display: false}},
+  scales: { x: {display: false}, y: {grid: {color:'#21262d'}, ticks: {color:'#8b949e'}} }
+};
+new Chart(document.getElementById('cRoi').getContext('2d'), {
+  type:'line', data:{labels:[1], datasets:[{data:[0.952],
+  borderColor:'#58a6ff',backgroundColor:'rgba(88,166,255,.08)',borderWidth:2,pointRadius:0,fill:true,tension:.3}]},
+  options:baseOpts
+});
+new Chart(document.getElementById('cDaily').getContext('2d'), {
+  type:'bar', data:{labels:["2026-05-25"], datasets:[{data:[0.95],
+  backgroundColor:["rgba(63,185,80,.75)"],borderRadius:3}]},
+  options:baseOpts
+});</script>
+</body>
+</html>
