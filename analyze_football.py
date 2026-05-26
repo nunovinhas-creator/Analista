@@ -81,28 +81,44 @@ def analyze_football(history, trebles):
         }
 
     # Trebles
+    # A BSD API não guarda odds nas triplas — estima a partir das probabilidades dos picks
+    # odds_estimadas = produto de (1/prob) para cada pick (fair value, sem margem)
+    def _est_odds(t):
+        stored = t.get("combined_odds")
+        if stored:
+            return stored
+        combined = 1.0
+        for p in t.get("picks", []):
+            prob = p.get("prob", 0)
+            if prob and prob > 0.05:
+                combined *= 1.0 / prob
+        return round(combined, 2) if combined > 1.01 else None
+
     t_hist = trebles.get("history", [])
     t_won  = [t for t in t_hist if t.get("hit") is True]
-    # combined_odds e profit_1u podem ser null — usa fallback 0 para perdas, odds-1 para ganhos
     treble_roi = 0.0
     for t in t_hist:
         if t.get("hit"):
             profit = t.get("profit_1u")
             if profit is None:
-                odds = t.get("combined_odds") or 0
-                profit = (odds - 1) if odds else 0
+                odds = _est_odds(t)
+                profit = (odds - 1) if odds else 0.0
             treble_roi += profit
         else:
-            treble_roi -= 1
-    odds_list = [t["combined_odds"] for t in t_hist if t.get("combined_odds") is not None]
+            profit = t.get("profit_1u")
+            treble_roi += profit if profit is not None else -1.0
+
+    est_odds_list = [_est_odds(t) for t in t_hist]
+    est_odds_list = [o for o in est_odds_list if o]
     treble_stats = {
-        "total":    len(t_hist),
-        "won":      len(t_won),
-        "win_rate": len(t_won) / len(t_hist) if t_hist else 0.0,
-        "roi":      treble_roi,
-        "roi_pct":  (treble_roi / len(t_hist) * 100) if t_hist else 0.0,
-        "avg_odds": sum(odds_list) / len(odds_list) if odds_list else 0.0,
-        "pending":  len(trebles.get("pending", [])),
+        "total":      len(t_hist),
+        "won":        len(t_won),
+        "win_rate":   len(t_won) / len(t_hist) if t_hist else 0.0,
+        "roi":        treble_roi,
+        "roi_pct":    (treble_roi / len(t_hist) * 100) if t_hist else 0.0,
+        "avg_odds":   sum(est_odds_list) / len(est_odds_list) if est_odds_list else 0.0,
+        "odds_estimated": not any(t.get("combined_odds") for t in t_hist),
+        "pending":    len(trebles.get("pending", [])),
     }
 
     # Últimos 7 dias
@@ -148,11 +164,12 @@ def analyze_football(history, trebles):
         if t.get("hit"):
             profit = t.get("profit_1u")
             if profit is None:
-                odds = t.get("combined_odds") or 0
-                profit = (odds - 1) if odds else 0
+                odds = _est_odds(t)
+                profit = (odds - 1) if odds else 0.0
             cum_treble += profit
         else:
-            cum_treble -= 1
+            profit = t.get("profit_1u")
+            cum_treble += profit if profit is not None else -1.0
         cum_treble_series.append(round(cum_treble, 2))
 
     return {

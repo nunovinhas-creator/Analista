@@ -177,4 +177,8 @@ def analyze_over25(picks, picks_1x2):
             "roi": roi_1x2,
             "roi_pct": (roi_1x2 / cnt_1x2 * 100) if cnt_1x2 else 0.0,
         },
+        # Picks para tabela no dashboard (pendentes + recentes)
+        "all_picks_raw": sorted(picks, key=lambda x: _parse_date(x.get("data")) or _min, reverse=True)[:30],
+        "pending_picks": sorted([p for p in picks if p.get("result_over25") not in ("WIN", "LOSS")],
+                                key=lambda x: _parse_date(x.get("data")) or _min, reverse=True),
     }

@@ -156,8 +156,9 @@ tr:last-child td{{border-bottom:none}}
 
 <div class="card">
   <h3>Sistema de Triplas — {tr.get('total', 0)} triplas ({tr.get('pending', 0)} pendentes)</h3>
+  {'<p style="color:#d29922;font-size:.78rem;margin-bottom:8px">* Odds estimadas a partir das probabilidades do modelo (BSD API não guarda odds das triplas)</p>' if tr.get('odds_estimated') else ''}
   <table>
-    <tr><th>Total</th><th>Ganhas</th><th>WR</th><th>ROI</th><th>Odds médias</th></tr>
+    <tr><th>Total</th><th>Ganhas</th><th>WR</th><th>ROI *</th><th>Odds médias *</th></tr>
     <tr>
       <td>{tr.get('total',0)}</td>
       <td>{tr.get('won',0)}</td>
