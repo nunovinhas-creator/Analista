@@ -102,11 +102,15 @@ iframe.active { display: block; }
 </div>
 
 <div class="content">
-  <iframe id="frame-o25" class="active" src="over25_dashboard.html"></iframe>
-  <iframe id="frame-fb"  src="football_dashboard.html"></iframe>
+  <iframe id="frame-o25" class="active"></iframe>
+  <iframe id="frame-fb"></iframe>
 </div>
 
 <script>
+const ts = Date.now();
+document.getElementById('frame-o25').src = 'over25_dashboard.html?v=' + ts;
+document.getElementById('frame-fb').src  = 'football_dashboard.html?v=' + ts;
+
 function switchTab(e, frameId, btnId, href) {
   e.preventDefault();
   document.querySelectorAll('iframe').forEach(f => f.classList.remove('active'));
