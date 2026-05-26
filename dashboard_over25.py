@@ -224,6 +224,7 @@ new Chart(document.getElementById('cDaily').getContext('2d'), {{
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
 <title>Over 2.5 Scanner — Analista</title>
+<meta http-equiv="refresh" content="900">
 {script_tag}
 <style>
 *{{box-sizing:border-box;margin:0;padding:0}}

@@ -95,6 +95,7 @@ def gen_dashboard_football(stats):
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
 <title>Matemática Da Bola — Analista</title>
+<meta http-equiv="refresh" content="900">
 <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
 <style>
 *{{box-sizing:border-box;margin:0;padding:0}}

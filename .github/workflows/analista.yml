@@ -2,10 +2,8 @@ name: Analista
 
 on:
   schedule:
-    # Análise manhã — 07:00 UTC
-    - cron: "0 7 * * *"
-    # Análise tarde — 14:00 UTC
-    - cron: "0 14 * * *"
+    # Análise a cada 2 horas (mantém dashboards actualizados)
+    - cron: "0 */2 * * *"
     # Relatório completo + email — 20:30 UTC = 21:30 Lisboa (UTC+1)
     - cron: "30 20 * * *"
   workflow_dispatch:
