@@ -44,24 +44,30 @@ def _market_segment(records, pick_key, hit_key):
 
 
 def _brier_score(records, prob_key, hit_key):
-    """Brier Score: qualidade de calibração (0=perfeito, 0.25=aleatório)."""
+    """Brier Score: qualidade de calibração (0=perfeito, 0.25=aleatório).
+    prob_key armazena probabilidade em escala 0-100 (ex: 71.0 = 71%).
+    """
     scores = []
     for r in records:
         prob = r.get(prob_key)
         hit  = r.get(hit_key)
         if prob is not None and hit is not None:
             try:
-                scores.append((float(prob) - (1 if hit else 0)) ** 2)
+                p = float(prob) / 100.0  # converter 0-100 → 0-1
+                scores.append((p - (1 if hit else 0)) ** 2)
             except (ValueError, TypeError):
                 pass
     return round(sum(scores) / len(scores), 4) if scores else None
 
 
-def _calibration_data(records, prob_key, hit_key, n_bins=5):
-    """Dados para reliability diagram: prob prevista vs WR real por banda."""
-    bins = [(i / n_bins, (i + 1) / n_bins) for i in range(n_bins)]
+def _calibration_data(records, prob_key, hit_key):
+    """Dados para reliability diagram: prob prevista vs WR real por banda.
+    prob_key armazena probabilidade em escala 0-100.
+    Bandas: 0-20%, 20-40%, 40-60%, 60-80%, 80-100%.
+    """
+    bands = [(0, 20), (20, 40), (40, 60), (60, 80), (80, 100)]
     result = []
-    for lo, hi in bins:
+    for lo, hi in bands:
         subset = []
         for r in records:
             prob = r.get(prob_key)
@@ -73,9 +79,9 @@ def _calibration_data(records, prob_key, hit_key, n_bins=5):
                 except (ValueError, TypeError):
                     pass
         hits = sum(1 for r in subset if r.get(hit_key))
-        mid  = round((lo + hi) / 2, 2)
+        mid  = round((lo + hi) / 2 / 100, 2)  # converter para 0-1 para display
         result.append({
-            "band":      f"{lo:.0%}–{hi:.0%}",
+            "band":      f"{lo}%–{hi}%",
             "predicted": mid,
             "actual":    round(hits / len(subset), 3) if subset else None,
             "n":         len(subset),
@@ -108,16 +114,16 @@ def analyze_football(history, trebles):
                ("btts", "pick_btts", "hit_btts"), ("xg", "pick_xg", "hit_goal_range")]
     per_market = {m: _market_segment(records, pk, hk) for m, pk, hk in markets}
 
-    # Brier Scores (calibração preditiva do modelo)
+    # Brier Scores — campos reais: po (prob over, 0-100), pb (prob btts, 0-100)
     brier_scores = {
-        "o25":  _brier_score(records, "prob_o25",  "hit_o25"),
-        "btts": _brier_score(records, "prob_btts", "hit_btts"),
+        "o25":  _brier_score(records, "po", "hit_o25"),
+        "btts": _brier_score(records, "pb", "hit_btts"),
     }
 
     # Reliability diagram data
     calibration = {
-        "o25":  _calibration_data(records, "prob_o25",  "hit_o25"),
-        "btts": _calibration_data(records, "prob_btts", "hit_btts"),
+        "o25":  _calibration_data(records, "po", "hit_o25"),
+        "btts": _calibration_data(records, "pb", "hit_btts"),
     }
 
     # Por nível de confiança
