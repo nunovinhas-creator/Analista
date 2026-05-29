@@ -103,10 +103,11 @@ def analyze_over25(picks, picks_1x2):
     n, k = len(resolved), wins
     wr = k / n if n else 0.0
     ci_low, ci_high = _wilson_ci(k, n)
+    _min = datetime.min.replace(tzinfo=timezone.utc)
 
-    # Série de vitórias/derrotas actual
+    # Série de vitórias/derrotas actual — sorted by date for correctness
     streak, streak_type = 0, None
-    for p in reversed(resolved):
+    for p in reversed(sorted(resolved, key=lambda x: _parse_date(x.get("data")) or _min)):
         r = p["result_over25"]
         if streak_type is None:
             streak_type = r
@@ -121,7 +122,6 @@ def analyze_over25(picks, picks_1x2):
 
     # Últimos 7 dias
     cutoff = datetime.now(timezone.utc) - timedelta(days=7)
-    _min = datetime.min.replace(tzinfo=timezone.utc)
     recent = [p for p in resolved if (_parse_date(p.get("data")) or _min) >= cutoff]
     roi_recent, cnt_recent = _roi_for_list(recent)
     wins_recent = sum(1 for p in recent if p["result_over25"] == "WIN")

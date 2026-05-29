@@ -33,6 +33,14 @@ def _kelly_quarter(win_rate, avg_odds=1.90):
     return max(0.0, f / 4)
 
 
+def _best_segment(mapping, min_count):
+    """Retorna (label, stats) do segmento com maior win_rate com pelo menos min_count picks, ou (None, None)."""
+    filtered = {k: v for k, v in mapping.items() if v.get("count", 0) >= min_count}
+    if not filtered:
+        return None, None
+    return max(filtered.items(), key=lambda x: x[1]["win_rate"])
+
+
 def _picks_to_significance(wr, n_current, base=0.5, z=1.645):
     """Quantos picks no total para atingir p<0.05 com o WR actual (aproximação normal)."""
     if wr <= base:
@@ -91,28 +99,24 @@ def generate_ai_report(over25_stats, football_stats):
                 lines.append(f"- **Deriva do modelo:** WR últimos {min(20, n)} picks = {current_rwr:.1%} vs global {wr:.1%} → {direction}")
 
         # Melhor segmento (movimento)
-        by_mov = {k_: v for k_, v in o.get("by_movement", {}).items() if v["count"] >= 5}
-        if by_mov:
-            best = max(by_mov.items(), key=lambda x: x[1]["win_rate"])
-            lines.append(f"- **Filtro recomendado:** movimento {best[0]} → WR={best[1]['win_rate']:.1%} ({best[1]['count']} picks), ROI={best[1]['roi']:+.2f}u")
+        lbl, seg = _best_segment(o.get("by_movement", {}), 5)
+        if lbl:
+            lines.append(f"- **Filtro recomendado:** movimento {lbl} → WR={seg['win_rate']:.1%} ({seg['count']} picks), ROI={seg['roi']:+.2f}u")
 
         # Melhor score
-        by_score = {k_: v for k_, v in o.get("by_score", {}).items() if v["count"] >= 3}
-        if by_score:
-            best_s = max(by_score.items(), key=lambda x: x[1]["win_rate"])
-            lines.append(f"- **Score óptimo:** {best_s[0]} → WR={best_s[1]['win_rate']:.1%} — usar como score_sistema mínimo")
+        lbl, seg = _best_segment(o.get("by_score", {}), 3)
+        if lbl:
+            lines.append(f"- **Score óptimo:** {lbl} → WR={seg['win_rate']:.1%} — usar como score_sistema mínimo")
 
         # Melhor xG
-        by_xg = {k_: v for k_, v in o.get("by_xg", {}).items() if v["count"] >= 3}
-        if by_xg:
-            best_x = max(by_xg.items(), key=lambda x: x[1]["win_rate"])
-            lines.append(f"- **xG óptimo:** {best_x[0]} → WR={best_x[1]['win_rate']:.1%}")
+        lbl, seg = _best_segment(o.get("by_xg", {}), 3)
+        if lbl:
+            lines.append(f"- **xG óptimo:** {lbl} → WR={seg['win_rate']:.1%}")
 
         # Melhor banda de odds
-        by_odds = {k_: v for k_, v in o.get("by_odds", {}).items() if v["count"] >= 3}
-        if by_odds:
-            best_o = max(by_odds.items(), key=lambda x: x[1]["win_rate"])
-            lines.append(f"- **Odds óptimas:** {best_o[0]} → WR={best_o[1]['win_rate']:.1%} ({best_o[1]['count']} picks)")
+        lbl, seg = _best_segment(o.get("by_odds", {}), 3)
+        if lbl:
+            lines.append(f"- **Odds óptimas:** {lbl} → WR={seg['win_rate']:.1%} ({seg['count']} picks)")
 
         # Tendência 7 dias
         r7 = o.get("recent_7d", {})
@@ -182,7 +186,7 @@ def generate_ai_report(over25_stats, football_stats):
     bs_btts = bs.get("btts")
     if bs_o25 is not None:
         interp_o25  = "excelente" if bs_o25 < 0.15 else ("bom" if bs_o25 < 0.20 else ("aceitável" if bs_o25 < 0.25 else "fraco"))
-        interp_btts = "excelente" if (bs_btts or 1) < 0.15 else ("bom" if (bs_btts or 1) < 0.20 else ("aceitável" if (bs_btts or 1) < 0.25 else "fraco"))
+        interp_btts = ("excelente" if bs_btts < 0.15 else ("bom" if bs_btts < 0.20 else ("aceitável" if bs_btts < 0.25 else "fraco"))) if bs_btts is not None else "N/D"
         bs_btts_str = f"{bs_btts:.4f}" if bs_btts is not None else "N/D"
         lines.append(f"- **Calibração (Brier Score):** O2.5={bs_o25:.4f} ({interp_o25}) · BTTS={bs_btts_str} ({interp_btts}) — quanto menor melhor (0=perfeito)")
 

@@ -89,6 +89,18 @@ def _calibration_data(records, prob_key, hit_key):
     return result
 
 
+def _est_odds(t):
+    stored = t.get("combined_odds")
+    if stored:
+        return stored
+    combined = 1.0
+    for p in t.get("picks", []):
+        prob = p.get("prob", 0)
+        if prob and prob > 0.05:
+            combined *= 1.0 / prob
+    return round(combined, 2) if combined > 1.01 else None
+
+
 def analyze_football(history, trebles):
     records = history.get("records", [])
 
@@ -163,17 +175,6 @@ def analyze_football(history, trebles):
         }
 
     # Trebles
-    def _est_odds(t):
-        stored = t.get("combined_odds")
-        if stored:
-            return stored
-        combined = 1.0
-        for p in t.get("picks", []):
-            prob = p.get("prob", 0)
-            if prob and prob > 0.05:
-                combined *= 1.0 / prob
-        return round(combined, 2) if combined > 1.01 else None
-
     t_hist = trebles.get("history", [])
     t_won  = [t for t in t_hist if t.get("hit") is True]
     treble_roi = 0.0
@@ -221,24 +222,24 @@ def analyze_football(history, trebles):
             continue
         daily.setdefault(d, {"records": 0, "o25_picks": 0, "o25_wins": 0, "btts_picks": 0, "btts_wins": 0})
         daily[d]["records"] += 1
-        if r.get("pick_o25"):
+        if r.get("pick_o25") and r.get("hit_o25") is not None:
             daily[d]["o25_picks"] += 1
             if r.get("hit_o25"):
                 daily[d]["o25_wins"] += 1
-        if r.get("pick_btts"):
+        if r.get("pick_btts") and r.get("hit_btts") is not None:
             daily[d]["btts_picks"] += 1
             if r.get("hit_btts"):
                 daily[d]["btts_wins"] += 1
     daily = dict(sorted(daily.items()))
 
-    # Séries ROI acumulado para gráficos
+    # Séries ROI acumulado para gráficos — apenas picks resolvidos
     cum_o25, cum_btts = 0.0, 0.0
     cum_o25_series, cum_btts_series = [], []
     for r in records:
-        if r.get("pick_o25"):
+        if r.get("pick_o25") and r.get("hit_o25") is not None:
             cum_o25 += 1 if r.get("hit_o25") else -1
             cum_o25_series.append(round(cum_o25, 2))
-        if r.get("pick_btts"):
+        if r.get("pick_btts") and r.get("hit_btts") is not None:
             cum_btts += 1 if r.get("hit_btts") else -1
             cum_btts_series.append(round(cum_btts, 2))
 
