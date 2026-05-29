@@ -22,26 +22,38 @@ def fetch_all_data():
     }
 
     try:
-        data["over25_picks"] = _get(f"{OVER25_RAW}/data/picks.json")
+        fetched = _get(f"{OVER25_RAW}/data/picks.json")
+        if not isinstance(fetched, list):
+            raise ValueError(f"tipo inesperado: {type(fetched).__name__}")
+        data["over25_picks"] = fetched
         print(f"[fetch] over25 picks: {len(data['over25_picks'])} registos")
     except Exception as e:
         print(f"[WARN] over25 picks.json: {e}")
 
     try:
-        data["over25_picks_1x2"] = _get(f"{OVER25_RAW}/data/picks_1x2.json")
+        fetched = _get(f"{OVER25_RAW}/data/picks_1x2.json")
+        if not isinstance(fetched, list):
+            raise ValueError(f"tipo inesperado: {type(fetched).__name__}")
+        data["over25_picks_1x2"] = fetched
         print(f"[fetch] over25 picks_1x2: {len(data['over25_picks_1x2'])} registos")
     except Exception as e:
         print(f"[WARN] over25 picks_1x2.json: {e}")
 
     try:
-        data["football_history"] = _get(f"{FOOTBALL_RAW}/docs/history.json")
+        fetched = _get(f"{FOOTBALL_RAW}/docs/history.json")
+        if not isinstance(fetched, dict):
+            raise ValueError(f"tipo inesperado: {type(fetched).__name__}")
+        data["football_history"] = fetched
         n = len(data["football_history"].get("records", []))
         print(f"[fetch] football history: {n} registos")
     except Exception as e:
         print(f"[WARN] football history.json: {e}")
 
     try:
-        data["football_trebles"] = _get(f"{FOOTBALL_RAW}/docs/trebles.json")
+        fetched = _get(f"{FOOTBALL_RAW}/docs/trebles.json")
+        if not isinstance(fetched, dict):
+            raise ValueError(f"tipo inesperado: {type(fetched).__name__}")
+        data["football_trebles"] = fetched
         n = len(data["football_trebles"].get("history", []))
         print(f"[fetch] football trebles: {n} histórico")
     except Exception as e:

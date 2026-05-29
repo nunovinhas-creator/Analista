@@ -7,7 +7,10 @@ def _parse_date(s):
     if not s:
         return None
     try:
-        return datetime.fromisoformat(str(s).replace("Z", "+00:00"))
+        dt = datetime.fromisoformat(str(s).replace("Z", "+00:00"))
+        if dt.tzinfo is None:
+            dt = dt.replace(tzinfo=timezone.utc)
+        return dt
     except Exception:
         return None
 
@@ -172,24 +175,24 @@ def analyze_over25(picks, picks_1x2):
             daily[day]["roi"] += (odds - 1) if p["result_over25"] == "WIN" else -1
     daily = dict(sorted(daily.items()))
 
-    # Série ROI acumulado
+    # Série ROI acumulado + Rolling WR — apenas picks com odds válidas
     cumulative_roi: list = []
+    rolling_wr_series = []
     cum = 0.0
+    window = 20
     sorted_resolved = sorted(resolved, key=lambda x: _parse_date(x.get("data")) or _min)
+    bet_results: list = []
     for p in sorted_resolved:
         odds = _safe_odds(p)
-        if odds:
-            cum += (odds - 1) if p["result_over25"] == "WIN" else -1
+        if odds is None:
+            continue
+        is_win = p["result_over25"] == "WIN"
+        cum += (odds - 1) if is_win else -1
         cumulative_roi.append(round(cum, 3))
-
-    # Rolling Win Rate — janela 20 picks
-    rolling_wr_series = []
-    window = 20
-    for i in range(len(sorted_resolved)):
-        start = max(0, i - window + 1)
-        sub = sorted_resolved[start:i + 1]
-        w = sum(1 for p in sub if p["result_over25"] == "WIN")
-        rolling_wr_series.append(round(w / len(sub), 3))
+        bet_results.append(1 if is_win else 0)
+        start = max(0, len(bet_results) - window)
+        sub = bet_results[start:]
+        rolling_wr_series.append(round(sum(sub) / len(sub), 3))
 
     # Drawdown máximo
     max_drawdown = _max_drawdown(cumulative_roi)

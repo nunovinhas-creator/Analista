@@ -247,21 +247,21 @@ const lineOpts = {{
   }}
 }};
 
-function lineDataset(data, color) {{
+function lineDataset(data, color, bgColor) {{
   return {{
-    data, borderColor: color, backgroundColor: color.replace(')', ', .08)').replace('rgb', 'rgba'),
+    data, borderColor: color, backgroundColor: bgColor || 'transparent',
     borderWidth: 2, pointRadius: 0, fill: true, tension: .3
   }};
 }}
 
 new Chart(document.getElementById('cO25').getContext('2d'), {{
-  type:'line', data:{{labels: Array.from({{length:{len(stats.get('cum_o25_series',[]))}}},(_,i)=>i+1), datasets:[lineDataset({cum_o25_json}, '#3fb950')]}}, options:lineOpts
+  type:'line', data:{{labels: Array.from({{length:{len(stats.get('cum_o25_series',[]))}}},(_,i)=>i+1), datasets:[lineDataset({cum_o25_json}, '#3fb950', 'rgba(63,185,80,.08)')]}}, options:lineOpts
 }});
 new Chart(document.getElementById('cBtts').getContext('2d'), {{
-  type:'line', data:{{labels: Array.from({{length:{len(stats.get('cum_btts_series',[]))}}},(_,i)=>i+1), datasets:[lineDataset({cum_btts_json}, '#f0883e')]}}, options:lineOpts
+  type:'line', data:{{labels: Array.from({{length:{len(stats.get('cum_btts_series',[]))}}},(_,i)=>i+1), datasets:[lineDataset({cum_btts_json}, '#f0883e', 'rgba(240,136,62,.08)')]}}, options:lineOpts
 }});
 new Chart(document.getElementById('cTreble').getContext('2d'), {{
-  type:'line', data:{{labels: Array.from({{length:{len(stats.get('cum_treble_series',[]))}}},(_,i)=>i+1), datasets:[lineDataset({cum_treble_json}, '#a371f7')]}}, options:lineOpts
+  type:'line', data:{{labels: Array.from({{length:{len(stats.get('cum_treble_series',[]))}}},(_,i)=>i+1), datasets:[lineDataset({cum_treble_json}, '#a371f7', 'rgba(163,113,247,.08)')]}}, options:lineOpts
 }});
 </script>
 </body>

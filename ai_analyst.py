@@ -183,7 +183,8 @@ def generate_ai_report(over25_stats, football_stats):
     if bs_o25 is not None:
         interp_o25  = "excelente" if bs_o25 < 0.15 else ("bom" if bs_o25 < 0.20 else ("aceitável" if bs_o25 < 0.25 else "fraco"))
         interp_btts = "excelente" if (bs_btts or 1) < 0.15 else ("bom" if (bs_btts or 1) < 0.20 else ("aceitável" if (bs_btts or 1) < 0.25 else "fraco"))
-        lines.append(f"- **Calibração (Brier Score):** O2.5={bs_o25:.4f} ({interp_o25}) · BTTS={bs_btts:.4f} ({interp_btts}) — quanto menor melhor (0=perfeito)")
+        bs_btts_str = f"{bs_btts:.4f}" if bs_btts is not None else "N/D"
+        lines.append(f"- **Calibração (Brier Score):** O2.5={bs_o25:.4f} ({interp_o25}) · BTTS={bs_btts_str} ({interp_btts}) — quanto menor melhor (0=perfeito)")
 
     # Triplas
     n_tr = tr.get("total", 0)

@@ -26,7 +26,7 @@ def _wilson_ci(wins, n, z=1.96):
 
 
 def _market_segment(records, pick_key, hit_key):
-    picks = [r for r in records if r.get(pick_key)]
+    picks = [r for r in records if r.get(pick_key) and r.get(hit_key) is not None]
     wins  = [r for r in picks  if r.get(hit_key)]
     n, k  = len(picks), len(wins)
     roi   = k - (n - k)  # odds 2.0 implícitas (flat)
@@ -131,7 +131,7 @@ def analyze_football(history, trebles):
     for conf in ["ALTA", "MÉDIA", "BAIXA"]:
         subset = [r for r in records if r.get("conf") == conf]
         combos = [("pick_1x2", "hit_1x2"), ("pick_o25", "hit_o25"), ("pick_btts", "hit_btts")]
-        all_picks = sum(1 for r in subset for pk, hk in combos if r.get(pk))
+        all_picks = sum(1 for r in subset for pk, hk in combos if r.get(pk) and r.get(hk) is not None)
         all_wins  = sum(1 for r in subset for pk, hk in combos if r.get(pk) and r.get(hk))
         ci_low, ci_high = _wilson_ci(all_wins, all_picks)
         by_confidence[conf] = {
@@ -209,7 +209,7 @@ def analyze_football(history, trebles):
     cutoff = datetime.now(timezone.utc) - timedelta(days=7)
     dates_processed = history.get("dates_processed", [])
     _min_aware = datetime.min.replace(tzinfo=timezone.utc)
-    recent_dates = {d for d in dates_processed if (_parse_date(d) or _min_aware) >= cutoff}
+    recent_dates = {d[:10] for d in dates_processed if (_parse_date(d) or _min_aware) >= cutoff}
     recent_records = [r for r in records if r.get("date", "")[:10] in recent_dates]
     recent_pm = {m: _market_segment(recent_records, pk, hk) for m, pk, hk in markets}
 
