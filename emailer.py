@@ -1,5 +1,7 @@
 # emailer.py — Envia relatório diário por email via Gmail SMTP
+import html as _html
 import os
+import re
 import smtplib
 from datetime import datetime, timezone
 from email.mime.multipart import MIMEMultipart
@@ -47,17 +49,22 @@ def _market_table_row(name, s):
 
 
 def _md_to_html(text: str) -> str:
+    def _inline(s):
+        s = _html.escape(s)
+        s = re.sub(r'\*\*(.+?)\*\*', r'<b>\1</b>', s)
+        return s
+
     lines_out = []
     for line in text.split("\n"):
         s = line.strip()
         if s.startswith("### "):
-            lines_out.append(f"<h4 style='color:#2c3e50;margin:16px 0 6px;font-size:.95rem'>{s[4:]}</h4>")
+            lines_out.append(f"<h4 style='color:#2c3e50;margin:16px 0 6px;font-size:.95rem'>{_inline(s[4:])}</h4>")
         elif s.startswith("## "):
-            lines_out.append(f"<h3 style='color:#2c3e50;margin:18px 0 6px;font-size:1rem'>{s[3:]}</h3>")
+            lines_out.append(f"<h3 style='color:#2c3e50;margin:18px 0 6px;font-size:1rem'>{_inline(s[3:])}</h3>")
         elif s.startswith("- "):
-            lines_out.append(f"<li style='margin-bottom:4px'>{s[2:]}</li>")
+            lines_out.append(f"<li style='margin-bottom:4px'>{_inline(s[2:])}</li>")
         elif s:
-            lines_out.append(f"<p style='margin:4px 0'>{s}</p>")
+            lines_out.append(f"<p style='margin:4px 0'>{_inline(s)}</p>")
         else:
             lines_out.append("<br>")
     return "\n".join(lines_out)

@@ -142,7 +142,7 @@ def analyze_over25(picks, picks_1x2):
     # Por banda de odds
     by_odds = {}
     for lo, hi, label in [(1.0, 1.60, "< 1.60"), (1.60, 1.80, "1.60–1.80"), (1.80, 2.00, "1.80–2.00"), (2.00, 50.0, "≥ 2.00")]:
-        subset = [p for p in picks if _safe_odds(p) is not None and lo <= _safe_odds(p) < hi]
+        subset = [p for p in picks if (o := _safe_odds(p)) is not None and lo <= o < hi]
         by_odds[label] = _segment(subset)
 
     # Por liga (top 12 por volume)

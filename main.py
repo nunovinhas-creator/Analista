@@ -31,8 +31,15 @@ def main():
     print(f"[analista] football: {football_stats['total']} registos, O25 WR={football_stats['per_market'].get('o25',{}).get('win_rate',0):.1%}")
 
     if mode == "report":
-        ai_report = generate_ai_report(over25_stats, football_stats)
-        send_daily_report(over25_stats, football_stats, ai_report)
+        try:
+            ai_report = generate_ai_report(over25_stats, football_stats)
+        except Exception as e:
+            print(f"[ERROR] Falha na análise científica: {e}")
+            ai_report = ""
+        try:
+            send_daily_report(over25_stats, football_stats, ai_report)
+        except Exception as e:
+            print(f"[ERROR] Falha no envio do email: {e}")
 
 
 if __name__ == "__main__":
