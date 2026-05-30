@@ -54,16 +54,17 @@ jobs:
 
       - name: Commit e push dashboards
         run: |
+          BRANCH="${GITHUB_REF_NAME}"
           git config user.name  "analista-bot"
           git config user.email "analista@noreply.github.com"
           git add docs/
           git diff --staged --quiet || git commit -m "update: $(date -u +'%Y-%m-%dT%H:%M') [${{ steps.mode.outputs.mode }}]"
           pushed=false
           for i in 1 2 3 4; do
-            if git pull --rebase origin main && git push origin main; then
+            if git pull --rebase origin "$BRANCH" && git push origin HEAD:"$BRANCH"; then
               pushed=true && break
             fi
             echo "Push falhou (tentativa $i), a aguardar $((i * 2))s..."
             sleep $((i * 2))
           done
-          $pushed || { echo "[ERROR] Push falhou após 4 tentativas"; exit 1; }
+          $pushed || { echo "Error:  Push falhou após 4 tentativas"; exit 1; }
