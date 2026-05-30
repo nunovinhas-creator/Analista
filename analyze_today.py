@@ -1,6 +1,6 @@
 # analyze_today.py — "Onde Apostar Hoje": picks do dia qualificados pelo backtest
 import re
-from datetime import datetime, timezone
+from datetime import datetime, timedelta, timezone
 from picks_tracker import record_and_resolve, tracker_stats
 
 MARKET_BASE_ODDS = {"o25": 1.90, "btts": 1.85, "1x2": 2.20}
@@ -59,8 +59,8 @@ def _kelly_q(wr, odds, cap=3.0):
     return round(min(max((wr * b - (1 - wr)) / b / 4, 0.0) * 100, cap), 1)
 
 
-def parse_dashboard_html(html, today_str):
-    """Extrai picks do football-dashboard HTML para o dia indicado."""
+def parse_dashboard_html(html, dates):
+    """Extrai jogos do football-dashboard HTML para as datas indicadas."""
     games = []
     card_blocks = re.split(r'(?=<div class="card")', html)
 
@@ -69,7 +69,7 @@ def parse_dashboard_html(html, today_str):
             continue
 
         attrs = dict(re.findall(r'data-(\w+)="([^"]+)"', block))
-        if attrs.get("date") != today_str:
+        if attrs.get("date") not in dates:
             continue
 
         home_m = re.search(r'class="team home-team">([^<]+)<', block)
@@ -109,6 +109,7 @@ def parse_dashboard_html(html, today_str):
             continue
 
         games.append({
+            "date":      attrs.get("date", ""),
             "home":      home_m.group(1).strip(),
             "away":      away_m.group(1).strip(),
             "league":    attrs.get("league", "Desconhecida"),
@@ -131,9 +132,10 @@ def parse_dashboard_html(html, today_str):
 
 
 def analyze_today(history, dashboard_html):
-    """Cruza picks do dia com estatísticas do backtest e devolve recomendações."""
-    today_str = datetime.now(timezone.utc).strftime("%Y-%m-%d")
-    records   = history.get("records", [])
+    """Cruza picks de hoje e amanhã com estatísticas do backtest e devolve recomendações."""
+    today_str    = datetime.now(timezone.utc).strftime("%Y-%m-%d")
+    tomorrow_str = (datetime.now(timezone.utc) + timedelta(days=1)).strftime("%Y-%m-%d")
+    records      = history.get("records", [])
 
     markets = [
         ("o25",  "pick_o25",  "hit_o25"),
@@ -158,9 +160,9 @@ def analyze_today(history, dashboard_html):
         for lg, recs in league_map.items()
     }
 
-    # --- Picks de hoje ---
-    today_games = parse_dashboard_html(dashboard_html, today_str) if dashboard_html else []
-    print(f"[today] {len(today_games)} jogos com picks em {today_str}")
+    # --- Picks de hoje e amanhã ---
+    today_games = parse_dashboard_html(dashboard_html, {today_str, tomorrow_str}) if dashboard_html else []
+    print(f"[today] {len(today_games)} jogos com picks ({today_str} + {tomorrow_str})")
 
     # --- Qualificar cada pick ---
     pick_defs = [
@@ -243,6 +245,7 @@ def analyze_today(history, dashboard_html):
         n_moderate = sum(1 for p in scored if p["edge"] == "moderate")
 
         games_out.append({
+            "date":      g["date"],
             "home":      g["home"],
             "away":      g["away"],
             "league":    league,
@@ -268,6 +271,7 @@ def analyze_today(history, dashboard_html):
 
     return {
         "today":        today_str,
+        "tomorrow":     tomorrow_str,
         "total_games":  len(games_out),
         "total_picks":  sum(len(g["picks"]) for g in games_out),
         "strong_picks": sum(g["n_strong"] for g in games_out),

@@ -1,7 +1,7 @@
 # dashboard_today.py — Gera docs/today_dashboard.html ("Onde Apostar Hoje")
 import json
 import os
-from datetime import datetime, timezone
+from datetime import datetime, timedelta, timezone
 
 DOCS_DIR = "docs"
 
@@ -343,7 +343,12 @@ def gen_dashboard_today(today_stats):
     total_games   = today_stats.get("total_games", 0)
     total_picks   = today_stats.get("total_picks", 0)
     strong_picks  = today_stats.get("strong_picks", 0)
-    games         = today_stats.get("games", [])
+    today_str     = today_stats.get("today", "")
+    tomorrow_str  = today_stats.get("tomorrow", "")
+    all_games     = today_stats.get("games", [])
+    games_today   = [g for g in all_games if g.get("date") == today_str]
+    games_tomorrow= [g for g in all_games if g.get("date") == tomorrow_str]
+    games         = all_games  # manter compat. com backtest_table e kpi_bar
     global_stats  = today_stats.get("global_stats", {})
     conf_stats    = today_stats.get("conf_stats", {})
     tracker       = today_stats.get("tracker", {"total_resolved": 0, "total_pending": 0})
@@ -397,17 +402,11 @@ def gen_dashboard_today(today_stats):
   </p>
 </div>"""
 
-    # --- Game cards ---
-    if not games:
-        games_html = """
-<div style='background:#161b22;border:1px solid #30363d;border-radius:8px;padding:32px;text-align:center;color:#8b949e'>
-  <div style='font-size:2rem;margin-bottom:12px'>📭</div>
-  <div style='font-size:1rem;color:#e6edf3'>Sem jogos com picks disponíveis para hoje</div>
-  <div style='font-size:.82rem;margin-top:8px'>O pipeline do football-dashboard ainda não processou os jogos de hoje,<br>ou não há jogos nas ligas cobertas.</div>
-</div>"""
-    else:
+    def _build_cards(game_list):
+        if not game_list:
+            return ""
         cards = []
-        for g in games:
+        for g in game_list:
             # Game header
             conf_b = _conf_badge(g["conf"])
             ko     = f"🕐 {g['ko_hour']}:00" if g["ko_hour"] else ""
@@ -458,7 +457,33 @@ def gen_dashboard_today(today_stats):
   <div style='margin-top:8px;font-size:.78rem;color:#6e7681'>{probs_html}{p1x2_html}</div>
 </div>""")
 
-        games_html = "\n".join(cards)
+        return "\n".join(cards)
+
+    def _empty_section(label):
+        return f"""
+<div style='background:#161b22;border:1px solid #30363d;border-radius:8px;padding:24px;text-align:center;color:#8b949e;margin-bottom:16px'>
+  <div style='font-size:1.5rem;margin-bottom:8px'>📭</div>
+  <div style='font-size:.9rem;color:#e6edf3'>Sem jogos com picks disponíveis {label}</div>
+  <div style='font-size:.78rem;margin-top:6px'>O pipeline do football-dashboard ainda não processou estes jogos.</div>
+</div>"""
+
+    def _section_header(label, date_str, game_list):
+        n_g = len(game_list)
+        n_s = sum(g["n_strong"] for g in game_list)
+        strong_note = f' · <span style="color:#3fb950">{n_s} fortes</span>' if n_s else ""
+        return (f"<h2 style='color:#e6edf3;font-size:1rem;margin:24px 0 12px'>"
+                f"{label} <span style='color:#6e7681;font-size:.82rem'>· {date_str}</span>"
+                f" — {n_g} jogo{'s' if n_g != 1 else ''} com picks{strong_note}</h2>")
+
+    today_pt_label    = datetime.now(timezone.utc).strftime("%d/%m")
+    tomorrow_pt_label = (datetime.now(timezone.utc) + timedelta(days=1)).strftime("%d/%m")
+
+    games_html = (
+        _section_header("Hoje", today_pt_label, games_today)
+        + (_build_cards(games_today) or _empty_section("para hoje"))
+        + _section_header("Amanhã", tomorrow_pt_label, games_tomorrow)
+        + (_build_cards(games_tomorrow) or _empty_section("para amanhã"))
+    )
 
     # --- Tracker KPIs ---
     t_n       = tracker.get("total_resolved", 0)
@@ -488,7 +513,7 @@ def gen_dashboard_today(today_stats):
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
-<title>Onde Apostar Hoje — Analista</title>
+<title>Onde Apostar Hoje e Amanhã — Analista</title>
 <meta http-equiv="refresh" content="900">
 <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
 <style>
@@ -522,8 +547,8 @@ tr:last-child td{{border-bottom:none}}
 </style>
 </head>
 <body>
-<h1>🎯 Onde Apostar Hoje</h1>
-<p class="sub">Actualizado: {now} · {today_pt} · picks do Matemática Da Bola qualificados pelo backtest</p>
+<h1>🎯 Onde Apostar Hoje e Amanhã</h1>
+<p class="sub">Actualizado: {now} · picks do Matemática Da Bola qualificados pelo backtest</p>
 
 <div class="kpi-bar">
 {summary_html}

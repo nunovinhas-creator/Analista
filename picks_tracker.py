@@ -68,18 +68,19 @@ def record_and_resolve(today_games, history_records):
     if newly_resolved:
         print(f"[tracker] {len(newly_resolved)} picks resolvidos")
 
-    # 2. Registar picks de hoje (dedup por data+equipas+mercado)
+    # 2. Registar picks (dedup por data+equipas+mercado)
     existing = {
         (p["date"], _norm(p["home"]), _norm(p["away"]), p["market"])
         for p in db["pending"] + db["resolved"]
     }
     added = 0
     for game in today_games:
+        game_date = game.get("date", today_str)
         for pick in game.get("picks", []):
-            key = (today_str, _norm(game["home"]), _norm(game["away"]), pick["market"])
+            key = (game_date, _norm(game["home"]), _norm(game["away"]), pick["market"])
             if key not in existing:
                 db["pending"].append({
-                    "date":      today_str,
+                    "date":      game_date,
                     "home":      game["home"],
                     "away":      game["away"],
                     "league":    game["league"],
@@ -93,7 +94,7 @@ def record_and_resolve(today_games, history_records):
                 added += 1
 
     if added:
-        print(f"[tracker] {added} novas picks registadas para {today_str}")
+        print(f"[tracker] {added} novas picks registadas")
 
     save_db(db)
     return db
