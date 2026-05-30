@@ -337,7 +337,6 @@ def _tracker_section(perf):
 def gen_dashboard_today(today_stats):
     os.makedirs(DOCS_DIR, exist_ok=True)
     now      = datetime.now(timezone.utc).strftime("%d/%m/%Y %H:%M UTC")
-    today_pt = datetime.now(timezone.utc).strftime("%d/%m/%Y")
 
     backtest_n    = today_stats.get("backtest_n", 0)
     total_games   = today_stats.get("total_games", 0)
@@ -346,9 +345,8 @@ def gen_dashboard_today(today_stats):
     today_str     = today_stats.get("today", "")
     tomorrow_str  = today_stats.get("tomorrow", "")
     all_games     = today_stats.get("games", [])
-    games_today   = [g for g in all_games if g.get("date") == today_str]
-    games_tomorrow= [g for g in all_games if g.get("date") == tomorrow_str]
-    games         = all_games  # manter compat. com backtest_table e kpi_bar
+    games_today    = [g for g in all_games if g.get("date") == today_str]
+    games_tomorrow = [g for g in all_games if g.get("date") == tomorrow_str]
     global_stats  = today_stats.get("global_stats", {})
     conf_stats    = today_stats.get("conf_stats", {})
     tracker       = today_stats.get("tracker", {"total_resolved": 0, "total_pending": 0})
@@ -475,8 +473,8 @@ def gen_dashboard_today(today_stats):
                 f"{label} <span style='color:#6e7681;font-size:.82rem'>· {date_str}</span>"
                 f" — {n_g} jogo{'s' if n_g != 1 else ''} com picks{strong_note}</h2>")
 
-    today_pt_label    = datetime.now(timezone.utc).strftime("%d/%m")
-    tomorrow_pt_label = (datetime.now(timezone.utc) + timedelta(days=1)).strftime("%d/%m")
+    today_pt_label    = datetime.strptime(today_str,    "%Y-%m-%d").strftime("%d/%m") if today_str    else ""
+    tomorrow_pt_label = datetime.strptime(tomorrow_str, "%Y-%m-%d").strftime("%d/%m") if tomorrow_str else ""
 
     games_html = (
         _section_header("Hoje", today_pt_label, games_today)
@@ -501,7 +499,7 @@ def gen_dashboard_today(today_stats):
     summary_items = [
         f"<div class='kpi'><div class='kpi-l'>Jogos c/ Picks</div><div class='kpi-v' style='color:#58a6ff'>{total_games}</div></div>",
         f"<div class='kpi'><div class='kpi-l'>Picks Fortes ✅</div><div class='kpi-v' style='color:#3fb950'>{strong_picks}</div></div>",
-        f"<div class='kpi'><div class='kpi-l'>Picks Moderadas ⚠️</div><div class='kpi-v' style='color:#d29922'>{sum(g['n_moderate'] for g in games)}</div></div>",
+        f"<div class='kpi'><div class='kpi-l'>Picks Moderadas ⚠️</div><div class='kpi-v' style='color:#d29922'>{sum(g['n_moderate'] for g in all_games)}</div></div>",
         f"<div class='kpi'><div class='kpi-l'>Picks Rastreadas</div><div class='kpi-v' style='color:#8b949e'>{t_n + t_pending}</div></div>",
         f"<div class='kpi'><div class='kpi-l'>Acerto Próprio</div><div class='kpi-v' style='color:{t_wr_c}'>{t_wr_s}</div></div>",
         f"<div class='kpi'><div class='kpi-l'>ROI Próprio</div><div class='kpi-v' style='color:{t_roi_c}'>{t_roi_s}</div></div>",
@@ -567,11 +565,6 @@ tr:last-child td{{border-bottom:none}}
 {backtest_table}
 
 {tracker_section_html}
-
-<h2 style='color:#e6edf3;font-size:1rem;margin:20px 0 12px'>
-  Jogos de Hoje — {total_games} com picks
-  {'· <span style="color:#3fb950">' + str(strong_picks) + ' apostas fortes</span>' if strong_picks else ''}
-</h2>
 
 {games_html}
 
