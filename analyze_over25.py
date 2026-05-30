@@ -117,7 +117,15 @@ def analyze_over25(picks, picks_1x2):
             break
 
     # CLV médio (campo vem como string; "" = sem dados)
-    clv_vals = [_flt(p, "clv") for p in picks if p.get("clv") not in (None, "")]
+    clv_vals = []
+    for p in picks:
+        raw = p.get("clv")
+        if raw is None or raw == "":
+            continue
+        try:
+            clv_vals.append(float(raw))
+        except (ValueError, TypeError):
+            pass
     avg_clv = sum(clv_vals) / len(clv_vals) if clv_vals else None
 
     # Últimos 7 dias

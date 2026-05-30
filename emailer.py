@@ -55,18 +55,36 @@ def _md_to_html(text: str) -> str:
         return s
 
     lines_out = []
+    in_list = False
     for line in text.split("\n"):
         s = line.strip()
         if s.startswith("### "):
+            if in_list:
+                lines_out.append("</ul>")
+                in_list = False
             lines_out.append(f"<h4 style='color:#2c3e50;margin:16px 0 6px;font-size:.95rem'>{_inline(s[4:])}</h4>")
         elif s.startswith("## "):
+            if in_list:
+                lines_out.append("</ul>")
+                in_list = False
             lines_out.append(f"<h3 style='color:#2c3e50;margin:18px 0 6px;font-size:1rem'>{_inline(s[3:])}</h3>")
         elif s.startswith("- "):
+            if not in_list:
+                lines_out.append("<ul style='margin:4px 0;padding-left:20px'>")
+                in_list = True
             lines_out.append(f"<li style='margin-bottom:4px'>{_inline(s[2:])}</li>")
         elif s:
+            if in_list:
+                lines_out.append("</ul>")
+                in_list = False
             lines_out.append(f"<p style='margin:4px 0'>{_inline(s)}</p>")
         else:
+            if in_list:
+                lines_out.append("</ul>")
+                in_list = False
             lines_out.append("<br>")
+    if in_list:
+        lines_out.append("</ul>")
     return "\n".join(lines_out)
 
 
@@ -151,15 +169,15 @@ def build_html_email(over25_stats: dict, football_stats: dict, ai_report: str) -
         if p["kelly_ok"]:
             stake_cell = f"<b style='color:#27ae60'>{p['kelly_pct']:.1f}% banca</b>"
             if p.get("kelly_note"):
-                stake_cell += f"<br><span style='font-size:.75rem;color:#e67e22'>{p['kelly_note']}</span>"
+                stake_cell += f"<br><span style='font-size:.75rem;color:#e67e22'>{_html.escape(p['kelly_note'])}</span>"
         else:
-            stake_cell = f"<span style='color:#888;font-size:.82rem'>{p.get('kelly_note','—')}</span>"
+            stake_cell = f"<span style='color:#888;font-size:.82rem'>{_html.escape(p.get('kelly_note', '—'))}</span>"
         pending_kelly_rows += (
-            f"<tr><td style='padding:5px 8px'><b>{p['casa']}</b> vs {p['fora']}</td>"
+            f"<tr><td style='padding:5px 8px'><b>{_html.escape(p['casa'])}</b> vs {_html.escape(p['fora'])}</td>"
             f"<td style='padding:5px 8px'>{odds_s}</td>"
             f"<td style='padding:5px 8px'>{p['score']:.0f}</td>"
             f"<td style='padding:5px 8px'>{p['xg']:.1f}</td>"
-            f"<td style='padding:5px 8px'>{p['movimento']}</td>"
+            f"<td style='padding:5px 8px'>{_html.escape(p['movimento'])}</td>"
             f"<td style='padding:5px 8px'>{stake_cell}</td></tr>"
         )
 

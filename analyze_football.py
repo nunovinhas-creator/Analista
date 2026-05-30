@@ -65,7 +65,7 @@ def _calibration_data(records, prob_key, hit_key):
     prob_key armazena probabilidade em escala 0-100.
     Bandas: 0-20%, 20-40%, 40-60%, 60-80%, 80-100%.
     """
-    bands = [(0, 20), (20, 40), (40, 60), (60, 80), (80, 100)]
+    bands = [(0, 20), (20, 40), (40, 60), (60, 80), (80, 101)]
     result = []
     for lo, hi in bands:
         subset = []
@@ -175,11 +175,12 @@ def analyze_football(history, trebles):
         }
 
     # Trebles
-    t_hist = trebles.get("history", [])
-    t_won  = [t for t in t_hist if t.get("hit") is True]
+    t_hist     = trebles.get("history", [])
+    t_resolved = [t for t in t_hist if t.get("hit") is not None]
+    t_won      = [t for t in t_resolved if t.get("hit") is True]
     treble_roi = 0.0
-    for t in t_hist:
-        if t.get("hit"):
+    for t in t_resolved:
+        if t.get("hit") is True:
             profit = t.get("profit_1u")
             if profit is None:
                 odds = _est_odds(t)
@@ -189,8 +190,8 @@ def analyze_football(history, trebles):
             profit = t.get("profit_1u")
             treble_roi += profit if profit is not None else -1.0
 
-    est_odds_list = [o for o in (_est_odds(t) for t in t_hist) if o]
-    n_tr, k_tr = len(t_hist), len(t_won)
+    est_odds_list = [o for o in (_est_odds(t) for t in t_resolved) if o]
+    n_tr, k_tr = len(t_resolved), len(t_won)
     ci_tr_l, ci_tr_h = _wilson_ci(k_tr, n_tr)
     treble_stats = {
         "total":          n_tr,
@@ -202,7 +203,7 @@ def analyze_football(history, trebles):
         "roi":            treble_roi,
         "roi_pct":        (treble_roi / n_tr * 100) if n_tr else 0.0,
         "avg_odds":       sum(est_odds_list) / len(est_odds_list) if est_odds_list else 0.0,
-        "odds_estimated": not any(t.get("combined_odds") for t in t_hist),
+        "odds_estimated": not any(t.get("combined_odds") for t in t_resolved),
         "pending":        len(trebles.get("pending", [])),
     }
 
@@ -244,8 +245,8 @@ def analyze_football(history, trebles):
             cum_btts_series.append(round(cum_btts, 2))
 
     cum_treble, cum_treble_series = 0.0, []
-    for t in t_hist:
-        if t.get("hit"):
+    for t in t_resolved:
+        if t.get("hit") is True:
             profit = t.get("profit_1u")
             if profit is None:
                 odds = _est_odds(t)

@@ -133,7 +133,7 @@ def generate_ai_report(over25_stats, football_stats):
         lines.append(f"- ⚠️ Apenas {n} picks resolvidos — aguardar mínimo 10 para análise estatística")
         if n > 0:
             n_need, n_rem = _picks_to_significance(wr, n) if wr > 0.5 else (None, None)
-            if n_need and n_rem:
+            if n_need and n_rem > 0:
                 lines.append(f"- Com WR actual de {wr:.1%}, precisas de {n_rem} picks adicionais para atingir p<0.05")
 
     # 1X2 Sharp

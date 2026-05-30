@@ -61,8 +61,6 @@ def gen_dashboard_football(stats):
     daily  = stats.get("daily", {})
     last30 = list(daily.keys())[-30:]
     d_labels_json = json.dumps(last30)
-    d_o25_json  = json.dumps([round(daily[d]["o25_wins"] / daily[d]["o25_picks"] * 100 if daily[d]["o25_picks"] else 0, 1) for d in last30])
-    d_btts_json = json.dumps([round(daily[d]["btts_wins"] / daily[d]["btts_picks"] * 100 if daily[d]["btts_picks"] else 0, 1) for d in last30])
 
     # Tabela por confiança com IC
     conf_rows = ""
