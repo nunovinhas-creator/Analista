@@ -1,0 +1,101 @@
+<!DOCTYPE html>
+<html lang="pt">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Onde Apostar Hoje — Analista</title>
+<meta http-equiv="refresh" content="900">
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+body{background:#0d1117;color:#e6edf3;font-family:'Segoe UI',sans-serif;padding:20px;font-size:14px}
+h1{font-size:1.5rem;color:#58a6ff;margin-bottom:4px}
+.sub{color:#8b949e;font-size:.82rem;margin-bottom:20px}
+.kpi-bar{display:flex;gap:10px;flex-wrap:wrap;margin-bottom:22px}
+.kpi{background:#161b22;border:1px solid #30363d;border-radius:8px;padding:12px 18px;min-width:130px}
+.kpi-l{font-size:.72rem;color:#8b949e;text-transform:uppercase;letter-spacing:.05em}
+.kpi-v{font-size:1.4rem;font-weight:700;margin-top:3px}
+.card{background:#161b22;border:1px solid #30363d;border-radius:10px;padding:18px;margin-bottom:16px}
+.card h3{font-size:.80rem;color:#8b949e;margin-bottom:10px;text-transform:uppercase;letter-spacing:.04em}
+table{width:100%;border-collapse:collapse;font-size:.83rem}
+th{text-align:left;color:#8b949e;padding:5px 8px;border-bottom:1px solid #30363d;font-weight:500}
+td{padding:5px 8px;border-bottom:1px solid #21262d;vertical-align:top}
+tr:last-child td{border-bottom:none}
+.teams{font-size:1.05rem;color:#e6edf3}
+.conf-badge{font-size:.72rem;font-weight:700;padding:3px 9px;border-radius:12px}
+.market-pill{font-size:.88rem;font-weight:700;color:#e6edf3}
+.edge-badge{font-size:.72rem;padding:2px 8px;border-radius:10px;font-weight:600}
+.edge-strong{background:#0d2818;color:#3fb950;border:1px solid #166534}
+.edge-moderate{background:#1c1a00;color:#d29922;border:1px solid #7d6608}
+.edge-weak{background:#1c0a0a;color:#f85149;border:1px solid #7f1d1d}
+.edge-insuf{background:#161b22;color:#6e7681;border:1px solid #30363d}
+.stat-line{font-size:.80rem;color:#8b949e;margin-bottom:3px;line-height:1.5}
+.stat-key{color:#6e7681}
+.kelly-line{margin-top:5px;padding-top:5px;border-top:1px solid #21262d}
+.legend{background:#0d1117;border:1px solid #21262d;border-radius:8px;padding:12px 16px;margin-bottom:20px;font-size:.78rem;color:#8b949e;line-height:1.7}
+@media(max-width:650px){.kpi-bar{gap:8px}}
+</style>
+</head>
+<body>
+<h1>🎯 Onde Apostar Hoje</h1>
+<p class="sub">Actualizado: 30/05/2026 09:41 UTC · 30/05/2026 · picks do Matemática Da Bola qualificados pelo backtest</p>
+
+<div class="kpi-bar">
+<div class='kpi'><div class='kpi-l'>Jogos c/ Picks</div><div class='kpi-v' style='color:#58a6ff'>0</div></div>
+<div class='kpi'><div class='kpi-l'>Picks Fortes ✅</div><div class='kpi-v' style='color:#3fb950'>0</div></div>
+<div class='kpi'><div class='kpi-l'>Picks Moderadas ⚠️</div><div class='kpi-v' style='color:#d29922'>0</div></div>
+<div class='kpi'><div class='kpi-l'>Picks Rastreadas</div><div class='kpi-v' style='color:#8b949e'>0</div></div>
+<div class='kpi'><div class='kpi-l'>Acerto Próprio</div><div class='kpi-v' style='color:#8b949e'>—</div></div>
+<div class='kpi'><div class='kpi-l'>ROI Próprio</div><div class='kpi-v' style='color:#3fb950'>—</div></div>
+</div>
+
+<div class="legend">
+  <b>Como ler este dashboard:</b> O Matemática Da Bola identifica picks para os jogos do dia.
+  O Analista cruza cada pick com o backtest histórico e atribui um sinal de edge:<br>
+  ✅ <b>Forte</b> — IC inferior do backtest acima do break-even (evidência estatística de edge) ·
+  ⚠️ <b>Moderado</b> — EV positivo mas IC ainda largo (aguardar mais dados) ·
+  ❌ <b>Fraco</b> — EV negativo baseado no backtest ·
+  📊 <b>Dados insuf.</b> — amostra muito pequena para conclusões.<br>
+  Break-even: O2.5 52.6% · BTTS 54.1% · 1X2 45.5%. Kelly ¼ sobre odds base (sem odds reais de bookmaker).
+</div>
+
+
+<div class='card'>
+  <h3>Backtest — 0 jogos resolvidos · Base estatística das recomendações</h3>
+  <table>
+    <tr>
+      <th style='padding:5px 10px'>Mercado</th>
+      <th style='padding:5px 10px'>Confiança ALTA</th>
+      <th style='padding:5px 10px'>Confiança MÉDIA</th>
+      <th style='padding:5px 10px'>Confiança BAIXA</th>
+      <th style='padding:5px 10px'>Global</th>
+    </tr>
+    <tr><td style='padding:5px 10px;color:#8b949e;font-size:.78rem'>Over 2.5</td><td style='padding:5px 10px;color:#6e7681;font-size:.78rem'>insuf.</td><td style='padding:5px 10px;color:#6e7681;font-size:.78rem'>insuf.</td><td style='padding:5px 10px;color:#6e7681;font-size:.78rem'>insuf.</td><td style='padding:5px 10px;color:#6e7681;font-size:.78rem'>insuf.</td></tr>
+    <tr><td style='padding:5px 10px;color:#8b949e;font-size:.78rem'>BTTS</td><td style='padding:5px 10px;color:#6e7681;font-size:.78rem'>insuf.</td><td style='padding:5px 10px;color:#6e7681;font-size:.78rem'>insuf.</td><td style='padding:5px 10px;color:#6e7681;font-size:.78rem'>insuf.</td><td style='padding:5px 10px;color:#6e7681;font-size:.78rem'>insuf.</td></tr>
+    <tr><td style='padding:5px 10px;color:#8b949e;font-size:.78rem'>1X2</td><td style='padding:5px 10px;color:#6e7681;font-size:.78rem'>insuf.</td><td style='padding:5px 10px;color:#6e7681;font-size:.78rem'>insuf.</td><td style='padding:5px 10px;color:#6e7681;font-size:.78rem'>insuf.</td><td style='padding:5px 10px;color:#6e7681;font-size:.78rem'>insuf.</td></tr>
+  </table>
+  <p style='color:#6e7681;font-size:.72rem;margin-top:8px'>
+    ⚠ n&lt;20 = amostra insuficiente · IC = intervalo de confiança Wilson 95% ·
+    Break-even: O2.5&nbsp;52.6%, BTTS&nbsp;54.1%, 1X2&nbsp;45.5%
+  </p>
+</div>
+
+<div class='card'><h3>Performance do Analista — Backtest Próprio</h3><div style='text-align:center;padding:24px;color:#8b949e'><div style='font-size:1.8rem;margin-bottom:10px'>📊</div><div style='color:#e6edf3'>A acumular dados — 0 picks pendentes de resolução</div><div style='font-size:.78rem;margin-top:8px'>As picks identificadas hoje são registadas e comparadas com os resultados reais assim que ficarem disponíveis.</div></div></div>
+
+<h2 style='color:#e6edf3;font-size:1rem;margin:20px 0 12px'>
+  Jogos de Hoje — 0 com picks
+  
+</h2>
+
+
+<div style='background:#161b22;border:1px solid #30363d;border-radius:8px;padding:32px;text-align:center;color:#8b949e'>
+  <div style='font-size:2rem;margin-bottom:12px'>📭</div>
+  <div style='font-size:1rem;color:#e6edf3'>Sem jogos com picks disponíveis para hoje</div>
+  <div style='font-size:.82rem;margin-top:8px'>O pipeline do football-dashboard ainda não processou os jogos de hoje,<br>ou não há jogos nas ligas cobertas.</div>
+</div>
+
+<p style='text-align:center;color:#6e7681;font-size:.75rem;margin-top:20px'>
+  Analista · Baseado no backtest do Matemática Da Bola · nunovinhas-creator/Analista
+</p>
+</body>
+</html>

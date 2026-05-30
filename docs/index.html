@@ -93,25 +93,30 @@ iframe.active { display: block; }
 </header>
 
 <div class="tabs">
-  <a class="tab active" data-target="frame-o25" href="#over25" onclick="switchTab(event,'frame-o25','btn-o25','over25_dashboard.html')">
+  <a class="tab active" data-target="frame-o25" href="#over25" onclick="switchTab(event,'frame-o25','over25_dashboard.html')">
     🎯 Over 2.5 Scanner
   </a>
-  <a class="tab" data-target="frame-fb" href="#football" onclick="switchTab(event,'frame-fb','btn-fb','football_dashboard.html')">
+  <a class="tab" data-target="frame-fb" href="#football" onclick="switchTab(event,'frame-fb','football_dashboard.html')">
     ⚽ Matemática Da Bola
+  </a>
+  <a class="tab" data-target="frame-today" href="#hoje" onclick="switchTab(event,'frame-today','today_dashboard.html')">
+    📅 Onde Apostar Hoje
   </a>
 </div>
 
 <div class="content">
   <iframe id="frame-o25" class="active"></iframe>
   <iframe id="frame-fb"></iframe>
+  <iframe id="frame-today"></iframe>
 </div>
 
 <script>
 const ts = Date.now();
-document.getElementById('frame-o25').src = 'over25_dashboard.html?v=' + ts;
-document.getElementById('frame-fb').src  = 'football_dashboard.html?v=' + ts;
+document.getElementById('frame-o25').src    = 'over25_dashboard.html?v='   + ts;
+document.getElementById('frame-fb').src     = 'football_dashboard.html?v=' + ts;
+document.getElementById('frame-today').src  = 'today_dashboard.html?v='    + ts;
 
-function switchTab(e, frameId, btnId, href) {
+function switchTab(e, frameId, href) {
   e.preventDefault();
   document.querySelectorAll('iframe').forEach(f => f.classList.remove('active'));
   document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
