@@ -229,10 +229,11 @@ def _tracker_section(perf):
             if not seg:
                 continue
             rc = _pos(seg["roi"])
+            wr = seg["win_rate"]
             edge_rows += (f"<tr>"
                           f"<td style='{TD}'>{_EDGE_LABELS.get(edge, edge)}</td>"
                           f"<td style='{TDN}'>{seg['n']}</td>"
-                          f"<td style='{TD};color:{_wrc(seg[\"win_rate\"])};font-weight:600'>{_pct(seg['win_rate'])}</td>"
+                          f"<td style='{TD};color:{_wrc(wr)};font-weight:600'>{_pct(wr)}</td>"
                           f"<td style='{TD};color:{rc}'>{seg['roi']:+.2f}u</td>"
                           f"</tr>")
 
@@ -243,10 +244,11 @@ def _tracker_section(perf):
                 continue
             be_mkt = {"o25": 1/1.90, "btts": 1/1.85, "1x2": 1/2.20}.get(mkt, 0.5)
             rc = _pos(seg["roi"])
+            wr = seg["win_rate"]
             mkt_rows += (f"<tr>"
                          f"<td style='{TD}'>{_MKT_LABELS.get(mkt, mkt)}</td>"
                          f"<td style='{TDN}'>{seg['n']}</td>"
-                         f"<td style='{TD};color:{_wrc(seg[\"win_rate\"], be_mkt)};font-weight:600'>{_pct(seg['win_rate'])}</td>"
+                         f"<td style='{TD};color:{_wrc(wr, be_mkt)};font-weight:600'>{_pct(wr)}</td>"
                          f"<td style='{TD};color:{rc}'>{seg['roi']:+.2f}u</td>"
                          f"</tr>")
 
