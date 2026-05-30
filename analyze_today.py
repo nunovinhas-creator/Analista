@@ -1,6 +1,7 @@
 # analyze_today.py — "Onde Apostar Hoje": picks do dia qualificados pelo backtest
 import re
 from datetime import datetime, timezone
+from picks_tracker import record_and_resolve, tracker_stats
 
 MARKET_BASE_ODDS = {"o25": 1.90, "btts": 1.85, "1x2": 2.20}
 MARKET_LABELS    = {"o25": "Over 2.5", "btts": "BTTS", "1x2": "1X2"}
@@ -243,6 +244,9 @@ def analyze_today(history, dashboard_html):
 
     games_out.sort(key=lambda g: (g["conf_rank"], -g["n_strong"], -g["n_moderate"]))
 
+    tracker_db = record_and_resolve(games_out, records)
+    perf       = tracker_stats(tracker_db)
+
     return {
         "today":        today_str,
         "total_games":  len(games_out),
@@ -252,4 +256,5 @@ def analyze_today(history, dashboard_html):
         "conf_stats":   conf_stats,
         "backtest_n":   len(records),
         "games":        games_out,
+        "tracker":      perf,
     }

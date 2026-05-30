@@ -1,4 +1,5 @@
 # dashboard_today.py — Gera docs/today_dashboard.html ("Onde Apostar Hoje")
+import json
 import os
 from datetime import datetime, timezone
 
@@ -121,6 +122,218 @@ def _pick_card(pick):
 </div>"""
 
 
+_EDGE_LABELS = {
+    "strong":      "✅ Forte",
+    "moderate":    "⚠️ Moderado",
+    "weak":        "❌ Fraco",
+    "insufficient": "📊 Insuf.",
+}
+_MKT_LABELS = {"o25": "Over 2.5", "btts": "BTTS", "1x2": "1X2"}
+
+
+def _tracker_section(perf):
+    n       = perf["total_resolved"]
+    pending = perf["total_pending"]
+
+    if n == 0:
+        return (
+            f"<div class='card'>"
+            f"<h3>Performance do Analista — Backtest Próprio</h3>"
+            f"<div style='text-align:center;padding:24px;color:#8b949e'>"
+            f"<div style='font-size:1.8rem;margin-bottom:10px'>📊</div>"
+            f"<div style='color:#e6edf3'>A acumular dados — {pending} pick{'s' if pending != 1 else ''} pendente{'s' if pending != 1 else ''} de resolução</div>"
+            f"<div style='font-size:.78rem;margin-top:8px'>As picks identificadas hoje são registadas e comparadas com os resultados reais assim que ficarem disponíveis.</div>"
+            f"</div></div>"
+        )
+
+    wr      = perf["win_rate"]
+    roi     = perf["roi"]
+    roi_pct = perf["roi_pct"]
+    wins    = perf["wins"]
+    losses  = perf["losses"]
+    wr_c    = "#3fb950" if wr >= 0.50 else "#f85149"
+    roi_c   = "#3fb950" if roi >= 0   else "#f85149"
+
+    TS  = "width:100%;border-collapse:collapse;font-size:.82rem"
+    TH  = "text-align:left;color:#6e7681;padding:4px 8px;border-bottom:1px solid #21262d;font-weight:500"
+    TD  = "padding:4px 8px;border-bottom:1px solid #21262d"
+    TDN = "padding:4px 8px;border-bottom:1px solid #21262d;color:#8b949e"
+
+    def _pos(v):
+        return "#3fb950" if v >= 0 else "#f85149"
+
+    def _wr_c(v):
+        return "#3fb950" if v >= 0.50 else "#f85149"
+
+    # -- Tabela por edge --
+    edge_rows = ""
+    for edge in ("strong", "moderate", "weak", "insufficient"):
+        seg = perf["by_edge"].get(edge)
+        if not seg:
+            continue
+        wr_e  = seg["win_rate"]
+        rc    = _pos(seg["roi"])
+        edge_rows += (
+            f"<tr>"
+            f"<td style='{TD}'>{_EDGE_LABELS.get(edge, edge)}</td>"
+            f"<td style='{TDN}'>{seg['n']}</td>"
+            f"<td style='{TD};color:{_wr_c(wr_e)};font-weight:600'>{wr_e:.1%}</td>"
+            f"<td style='{TD};color:{rc}'>{seg['roi']:+.2f}u</td>"
+            f"</tr>"
+        )
+
+    # -- Tabela por mercado --
+    mkt_rows = ""
+    for mkt in ("o25", "btts", "1x2"):
+        seg = perf["by_market"].get(mkt)
+        if not seg:
+            continue
+        wr_m = seg["win_rate"]
+        rc   = _pos(seg["roi"])
+        mkt_rows += (
+            f"<tr>"
+            f"<td style='{TD}'>{_MKT_LABELS.get(mkt, mkt)}</td>"
+            f"<td style='{TDN}'>{seg['n']}</td>"
+            f"<td style='{TD};color:{_wr_c(wr_m)};font-weight:600'>{wr_m:.1%}</td>"
+            f"<td style='{TD};color:{rc}'>{seg['roi']:+.2f}u</td>"
+            f"</tr>"
+        )
+
+    tables_html = (
+        f"<div style='display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-bottom:18px'>"
+        f"<div>"
+        f"<div style='font-size:.70rem;color:#6e7681;text-transform:uppercase;letter-spacing:.04em;margin-bottom:6px'>Por Sinal de Edge</div>"
+        f"<table style='{TS}'>"
+        f"<thead><tr><th style='{TH}'>Sinal</th><th style='{TH}'>n</th><th style='{TH}'>Acerto</th><th style='{TH}'>ROI</th></tr></thead>"
+        f"<tbody>{edge_rows}</tbody></table>"
+        f"</div>"
+        f"<div>"
+        f"<div style='font-size:.70rem;color:#6e7681;text-transform:uppercase;letter-spacing:.04em;margin-bottom:6px'>Por Mercado</div>"
+        f"<table style='{TS}'>"
+        f"<thead><tr><th style='{TH}'>Mercado</th><th style='{TH}'>n</th><th style='{TH}'>Acerto</th><th style='{TH}'>ROI</th></tr></thead>"
+        f"<tbody>{mkt_rows}</tbody></table>"
+        f"</div>"
+        f"</div>"
+    )
+
+    # -- Gráfico ROI acumulado --
+    chart_html = ""
+    series = perf.get("series", [])
+    if len(series) >= 2:
+        s_data     = json.dumps([s["cum"]  for s in series])
+        s_tooltips = json.dumps([f"{s['date']} · {s['label']} ({s['market']}) {'✅' if s['hit'] else '❌'}"
+                                  for s in series])
+        s_labels   = json.dumps(list(range(1, len(series) + 1)))
+        zero_arr   = json.dumps([0] * len(series))
+        line_color = "#3fb950" if roi >= 0 else "#f85149"
+        bg_color   = "rgba(63,185,80,0.07)" if roi >= 0 else "rgba(248,81,73,0.07)"
+        chart_html = f"""
+<div style='margin-bottom:18px'>
+  <div style='font-size:.70rem;color:#6e7681;text-transform:uppercase;letter-spacing:.04em;margin-bottom:8px'>ROI Acumulado ({n} picks resolvidas)</div>
+  <canvas id='trackerChart' height='80'></canvas>
+</div>
+<script>
+(function(){{
+  var tooltips = {s_tooltips};
+  var ctx = document.getElementById('trackerChart').getContext('2d');
+  new Chart(ctx, {{
+    type: 'line',
+    data: {{
+      labels: {s_labels},
+      datasets: [
+        {{
+          label: 'ROI Acumulado (u)',
+          data: {s_data},
+          borderColor: '{line_color}',
+          backgroundColor: '{bg_color}',
+          fill: true,
+          tension: 0.15,
+          pointRadius: {3 if len(series) <= 50 else 0},
+          pointHoverRadius: 5,
+          borderWidth: 2,
+        }},
+        {{
+          label: '',
+          data: {zero_arr},
+          borderColor: '#30363d',
+          borderDash: [4, 4],
+          pointRadius: 0,
+          fill: false,
+          borderWidth: 1,
+        }}
+      ]
+    }},
+    options: {{
+      responsive: true,
+      plugins: {{
+        legend: {{ display: false }},
+        tooltip: {{
+          callbacks: {{
+            title: function(items) {{ return tooltips[items[0].dataIndex] || ''; }},
+            label: function(item) {{ return 'ROI: ' + item.raw.toFixed(2) + 'u'; }}
+          }}
+        }}
+      }},
+      scales: {{
+        x: {{ ticks: {{ color: '#8b949e', maxTicksLimit: 12 }}, grid: {{ color: '#21262d' }} }},
+        y: {{ ticks: {{ color: '#8b949e' }}, grid: {{ color: '#21262d' }} }}
+      }}
+    }}
+  }});
+}})();
+</script>"""
+
+    # -- Tabela de picks recentes --
+    recent = perf.get("recent", [])
+    recent_rows = ""
+    for p in recent[:15]:
+        hit_s   = "✅" if p.get("hit") else "❌"
+        profit  = (p["odds"] - 1) if p.get("hit") else -1.0
+        p_color = "#3fb950" if profit > 0 else "#f85149"
+        edge_s  = _EDGE_LABELS.get(p.get("edge", ""), p.get("edge", ""))
+        recent_rows += (
+            f"<tr>"
+            f"<td style='color:#8b949e'>{p.get('date','')}</td>"
+            f"<td>{p.get('home','')} vs {p.get('away','')}</td>"
+            f"<td style='color:#8b949e'>{_MKT_LABELS.get(p.get('market',''), p.get('market',''))}</td>"
+            f"<td style='font-size:.75rem'>{edge_s}</td>"
+            f"<td style='text-align:center;font-size:1.05rem'>{hit_s}</td>"
+            f"<td style='color:{p_color};text-align:right'>{profit:+.2f}u</td>"
+            f"</tr>"
+        )
+
+    recent_html = ""
+    if recent_rows:
+        recent_html = (
+            f"<div style='font-size:.70rem;color:#6e7681;text-transform:uppercase;letter-spacing:.04em;margin-bottom:6px'>Picks Recentes</div>"
+            f"<div style='overflow-x:auto'><table style='{TS}'>"
+            f"<thead><tr>"
+            f"<th style='{TH}'>Data</th>"
+            f"<th style='{TH}'>Jogo</th>"
+            f"<th style='{TH}'>Mercado</th>"
+            f"<th style='{TH}'>Edge</th>"
+            f"<th style='{TH};text-align:center'>Res.</th>"
+            f"<th style='{TH};text-align:right'>P&L</th>"
+            f"</tr></thead>"
+            f"<tbody>{recent_rows}</tbody>"
+            f"</table></div>"
+            f"<p style='font-size:.70rem;color:#6e7681;margin-top:6px'>ROI calculado com odds-base por mercado (O2.5 1.90x · BTTS 1.85x · 1X2 2.20x) · 1u por pick</p>"
+        )
+
+    return (
+        f"<div class='card'>"
+        f"<h3>Performance do Analista — Backtest Próprio · {n} resolvidas · {pending} pendentes</h3>"
+        f"<div style='display:flex;gap:24px;flex-wrap:wrap;margin-bottom:14px;font-size:.90rem'>"
+        f"<div>Taxa de Acerto: <b style='color:{wr_c}'>{wr:.1%}</b> <span style='color:#6e7681'>({wins}W / {losses}L)</span></div>"
+        f"<div>ROI: <b style='color:{roi_c}'>{roi:+.2f}u</b> <span style='color:#6e7681'>({roi_pct:+.1f}%/pick)</span></div>"
+        f"</div>"
+        f"{tables_html}"
+        f"{chart_html}"
+        f"{recent_html}"
+        f"</div>"
+    )
+
+
 def gen_dashboard_today(today_stats):
     os.makedirs(DOCS_DIR, exist_ok=True)
     now      = datetime.now(timezone.utc).strftime("%d/%m/%Y %H:%M UTC")
@@ -133,6 +346,7 @@ def gen_dashboard_today(today_stats):
     games         = today_stats.get("games", [])
     global_stats  = today_stats.get("global_stats", {})
     conf_stats    = today_stats.get("conf_stats", {})
+    tracker       = today_stats.get("tracker", {"total_resolved": 0, "total_pending": 0})
 
     # --- Backtest context table ---
     def _bt_row(market_key, label):
@@ -246,13 +460,26 @@ def gen_dashboard_today(today_stats):
 
         games_html = "\n".join(cards)
 
+    # --- Tracker KPIs ---
+    t_n       = tracker.get("total_resolved", 0)
+    t_pending = tracker.get("total_pending",  0)
+    t_wr      = tracker.get("win_rate",  0.0)
+    t_roi     = tracker.get("roi",       0.0)
+    t_wr_c    = "#3fb950" if t_wr >= 0.50 else ("#8b949e" if t_n == 0 else "#f85149")
+    t_roi_c   = "#3fb950" if t_roi >= 0   else ("#8b949e" if t_n == 0 else "#f85149")
+    t_wr_s    = f"{t_wr:.1%}" if t_n > 0 else "—"
+    t_roi_s   = f"{t_roi:+.2f}u" if t_n > 0 else "—"
+
+    tracker_section_html = _tracker_section(tracker)
+
     # --- Summary strip ---
     summary_items = [
         f"<div class='kpi'><div class='kpi-l'>Jogos c/ Picks</div><div class='kpi-v' style='color:#58a6ff'>{total_games}</div></div>",
-        f"<div class='kpi'><div class='kpi-l'>Total de Picks</div><div class='kpi-v' style='color:#8b949e'>{total_picks}</div></div>",
-        f"<div class='kpi'><div class='kpi-l'>Apostas Fortes ✅</div><div class='kpi-v' style='color:#3fb950'>{strong_picks}</div></div>",
-        f"<div class='kpi'><div class='kpi-l'>Apostas Moderadas ⚠️</div><div class='kpi-v' style='color:#d29922'>{sum(g['n_moderate'] for g in games)}</div></div>",
-        f"<div class='kpi'><div class='kpi-l'>Backtest (jogos)</div><div class='kpi-v' style='color:#8b949e'>{backtest_n}</div></div>",
+        f"<div class='kpi'><div class='kpi-l'>Picks Fortes ✅</div><div class='kpi-v' style='color:#3fb950'>{strong_picks}</div></div>",
+        f"<div class='kpi'><div class='kpi-l'>Picks Moderadas ⚠️</div><div class='kpi-v' style='color:#d29922'>{sum(g['n_moderate'] for g in games)}</div></div>",
+        f"<div class='kpi'><div class='kpi-l'>Picks Rastreadas</div><div class='kpi-v' style='color:#8b949e'>{t_n + t_pending}</div></div>",
+        f"<div class='kpi'><div class='kpi-l'>Acerto Próprio</div><div class='kpi-v' style='color:{t_wr_c}'>{t_wr_s}</div></div>",
+        f"<div class='kpi'><div class='kpi-l'>ROI Próprio</div><div class='kpi-v' style='color:{t_roi_c}'>{t_roi_s}</div></div>",
     ]
     summary_html = "\n".join(summary_items)
 
@@ -263,6 +490,7 @@ def gen_dashboard_today(today_stats):
 <meta name="viewport" content="width=device-width,initial-scale=1">
 <title>Onde Apostar Hoje — Analista</title>
 <meta http-equiv="refresh" content="900">
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
 <style>
 *{{box-sizing:border-box;margin:0;padding:0}}
 body{{background:#0d1117;color:#e6edf3;font-family:'Segoe UI',sans-serif;padding:20px;font-size:14px}}
@@ -312,6 +540,8 @@ tr:last-child td{{border-bottom:none}}
 </div>
 
 {backtest_table}
+
+{tracker_section_html}
 
 <h2 style='color:#e6edf3;font-size:1rem;margin:20px 0 12px'>
   Jogos de Hoje — {total_games} com picks
