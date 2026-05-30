@@ -264,7 +264,7 @@ def analyze_today(history, dashboard_html):
             "n_moderate": n_moderate,
         })
 
-    games_out.sort(key=lambda g: (g["conf_rank"], -g["n_strong"], -g["n_moderate"]))
+    games_out.sort(key=lambda g: (g["date"], (g["ko_hour"] or "99:99").zfill(5)))
 
     tracker_db = record_and_resolve(games_out, records)
     perf       = tracker_stats(tracker_db)
