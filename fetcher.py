@@ -2,8 +2,9 @@
 import requests
 from datetime import datetime, timezone
 
-OVER25_RAW = "https://raw.githubusercontent.com/nunovinhas-creator/over25-scanner/main"
+OVER25_RAW   = "https://raw.githubusercontent.com/nunovinhas-creator/over25-scanner/main"
 FOOTBALL_RAW = "https://raw.githubusercontent.com/nunovinhas-creator/football-dashboard/main"
+FOOTBALL_DASHBOARD_HTML_URL = f"{FOOTBALL_RAW}/docs/dashboard.html"
 
 
 def _get(url):
@@ -18,6 +19,7 @@ def fetch_all_data():
         "over25_picks_1x2": [],
         "football_history": {"records": [], "dates_processed": [], "dates_partial": {}},
         "football_trebles": {"pending": [], "history": []},
+        "football_dashboard_html": "",
         "fetched_at": datetime.now(timezone.utc).isoformat(),
     }
 
@@ -58,5 +60,13 @@ def fetch_all_data():
         print(f"[fetch] football trebles: {n} histórico")
     except Exception as e:
         print(f"[WARN] football trebles.json: {e}")
+
+    try:
+        r = requests.get(FOOTBALL_DASHBOARD_HTML_URL, timeout=20)
+        r.raise_for_status()
+        data["football_dashboard_html"] = r.text
+        print(f"[fetch] football dashboard.html: {len(r.content)} bytes")
+    except Exception as e:
+        print(f"[WARN] football dashboard.html: {e}")
 
     return data
