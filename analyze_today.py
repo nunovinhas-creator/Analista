@@ -9,6 +9,11 @@ CONF_RANK        = {"ALTA": 0, "MÉDIA": 1, "BAIXA": 2}
 MIN_N_EDGE       = 10   # mínimo para sinalizar edge (strong/moderate)
 MIN_N_SHOW       = 5    # mínimo para mostrar qualquer stat
 
+# Limiares de probabilidade para activar cada mercado (escala 0-100)
+PICK_THRESH_O25  = 62.0   # prob_o25  >= 62% → candidato Over 2.5
+PICK_THRESH_BTTS = 61.0   # prob_btts >= 61% → candidato BTTS
+PICK_THRESH_1X2  = 55.0   # prob_hw ou prob_aw >= 55%, apenas ALTA/MÉDIA → candidato 1X2
+
 
 def _wilson_ci(wins, n, z=1.96):
     if n == 0:
@@ -60,52 +65,54 @@ def parse_dashboard_html(html, today_str):
         if not home_m or not away_m:
             continue
 
-        tip_m = re.search(r'class="tip-badge">([^<]+)<', block)
-        tip   = tip_m.group(1).strip() if tip_m else ""
-
-        # Extra pills: hot-green = O2.5 ou BTTS activo como pick
-        pick_o25  = "Over 2.5 Golos" in tip
-        pick_btts = False
-        for pill_cls, pill_html in re.findall(r'class="extra-pill([^"]*)">(.*?)</div>', block, re.DOTALL):
-            if "hot-green" not in pill_cls:
-                continue
-            pill_text = re.sub(r"<[^>]+>", "", pill_html).strip()
-            if "Over 2.5" in pill_text:
-                pick_o25 = True
-            if "BTTS" in pill_text:
-                pick_btts = True
-
-        pick_1x2 = any(x in tip for x in ("Vitória Casa", "Vitória Fora", "Empate provável"))
-        pick_dir  = ("H" if "Vitória Casa" in tip
-                     else ("A" if "Vitória Fora" in tip
-                           else ("D" if "Empate" in tip else None)))
-
-        if not (pick_o25 or pick_btts or pick_1x2):
-            continue
-
         def _f(key):
             try:
                 return float(attrs.get(key, 0))
             except (ValueError, TypeError):
                 return 0.0
 
+        prob_o25  = _f("o25")
+        prob_btts = _f("btts")
+        prob_hw   = _f("hw")
+        prob_aw   = _f("aw")
+        conf_card = attrs.get("conf", "BAIXA")
+
+        tip_m = re.search(r'class="tip-badge">([^<]+)<', block)
+        tip   = tip_m.group(1).strip() if tip_m else ""
+
+        # Picks por limiar de probabilidade — independente dos flags do football-dashboard
+        pick_o25  = prob_o25  >= PICK_THRESH_O25
+        pick_btts = prob_btts >= PICK_THRESH_BTTS
+
+        # 1X2: apenas ALTA/MÉDIA, sem empate, direção do tip ou da probabilidade mais alta
+        pick_dir = ("H" if "Vitória Casa" in tip
+                    else ("A" if "Vitória Fora" in tip else None))
+        best_dir  = "H" if prob_hw >= prob_aw else "A"
+        best_prob = prob_hw if best_dir == "H" else prob_aw
+        pick_1x2  = conf_card in ("ALTA", "MÉDIA") and best_prob >= PICK_THRESH_1X2
+        if pick_1x2 and pick_dir is None:
+            pick_dir = best_dir  # fallback quando o tip não especifica direcção
+
+        if not (pick_o25 or pick_btts or pick_1x2):
+            continue
+
         games.append({
-            "home":       home_m.group(1).strip(),
-            "away":       away_m.group(1).strip(),
-            "league":     attrs.get("league", "Desconhecida"),
-            "ko_hour":    attrs.get("hour", ""),
-            "conf":       attrs.get("conf", "BAIXA"),
-            "tip":        tip,
-            "pick_o25":   pick_o25,
-            "pick_btts":  pick_btts,
-            "pick_1x2":   pick_1x2,
-            "pick_dir":   pick_dir,
-            "prob_o25":   _f("o25"),
-            "prob_btts":  _f("btts"),
-            "prob_hw":    _f("hw"),
-            "prob_dr":    _f("dr"),
-            "prob_aw":    _f("aw"),
-            "xg_total":   _f("xgtotal"),
+            "home":      home_m.group(1).strip(),
+            "away":      away_m.group(1).strip(),
+            "league":    attrs.get("league", "Desconhecida"),
+            "ko_hour":   attrs.get("hour", ""),
+            "conf":      conf_card,
+            "tip":       tip,
+            "pick_o25":  pick_o25,
+            "pick_btts": pick_btts,
+            "pick_1x2":  pick_1x2,
+            "pick_dir":  pick_dir,
+            "prob_o25":  prob_o25,
+            "prob_btts": prob_btts,
+            "prob_hw":   prob_hw,
+            "prob_dr":   _f("dr"),
+            "prob_aw":   prob_aw,
+            "xg_total":  _f("xgtotal"),
         })
 
     return games
