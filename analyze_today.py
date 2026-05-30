@@ -9,10 +9,22 @@ CONF_RANK        = {"ALTA": 0, "MÉDIA": 1, "BAIXA": 2}
 MIN_N_EDGE       = 10   # mínimo para sinalizar edge (strong/moderate)
 MIN_N_SHOW       = 5    # mínimo para mostrar qualquer stat
 
-# Limiares de probabilidade para activar cada mercado (escala 0-100)
-PICK_THRESH_O25  = 62.0   # prob_o25  >= 62% → candidato Over 2.5
-PICK_THRESH_BTTS = 61.0   # prob_btts >= 61% → candidato BTTS
-PICK_THRESH_1X2  = 55.0   # prob_hw ou prob_aw >= 55%, apenas ALTA/MÉDIA → candidato 1X2
+# Limiares derivados da calibração do backtest do Matemática Da Bola (history.json, 257 registos)
+# Regra: limiar mínimo = início da banda de probabilidade onde WR real > break-even
+#
+# Over 2.5 (odds 1.90x, break-even 52.6%):
+#   banda 40-60%  → WR real 50.6%  → EV -2.1%  ❌  excluída
+#   banda 60-80%  → WR real 55.2%  → EV +2.6%  ✅  limiar mínimo = 60%
+PICK_THRESH_O25  = 60.0
+#
+# BTTS (odds 1.85x, break-even 54.1%):
+#   banda 40-60%  → WR real 53.2%  → EV -0.8%  ❌  excluída
+#   banda 60-80%  → WR real 63.5%  → EV +9.4%  ✅  limiar mínimo = 60%
+PICK_THRESH_BTTS = 60.0
+#
+# 1X2 (odds 2.20x, break-even 45.5%), apenas ALTA/MÉDIA:
+#   banda 55-65%  → WR real 53.8%  → EV +8.4%  ✅  limiar mínimo = 55%
+PICK_THRESH_1X2  = 55.0
 
 
 def _wilson_ci(wins, n, z=1.96):
