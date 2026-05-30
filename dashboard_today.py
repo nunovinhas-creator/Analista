@@ -408,7 +408,7 @@ def gen_dashboard_today(today_stats):
         cards = []
         for g in game_list:
             # Game header
-            conf_b = _conf_badge(g["conf"])
+            conf_b = _conf_badge(g["conf"]) if g["conf"] in ("ALTA", "MÉDIA") else ""
             ko     = f"🕐 {g['ko_hour']}:00" if g["ko_hour"] else ""
             picks_html = "".join(_pick_card(p) for p in g["picks"])
 
