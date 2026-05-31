@@ -1,9 +1,19 @@
 # picks_tracker.py — Backtest próprio do Analista: regista picks do dia e resolve resultados
 import json
 import os
-from datetime import datetime, timezone
+from datetime import datetime, timedelta, timezone
 
-DB_PATH = os.path.join("docs", "picks_today_db.json")
+try:
+    import fcntl as _fcntl
+    def _lock(f):   _fcntl.flock(f, _fcntl.LOCK_EX)
+    def _unlock(f): _fcntl.flock(f, _fcntl.LOCK_UN)
+except ImportError:
+    def _lock(f):   pass
+    def _unlock(f): pass
+
+DB_PATH   = os.path.join("docs", "picks_today_db.json")
+LOCK_PATH = DB_PATH + ".lock"
+TTL_DAYS  = 30
 
 
 def load_db():
@@ -45,9 +55,26 @@ def record_and_resolve(today_games, history_records):
     Resolve picks pendentes contra history_records, depois regista as picks de hoje.
     Devolve o DB actualizado.
     """
+    os.makedirs("docs", exist_ok=True)
+    with open(LOCK_PATH, "w") as _lf:
+        _lock(_lf)
+        try:
+            return _record_and_resolve_locked(today_games, history_records)
+        finally:
+            _unlock(_lf)
+
+
+def _record_and_resolve_locked(today_games, history_records):
     db        = load_db()
     now_iso   = datetime.now(timezone.utc).isoformat()
     today_str = datetime.now(timezone.utc).strftime("%Y-%m-%d")
+
+    # Expirar picks pendentes sem resolução há mais de TTL_DAYS dias
+    cutoff = (datetime.now(timezone.utc) - timedelta(days=TTL_DAYS)).strftime("%Y-%m-%d")
+    expired = [p for p in db["pending"] if p.get("date", "9999") < cutoff]
+    if expired:
+        print(f"[tracker] {len(expired)} picks expirados removidos (>{TTL_DAYS}d sem resolução)")
+    db["pending"] = [p for p in db["pending"] if p.get("date", "9999") >= cutoff]
 
     # 1. Resolver picks pendentes
     still_pending, newly_resolved = [], []

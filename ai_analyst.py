@@ -7,6 +7,12 @@ def _binomial_pvalue(n, k, p=0.5):
     """P-valor unilateral: P(X >= k | n, p)."""
     if n == 0 or k == 0:
         return 1.0
+    if n > 200:
+        # Aproximação normal com correcção de continuidade (evita O(n) loop)
+        mu    = n * p
+        sigma = (n * p * (1 - p)) ** 0.5
+        z     = (k - 0.5 - mu) / sigma if sigma > 0 else float("inf")
+        return round(min(1.0, 0.5 * math.erfc(z / math.sqrt(2))), 4)
     total = 0.0
     for i in range(k, n + 1):
         total += math.comb(n, i) * (p ** i) * ((1 - p) ** (n - i))

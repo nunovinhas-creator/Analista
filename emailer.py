@@ -55,40 +55,53 @@ def _md_to_html(text: str) -> str:
         return s
 
     lines_out = []
-    in_list = False
+    in_ul = in_ol = False
+
+    def _close_lists():
+        nonlocal in_ul, in_ol
+        if in_ul:
+            lines_out.append("</ul>")
+            in_ul = False
+        if in_ol:
+            lines_out.append("</ol>")
+            in_ol = False
+
     for line in text.split("\n"):
         s = line.strip()
         if s.startswith("### "):
-            if in_list:
-                lines_out.append("</ul>")
-                in_list = False
+            _close_lists()
             lines_out.append(f"<h4 style='color:#2c3e50;margin:16px 0 6px;font-size:.95rem'>{_inline(s[4:])}</h4>")
         elif s.startswith("## "):
-            if in_list:
-                lines_out.append("</ul>")
-                in_list = False
+            _close_lists()
             lines_out.append(f"<h3 style='color:#2c3e50;margin:18px 0 6px;font-size:1rem'>{_inline(s[3:])}</h3>")
         elif s.startswith("- "):
-            if not in_list:
+            if in_ol:
+                lines_out.append("</ol>")
+                in_ol = False
+            if not in_ul:
                 lines_out.append("<ul style='margin:4px 0;padding-left:20px'>")
-                in_list = True
+                in_ul = True
             lines_out.append(f"<li style='margin-bottom:4px'>{_inline(s[2:])}</li>")
-        elif s:
-            if in_list:
+        elif re.match(r'^\d+\.\s', s):
+            if in_ul:
                 lines_out.append("</ul>")
-                in_list = False
+                in_ul = False
+            if not in_ol:
+                lines_out.append("<ol style='margin:4px 0;padding-left:20px'>")
+                in_ol = True
+            item = re.sub(r'^\d+\.\s+', '', s)
+            lines_out.append(f"<li style='margin-bottom:4px'>{_inline(item)}</li>")
+        elif s:
+            _close_lists()
             lines_out.append(f"<p style='margin:4px 0'>{_inline(s)}</p>")
         else:
-            if in_list:
-                lines_out.append("</ul>")
-                in_list = False
+            _close_lists()
             lines_out.append("<br>")
-    if in_list:
-        lines_out.append("</ul>")
+    _close_lists()
     return "\n".join(lines_out)
 
 
-def build_html_email(over25_stats: dict, football_stats: dict, ai_report: str) -> str:
+def build_html_email(over25_stats: dict, football_stats: dict, ai_report: str, today_stats: dict = None) -> str:
     now  = datetime.now(timezone.utc).strftime("%d/%m/%Y")
     o    = over25_stats
     f    = football_stats
@@ -203,6 +216,75 @@ def build_html_email(over25_stats: dict, football_stats: dict, ai_report: str) -
     ai_html = _md_to_html(ai_report) if ai_report else "<p style='color:#888'>Análise não disponível.</p>"
 
     SECTION_S = "background:#fff;border:1px solid #e0e0e0;border-radius:8px;padding:20px;margin-bottom:16px;"
+
+    # Secção Onde Apostar Hoje e Amanhã
+    today_section = ""
+    if today_stats:
+        ts           = today_stats
+        today_str    = ts.get("today", "")
+        tomorrow_str = ts.get("tomorrow", "")
+        all_games    = ts.get("games", [])
+        games_today    = [g for g in all_games if g.get("date") == today_str]
+        games_tomorrow = [g for g in all_games if g.get("date") == tomorrow_str]
+
+        rows = []
+        for date_label, games in [("Hoje", games_today), ("Amanhã", games_tomorrow)]:
+            if not games:
+                continue
+            rows.append(
+                f"<tr><td colspan='4' style='padding:7px 10px;background:#f4f5f7;"
+                f"font-weight:600;color:#555;font-size:.8rem'>{date_label}</td></tr>"
+            )
+            for g in games:
+                ko = f"{g['ko_hour']}:00" if g.get("ko_hour") else "—"
+                conf = g.get("conf", "")
+                if conf == "ALTA":
+                    conf_badge = "<span style='background:#1a7f37;color:#fff;border-radius:3px;padding:1px 5px;font-size:.73rem'>ALTA</span>"
+                elif conf == "MÉDIA":
+                    conf_badge = "<span style='background:#9a6700;color:#fff;border-radius:3px;padding:1px 5px;font-size:.73rem'>MÉDIA</span>"
+                else:
+                    conf_badge = ""
+                picks_html = " &nbsp;·&nbsp; ".join(
+                    f"<b style='color:{'#27ae60' if p['edge']=='strong' else '#e67e22'}'>"
+                    f"{_html.escape(p['label'])}</b>"
+                    f"<span style='color:#999;font-size:.75rem'> {p['edge']}</span>"
+                    for p in g.get("picks", [])
+                )
+                rows.append(
+                    f"<tr style='border-bottom:1px solid #f0f0f0'>"
+                    f"<td style='padding:6px 10px'>"
+                    f"<b>{_html.escape(g['home'])}</b> vs {_html.escape(g['away'])}<br>"
+                    f"<span style='font-size:.73rem;color:#888'>{_html.escape(g['league'])}</span></td>"
+                    f"<td style='padding:6px 10px;white-space:nowrap'>{ko}</td>"
+                    f"<td style='padding:6px 10px'>{conf_badge}</td>"
+                    f"<td style='padding:6px 10px;font-size:.82rem'>{picks_html}</td>"
+                    f"</tr>"
+                )
+
+        if rows:
+            rows_html  = "\n".join(rows)
+            n_strong   = ts.get("strong_picks", 0)
+            total_p    = ts.get("total_picks", 0)
+            strong_txt = f" · <b style='color:#27ae60'>{n_strong} fortes</b>" if n_strong else ""
+            today_section = f"""
+  <div style="{SECTION_S}">
+    <h2 style="color:#1a1a2e;margin:0 0 14px;font-size:1.1rem;">📅 Onde Apostar Hoje e Amanhã</h2>
+    <p style="color:#666;font-size:.82rem;margin-bottom:10px;">{ts.get('total_games',0)} jogos · {total_p} picks{strong_txt}</p>
+    <table style="width:100%;border-collapse:collapse;font-size:.82rem;">
+      <tr style="background:#f8f9fa">
+        <th style="padding:6px 10px;text-align:left;border-bottom:1px solid #eee">Jogo</th>
+        <th style="padding:6px 10px;text-align:left;border-bottom:1px solid #eee">Hora</th>
+        <th style="padding:6px 10px;text-align:left;border-bottom:1px solid #eee">Conf.</th>
+        <th style="padding:6px 10px;text-align:left;border-bottom:1px solid #eee">Picks</th>
+      </tr>
+      {rows_html}
+    </table>
+    <div style="text-align:right;margin-top:12px">
+      <a href="{PAGES_BASE}/today_dashboard.html" style="display:inline-block;background:#58a6ff;color:#fff;padding:8px 18px;border-radius:5px;text-decoration:none;font-size:.82rem;font-weight:600">
+        Ver Dashboard Completo →
+      </a>
+    </div>
+  </div>"""
     header_s  = "background:#1a1a2e;color:#58a6ff;padding:20px 24px;border-radius:8px 8px 0 0;margin-bottom:16px;"
 
     return f"""<!DOCTYPE html>
@@ -259,6 +341,8 @@ def build_html_email(over25_stats: dict, football_stats: dict, ai_report: str) -
     </div>
   </div>
 
+  {today_section}
+
   <!-- Análise Científica -->
   <div style="{SECTION_S}">
     <h2 style="color:#1a1a2e;margin:0 0 14px;font-size:1.1rem;">🔬 Análise Científica</h2>
@@ -275,6 +359,9 @@ def build_html_email(over25_stats: dict, football_stats: dict, ai_report: str) -
     <a href="{PAGES_BASE}/football_dashboard.html" style="display:inline-block;background:#3fb950;color:#fff;padding:10px 22px;border-radius:6px;text-decoration:none;font-weight:600;margin:6px;">
       Ver Dashboard Football
     </a>
+    <a href="{PAGES_BASE}/today_dashboard.html" style="display:inline-block;background:#f78166;color:#fff;padding:10px 22px;border-radius:6px;text-decoration:none;font-weight:600;margin:6px;">
+      Ver Hoje e Amanhã
+    </a>
   </div>
 
   <p style="text-align:center;color:#aaa;font-size:.78rem;margin-top:10px;">
@@ -285,7 +372,7 @@ def build_html_email(over25_stats: dict, football_stats: dict, ai_report: str) -
 </html>"""
 
 
-def send_daily_report(over25_stats: dict, football_stats: dict, ai_report: str):
+def send_daily_report(over25_stats: dict, football_stats: dict, ai_report: str, today_stats: dict = None):
     gmail_user = os.environ.get("GMAIL_USER")
     gmail_pass = os.environ.get("GMAIL_APP_PASSWORD")
 
@@ -295,7 +382,7 @@ def send_daily_report(over25_stats: dict, football_stats: dict, ai_report: str):
 
     now     = datetime.now(timezone.utc).strftime("%d/%m/%Y")
     subject = f"📊 Analista — Relatório Diário {now}"
-    html_body = build_html_email(over25_stats, football_stats, ai_report)
+    html_body = build_html_email(over25_stats, football_stats, ai_report, today_stats)
 
     msg = MIMEMultipart("alternative")
     msg["Subject"] = subject

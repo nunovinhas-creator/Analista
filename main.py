@@ -43,7 +43,7 @@ def main():
             print(f"[ERROR] Falha na análise científica: {e}")
             ai_report = ""
         try:
-            send_daily_report(over25_stats, football_stats, ai_report)
+            send_daily_report(over25_stats, football_stats, ai_report, today_stats)
         except Exception as e:
             print(f"[ERROR] Falha no envio do email: {e}")
 

@@ -258,7 +258,7 @@ def analyze_over25(picks, picks_1x2):
         "roi_pct":     (total_roi / bet_count * 100) if bet_count else 0.0,
         "bet_count":   bet_count,
         "streak":      streak,
-        "streak_type": streak_type,
+        "streak_type": streak_type or "",
         "avg_clv":     avg_clv,
         "max_drawdown": max_drawdown,
         "recent_7d": {
