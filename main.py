@@ -26,7 +26,15 @@ def main():
     over25_stats   = analyze_over25(data["over25_picks"], data["over25_picks_1x2"])
     football_stats = analyze_football(data["football_history"], data["football_trebles"])
 
-    today_stats = analyze_today(data["football_history"], data["football_dashboard_html"])
+    try:
+        today_stats = analyze_today(data["football_history"], data["football_dashboard_html"])
+    except Exception as e:
+        print(f"[ERROR] Falha em analyze_today: {e}")
+        today_stats = {
+            "today": "", "tomorrow": "", "total_games": 0,
+            "total_picks": 0, "strong_picks": 0, "games": [],
+            "tracker": {"total_resolved": 0, "total_pending": 0},
+        }
 
     gen_dashboard_over25(over25_stats)
     gen_dashboard_football(football_stats)

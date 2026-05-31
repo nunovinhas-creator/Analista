@@ -70,11 +70,12 @@ def _record_and_resolve_locked(today_games, history_records):
     today_str = datetime.now(timezone.utc).strftime("%Y-%m-%d")
 
     # Expirar picks pendentes sem resolução há mais de TTL_DAYS dias
-    cutoff = (datetime.now(timezone.utc) - timedelta(days=TTL_DAYS)).strftime("%Y-%m-%d")
-    expired = [p for p in db["pending"] if p.get("date", "9999") < cutoff]
-    if expired:
-        print(f"[tracker] {len(expired)} picks expirados removidos (>{TTL_DAYS}d sem resolução)")
-    db["pending"] = [p for p in db["pending"] if p.get("date", "9999") >= cutoff]
+    cutoff      = (datetime.now(timezone.utc) - timedelta(days=TTL_DAYS)).strftime("%Y-%m-%d")
+    new_pending = [p for p in db["pending"] if p.get("date", "") >= cutoff]
+    n_expired   = len(db["pending"]) - len(new_pending)
+    if n_expired:
+        print(f"[tracker] {n_expired} picks expirados removidos (>{TTL_DAYS}d sem resolução)")
+    db["pending"] = new_pending
 
     # 1. Resolver picks pendentes
     still_pending, newly_resolved = [], []
