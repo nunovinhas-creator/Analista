@@ -236,7 +236,8 @@ def build_html_email(over25_stats: dict, football_stats: dict, ai_report: str, t
                 f"font-weight:600;color:#555;font-size:.8rem'>{date_label}</td></tr>"
             )
             for g in games:
-                ko = f"{g['ko_hour']}:00" if g.get("ko_hour") else "—"
+                ko_raw = str(g.get("ko_hour", ""))
+                ko = (":" in ko_raw and ko_raw or f"{ko_raw}:00") if ko_raw else "—"
                 conf = g.get("conf", "")
                 if conf == "ALTA":
                     conf_badge = "<span style='background:#1a7f37;color:#fff;border-radius:3px;padding:1px 5px;font-size:.73rem'>ALTA</span>"

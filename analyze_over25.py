@@ -239,7 +239,7 @@ def analyze_over25(picks, picks_1x2):
             "score":     _flt(p, "score_sistema"),
             "movimento": p.get("movimento") or "—",
             "xg":        _flt(p, "xg_total"),
-            "prob":      _flt(p, "prob_over25"),
+
             "kelly_pct": kq,
             "kelly_ok":  kq >= 0.5,
             "kelly_note": note,

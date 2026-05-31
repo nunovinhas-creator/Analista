@@ -75,15 +75,12 @@ def _picks_table(picks):
         mov   = p.get("movimento")     or "—"
         mov_c = "#3fb950" if mov == "SHORTENING" else ("#f0883e" if mov == "DRIFTING" else "#8b949e")
         sharp = p.get("sharp_label")   or ""
-        prob  = p.get("prob_over25")   or ""
-        prob_str = f"{float(prob):.0f}%" if prob else "—"
 
         rows += (
             f"<tr>"
             f"<td><b>{casa}</b> vs {fora}<br><span style='color:#8b949e;font-size:.78rem'>{liga}</span></td>"
             f"<td style='color:{mov_c}'>{mov}</td>"
             f"<td>{score}</td>"
-            f"<td>{prob_str}</td>"
             f"<td>{odds}</td>"
             f"<td>{xg}</td>"
             f"<td style='color:#8b949e;font-size:.8rem'>{sharp}</td>"
@@ -322,7 +319,7 @@ tr:last-child td{{border-bottom:none}}
 <div class="card">
   <h3>Picks Recentes</h3>
   <table>
-    <tr><th>Jogo</th><th>Mov.</th><th>Score</th><th>Prob</th><th>Odds</th><th>xG</th><th>Sharp</th><th>Result.</th></tr>
+    <tr><th>Jogo</th><th>Mov.</th><th>Score</th><th>Odds</th><th>xG</th><th>Sharp</th><th>Result.</th></tr>
     {picks_rows if picks_rows else "<tr><td colspan='8' style='color:#8b949e;text-align:center'>Sem picks</td></tr>"}
   </table>
 </div>

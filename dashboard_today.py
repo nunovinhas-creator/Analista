@@ -407,7 +407,8 @@ def gen_dashboard_today(today_stats):
         for g in game_list:
             # Game header
             conf_b = _conf_badge(g["conf"]) if g["conf"] in ("ALTA", "MÉDIA") else ""
-            ko     = f"🕐 {g['ko_hour']}:00" if g["ko_hour"] else ""
+            ko_raw = str(g["ko_hour"]) if g["ko_hour"] else ""
+            ko     = (f"🕐 {ko_raw}" if ":" in ko_raw else f"🕐 {ko_raw}:00") if ko_raw else ""
             picks_html = "".join(_pick_card(p) for p in g["picks"])
 
             # Model probabilities
