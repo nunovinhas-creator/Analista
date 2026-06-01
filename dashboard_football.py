@@ -182,6 +182,7 @@ tr:last-child td{{border-bottom:none}}
   <div class="kpi"><div class="kpi-l">O2.5 WR</div><div class="kpi-v" style="color:{color(pm.get('o25',dict()).get('win_rate',0),.52)}">{pct(pm.get('o25',dict()).get('win_rate',0))}</div></div>
   <div class="kpi"><div class="kpi-l">BTTS WR</div><div class="kpi-v" style="color:{color(pm.get('btts',dict()).get('win_rate',0),.55)}">{pct(pm.get('btts',dict()).get('win_rate',0))}</div></div>
   <div class="kpi"><div class="kpi-l">1X2 WR</div><div class="kpi-v" style="color:{color(pm.get('1x2',dict()).get('win_rate',0),.52)}">{pct(pm.get('1x2',dict()).get('win_rate',0))}</div></div>
+  <div class="kpi"><div class="kpi-l">1X2 ROI</div><div class="kpi-v" style="color:{color(pm.get('1x2',dict()).get('roi',0))}">{pm.get('1x2',dict()).get('roi',0):+.1f}u</div></div>
   <div class="kpi"><div class="kpi-l">Triplas WR</div><div class="kpi-v" style="color:{color(tr.get('win_rate',0),.3)}">{pct(tr.get('win_rate',0))}</div></div>
   <div class="kpi"><div class="kpi-l">Triplas ROI</div><div class="kpi-v" style="color:{color(tr.get('roi',0))}">{tr.get('roi',0):+.1f}u</div></div>
   <div class="kpi"><div class="kpi-l">O2.5 7d WR</div><div class="kpi-v" style="color:{color(r7_o25.get('win_rate',0),.52)}">{pct(r7_o25.get('win_rate',0))}</div></div>

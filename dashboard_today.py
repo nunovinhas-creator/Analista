@@ -353,9 +353,9 @@ def gen_dashboard_today(today_stats):
             if n >= 5:
                 c    = color(wr, 1 / MARKET_BASE_ODDS.get(market_key, 2.0))
                 warn = " ⚠" if not cs.get("reliable") else ""
-                rows.append(f"<td style='padding:5px 10px;color:{c}'>{pct(wr)}<br><span style='color:oklch(55% 0.014 82);font-size:.70rem'>(n={n}{warn}) [{ci_l:.0%}–{ci_h:.0%}]</span></td>")
+                rows.append(f"<td style='padding:5px 8px;color:{c};white-space:nowrap'>{pct(wr)}<br><span style='color:oklch(55% 0.014 82);font-size:.68rem'>(n={n}{warn}) [{ci_l:.0%}–{ci_h:.0%}]</span></td>")
             else:
-                rows.append("<td style='padding:5px 10px;color:oklch(55% 0.014 82);font-size:.78rem'>insuf.</td>")
+                rows.append("<td style='padding:5px 8px;color:oklch(55% 0.014 82);font-size:.78rem;white-space:nowrap'>insuf.</td>")
         n_g  = gs.get("n", 0)
         wr_g = gs.get("win_rate", 0)
         ci_gl = gs.get("ci_low", 0)
@@ -363,26 +363,28 @@ def gen_dashboard_today(today_stats):
         if n_g >= 5:
             c    = color(wr_g, 1 / MARKET_BASE_ODDS.get(market_key, 2.0))
             warn = " ⚠" if not gs.get("reliable") else ""
-            rows.append(f"<td style='padding:5px 10px;color:{c}'><b>{pct(wr_g)}</b><br><span style='color:oklch(55% 0.014 82);font-size:.70rem'>(n={n_g}{warn}) [{ci_gl:.0%}–{ci_gh:.0%}]</span></td>")
+            rows.append(f"<td style='padding:5px 8px;color:{c};white-space:nowrap'><b>{pct(wr_g)}</b><br><span style='color:oklch(55% 0.014 82);font-size:.70rem'>(n={n_g}{warn}) [{ci_gl:.0%}–{ci_gh:.0%}]</span></td>")
         else:
-            rows.append("<td style='padding:5px 10px;color:oklch(55% 0.014 82);font-size:.78rem'>insuf.</td>")
+            rows.append("<td style='padding:5px 8px;color:oklch(55% 0.014 82);font-size:.78rem;white-space:nowrap'>insuf.</td>")
         return "<tr>" + "".join(rows) + "</tr>"
 
     backtest_table = f"""
 <div class='card'>
   <h3>Backtest — {backtest_n} jogos resolvidos · Base estatística das recomendações</h3>
-  <table>
+  <div style='overflow-x:auto;-webkit-overflow-scrolling:touch'>
+  <table style='min-width:520px'>
     <tr>
-      <th style='padding:5px 10px'>Mercado</th>
-      <th style='padding:5px 10px'>Confiança ALTA</th>
-      <th style='padding:5px 10px'>Confiança MÉDIA</th>
-      <th style='padding:5px 10px'>Confiança BAIXA</th>
-      <th style='padding:5px 10px'>Global</th>
+      <th style='padding:5px 8px;white-space:nowrap'>Mercado</th>
+      <th style='padding:5px 8px;white-space:nowrap'>Conf. ALTA</th>
+      <th style='padding:5px 8px;white-space:nowrap'>Conf. MÉDIA</th>
+      <th style='padding:5px 8px;white-space:nowrap'>Conf. BAIXA</th>
+      <th style='padding:5px 8px;white-space:nowrap'>Global</th>
     </tr>
     {_bt_row("o25",  "Over 2.5")}
     {_bt_row("btts", "BTTS")}
     {_bt_row("1x2",  "1X2")}
   </table>
+  </div>
   <p style='color:oklch(55% 0.014 82);font-size:.72rem;margin-top:8px'>
     ⚠ n&lt;20 = amostra insuficiente · IC = intervalo de confiança Wilson 95% ·
     Break-even: O2.5&nbsp;52.6%, BTTS&nbsp;54.1%, 1X2&nbsp;45.5%
