@@ -140,8 +140,8 @@ def pct(v, d=1):
 
 def color(v, threshold=0.0):
     if v is None:
-        return "#6e7681"
-    return "#27ae60" if v >= threshold else "#e74c3c"
+        return "oklch(63% 0.024 82)"
+    return "oklch(70% 0.12 188)" if v >= threshold else "oklch(58% 0.15 35)"
 
 
 def escape(s):
