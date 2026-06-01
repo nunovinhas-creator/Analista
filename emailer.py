@@ -119,7 +119,9 @@ def build_html_email(over25_stats: dict, football_stats: dict, ai_report: str, t
     # Picks pendentes com Kelly
     pending_kelly_rows = []
     for p in o25.get("pending_with_kelly", []):
-        odds_s = f"{p['odds']:.2f}x" if p["odds"] else "—"
+        odds_s  = f"{p['odds']:.2f}x" if p["odds"] else "—"
+        score_s = f"{p['score']:.0f}" if p["score"] is not None else "—"
+        xg_s    = f"{p['xg']:.1f}"   if p["xg"]    is not None else "—"
         if p["kelly_ok"]:
             stake_cell = f"<b style='color:#27ae60'>{p['kelly_pct']:.1f}% banca</b>"
             if p.get("kelly_note"):
@@ -129,8 +131,8 @@ def build_html_email(over25_stats: dict, football_stats: dict, ai_report: str, t
         pending_kelly_rows.append(
             f"<tr><td style='padding:5px 8px'><b>{_html.escape(p['casa'])}</b> vs {_html.escape(p['fora'])}</td>"
             f"<td style='padding:5px 8px'>{odds_s}</td>"
-            f"<td style='padding:5px 8px'>{p['score']:.0f}</td>"
-            f"<td style='padding:5px 8px'>{p['xg']:.1f}</td>"
+            f"<td style='padding:5px 8px'>{score_s}</td>"
+            f"<td style='padding:5px 8px'>{xg_s}</td>"
             f"<td style='padding:5px 8px'>{_html.escape(p['movimento'])}</td>"
             f"<td style='padding:5px 8px'>{stake_cell}</td></tr>"
         )

@@ -153,7 +153,9 @@ def generate_ai_report(over25_stats, football_stats):
             odds_str = f"{p['odds']:.2f}x" if p['odds'] else "—"
             if p["kelly_ok"]:
                 clv_note = f" ⚠️ {p['kelly_note']}" if p.get("kelly_note") else ""
-                lines.append(f"- **{p['casa']} vs {p['fora']}** · Odds {odds_str} · Score {p['score']:.0f} · xG {p['xg']:.1f} · {p['movimento']} → **Kelly ¼: {p['kelly_pct']:.1f}% da banca**{clv_note}")
+                score_str = f"{p['score']:.0f}" if p['score'] is not None else "—"
+                xg_str    = f"{p['xg']:.1f}"    if p['xg']    is not None else "—"
+                lines.append(f"- **{p['casa']} vs {p['fora']}** · Odds {odds_str} · Score {score_str} · xG {xg_str} · {p['movimento']} → **Kelly ¼: {p['kelly_pct']:.1f}% da banca**{clv_note}")
             else:
                 lines.append(f"- {p['casa']} vs {p['fora']} · Odds {odds_str} → sem recomendação ({p.get('kelly_note', 'amostra insuficiente')})")
         lines.append("")

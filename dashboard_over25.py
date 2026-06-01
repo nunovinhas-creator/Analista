@@ -203,7 +203,7 @@ new Chart(document.getElementById('cDaily').getContext('2d'), {{
   <div class="kpi"><div class="kpi-l">Yield</div>
     <div class="kpi-v" style="color:{_color(roi_pct)}">{roi_pct:+.1f}%</div></div>
   <div class="kpi"><div class="kpi-l">Streak</div>
-    <div class="kpi-v" style="color:{_color(1 if streak_type=='WIN' else -1)}">{'+' if streak_type=='WIN' else '-'}{streak}</div></div>
+    <div class="kpi-v" style="color:{_color(1 if streak_type=='WIN' else (-1 if streak_type=='LOSS' else 0))}">{'+' if streak_type=='WIN' else ('-' if streak_type=='LOSS' else '')}{streak if streak_type else '—'}</div></div>
   <div class="kpi"><div class="kpi-l">Max Drawdown</div>
     <div class="kpi-v" style="color:{dd_color}">-{max_dd:.2f}u</div></div>
   {clv_kpi}

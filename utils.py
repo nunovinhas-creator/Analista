@@ -133,10 +133,14 @@ def kelly_quarter(wr, odds, cap=3.0):
 
 
 def pct(v, d=1):
+    if v is None:
+        return "—"
     return f"{v * 100:.{d}f}%"
 
 
 def color(v, threshold=0.0):
+    if v is None:
+        return "#6e7681"
     return "#27ae60" if v >= threshold else "#e74c3c"
 
 
