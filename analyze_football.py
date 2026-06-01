@@ -88,6 +88,7 @@ def analyze_football(history, trebles):
             "daily": {},
             "cum_o25_series": [],
             "cum_btts_series": [],
+            "cum_1x2_series": [],
             "cum_treble_series": [],
             "brier_scores": {},
             "calibration": {},
@@ -202,8 +203,8 @@ def analyze_football(history, trebles):
     daily = dict(sorted(daily.items()))
 
     # Séries ROI acumulado para gráficos — apenas picks resolvidos
-    cum_o25, cum_btts = 0.0, 0.0
-    cum_o25_series, cum_btts_series = [], []
+    cum_o25, cum_btts, cum_1x2 = 0.0, 0.0, 0.0
+    cum_o25_series, cum_btts_series, cum_1x2_series = [], [], []
     for r in records:
         if r.get("pick_o25") and r.get("hit_o25") is not None:
             cum_o25 += 1 if r.get("hit_o25") else -1
@@ -211,6 +212,9 @@ def analyze_football(history, trebles):
         if r.get("pick_btts") and r.get("hit_btts") is not None:
             cum_btts += 1 if r.get("hit_btts") else -1
             cum_btts_series.append(round(cum_btts, 2))
+        if r.get("pick_1x2") and r.get("hit_1x2") is not None:
+            cum_1x2 += 1 if r.get("hit_1x2") else -1
+            cum_1x2_series.append(round(cum_1x2, 2))
 
     return {
         "total":            len(records),
@@ -223,6 +227,7 @@ def analyze_football(history, trebles):
         "daily":            daily,
         "cum_o25_series":   cum_o25_series,
         "cum_btts_series":  cum_btts_series,
+        "cum_1x2_series":   cum_1x2_series,
         "cum_treble_series": cum_treble_series,
         "brier_scores":     brier_scores,
         "calibration":      calibration,

@@ -16,19 +16,19 @@ h1{font-size:1.5rem;color:oklch(84% 0.19 80.46);margin-bottom:4px;font-family:"A
 .kpi{background:oklch(11% 0.006 95);border:1px solid oklch(28% 0.010 95);border-radius:2px;padding:12px 18px;min-width:120px}
 .kpi-l{font-size:.72rem;color:oklch(63% 0.024 82);text-transform:uppercase;letter-spacing:.05em}
 .kpi-v{font-size:1.5rem;font-weight:700;margin-top:3px}
-.charts{display:grid;grid-template-columns:1fr 1fr 1fr;gap:12px;margin-bottom:20px}
+.charts{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:20px}
 .card{background:oklch(11% 0.006 95);border:1px solid oklch(28% 0.010 95);border-radius:2px;padding:16px;margin-bottom:14px}
 .card h3{font-size:.82rem;color:oklch(63% 0.024 82);margin-bottom:10px;text-transform:uppercase;letter-spacing:.04em}
 table{width:100%;border-collapse:collapse;font-size:.83rem}
 th{text-align:left;color:oklch(63% 0.024 82);padding:5px 8px;border-bottom:1px solid oklch(28% 0.010 95);font-weight:500}
 td{padding:5px 8px;border-bottom:1px solid oklch(15% 0.008 95)}
 tr:last-child td{border-bottom:none}
-@media(max-width:750px){.charts{grid-template-columns:1fr}}
+@media(max-width:560px){.charts{grid-template-columns:1fr}}
 </style>
 </head>
 <body>
 <h1>⚽ Matemática Da Bola</h1>
-<p class="sub">Actualizado: 01/06/2026 22:48 UTC · 340 registos · 14 dias processados</p>
+<p class="sub">Actualizado: 01/06/2026 22:51 UTC · 340 registos · 14 dias processados</p>
 
 <div class="kpi-bar">
   <div class="kpi"><div class="kpi-l">O2.5 WR</div><div class="kpi-v" style="color:oklch(70% 0.12 188)">60.8%</div></div>
@@ -44,6 +44,7 @@ tr:last-child td{border-bottom:none}
 <div class="charts">
   <div class="card"><h3>ROI Acumulado — Over 2.5</h3><canvas id="cO25" height="160"></canvas></div>
   <div class="card"><h3>ROI Acumulado — BTTS</h3><canvas id="cBtts" height="160"></canvas></div>
+  <div class="card"><h3>ROI Acumulado — 1X2</h3><canvas id="c1x2" height="160"></canvas></div>
   <div class="card"><h3>ROI Acumulado — Triplas</h3><canvas id="cTreble" height="160"></canvas></div>
 </div>
 
@@ -123,6 +124,9 @@ new Chart(document.getElementById('cO25').getContext('2d'), {
 });
 new Chart(document.getElementById('cBtts').getContext('2d'), {
   type:'line', data:{labels: Array.from({length:70},(_,i)=>i+1), datasets:[lineDataset([1.0, 2.0, 3.0, 4.0, 5.0, 6.0, 5.0, 6.0, 7.0, 8.0, 9.0, 10.0, 11.0, 12.0, 13.0, 14.0, 13.0, 14.0, 13.0, 14.0, 13.0, 12.0, 11.0, 10.0, 11.0, 12.0, 11.0, 10.0, 11.0, 10.0, 11.0, 10.0, 11.0, 12.0, 11.0, 12.0, 13.0, 12.0, 11.0, 10.0, 11.0, 12.0, 13.0, 12.0, 13.0, 14.0, 15.0, 14.0, 15.0, 16.0, 17.0, 18.0, 19.0, 18.0, 17.0, 18.0, 19.0, 18.0, 19.0, 20.0, 19.0, 20.0, 19.0, 20.0, 21.0, 22.0, 21.0, 20.0, 21.0, 22.0], '#c9a030', 'rgba(201,160,48,.08)')]}, options:lineOpts
+});
+new Chart(document.getElementById('c1x2').getContext('2d'), {
+  type:'line', data:{labels: Array.from({length:12},(_,i)=>i+1), datasets:[lineDataset([1.0, 2.0, 3.0, 4.0, 5.0, 6.0, 5.0, 6.0, 7.0, 6.0, 7.0, 8.0], '#6a90c4', 'rgba(106,144,196,.08)')]}, options:lineOpts
 });
 new Chart(document.getElementById('cTreble').getContext('2d'), {
   type:'line', data:{labels: Array.from({length:7},(_,i)=>i+1), datasets:[lineDataset([2.64, 4.43, 6.26, 5.26, 6.81, 8.99, 7.99], '#b88a20', 'rgba(184,138,32,.08)')]}, options:lineOpts

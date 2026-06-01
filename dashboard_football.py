@@ -57,6 +57,7 @@ def gen_dashboard_football(stats):
     # JSON para gráficos
     cum_o25_json    = json.dumps(stats.get("cum_o25_series", []))
     cum_btts_json   = json.dumps(stats.get("cum_btts_series", []))
+    cum_1x2_json    = json.dumps(stats.get("cum_1x2_series", []))
     cum_treble_json = json.dumps(stats.get("cum_treble_series", []))
 
     daily  = stats.get("daily", {})
@@ -164,14 +165,14 @@ h1{{font-size:1.5rem;color:oklch(84% 0.19 80.46);margin-bottom:4px;font-family:"
 .kpi{{background:oklch(11% 0.006 95);border:1px solid oklch(28% 0.010 95);border-radius:2px;padding:12px 18px;min-width:120px}}
 .kpi-l{{font-size:.72rem;color:oklch(63% 0.024 82);text-transform:uppercase;letter-spacing:.05em}}
 .kpi-v{{font-size:1.5rem;font-weight:700;margin-top:3px}}
-.charts{{display:grid;grid-template-columns:1fr 1fr 1fr;gap:12px;margin-bottom:20px}}
+.charts{{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:20px}}
 .card{{background:oklch(11% 0.006 95);border:1px solid oklch(28% 0.010 95);border-radius:2px;padding:16px;margin-bottom:14px}}
 .card h3{{font-size:.82rem;color:oklch(63% 0.024 82);margin-bottom:10px;text-transform:uppercase;letter-spacing:.04em}}
 table{{width:100%;border-collapse:collapse;font-size:.83rem}}
 th{{text-align:left;color:oklch(63% 0.024 82);padding:5px 8px;border-bottom:1px solid oklch(28% 0.010 95);font-weight:500}}
 td{{padding:5px 8px;border-bottom:1px solid oklch(15% 0.008 95)}}
 tr:last-child td{{border-bottom:none}}
-@media(max-width:750px){{.charts{{grid-template-columns:1fr}}}}
+@media(max-width:560px){{.charts{{grid-template-columns:1fr}}}}
 </style>
 </head>
 <body>
@@ -192,6 +193,7 @@ tr:last-child td{{border-bottom:none}}
 <div class="charts">
   <div class="card"><h3>ROI Acumulado — Over 2.5</h3><canvas id="cO25" height="160"></canvas></div>
   <div class="card"><h3>ROI Acumulado — BTTS</h3><canvas id="cBtts" height="160"></canvas></div>
+  <div class="card"><h3>ROI Acumulado — 1X2</h3><canvas id="c1x2" height="160"></canvas></div>
   <div class="card"><h3>ROI Acumulado — Triplas</h3><canvas id="cTreble" height="160"></canvas></div>
 </div>
 
@@ -263,6 +265,9 @@ new Chart(document.getElementById('cO25').getContext('2d'), {{
 }});
 new Chart(document.getElementById('cBtts').getContext('2d'), {{
   type:'line', data:{{labels: Array.from({{length:{len(stats.get('cum_btts_series',[]))}}},(_,i)=>i+1), datasets:[lineDataset({cum_btts_json}, '#c9a030', 'rgba(201,160,48,.08)')]}}, options:lineOpts
+}});
+new Chart(document.getElementById('c1x2').getContext('2d'), {{
+  type:'line', data:{{labels: Array.from({{length:{len(stats.get('cum_1x2_series',[]))}}},(_,i)=>i+1), datasets:[lineDataset({cum_1x2_json}, '#6a90c4', 'rgba(106,144,196,.08)')]}}, options:lineOpts
 }});
 new Chart(document.getElementById('cTreble').getContext('2d'), {{
   type:'line', data:{{labels: Array.from({{length:{len(stats.get('cum_treble_series',[]))}}},(_,i)=>i+1), datasets:[lineDataset({cum_treble_json}, '#b88a20', 'rgba(184,138,32,.08)')]}}, options:lineOpts
