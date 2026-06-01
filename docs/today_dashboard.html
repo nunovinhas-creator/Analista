@@ -7,46 +7,47 @@
 <meta http-equiv="refresh" content="900">
 <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
 <style>
+@import url('https://fonts.googleapis.com/css2?family=Albert+Sans:wght@300;400;500;600&family=Alumni+Sans+Pinstripe&display=swap');
 *{box-sizing:border-box;margin:0;padding:0}
-body{background:#0d1117;color:#e6edf3;font-family:'Segoe UI',sans-serif;padding:20px;font-size:14px}
-h1{font-size:1.5rem;color:#58a6ff;margin-bottom:4px}
-.sub{color:#8b949e;font-size:.82rem;margin-bottom:20px}
+body{background:oklch(7% 0.006 95);color:oklch(81% 0.03 82);font-family:"Albert Sans","Avenir Next","Helvetica Neue",Arial,system-ui,sans-serif;padding:20px;font-size:14px}
+h1{font-size:1.5rem;color:oklch(84% 0.19 80.46);margin-bottom:4px;font-family:"Alumni Sans Pinstripe","Albert Sans",sans-serif;font-weight:300;letter-spacing:.02em;}
+.sub{color:oklch(63% 0.024 82);font-size:.82rem;margin-bottom:20px;font-family:"SFMono-Regular","Roboto Mono",Consolas,monospace;letter-spacing:.04em;text-transform:uppercase;font-size:.72rem;}
 .kpi-bar{display:flex;gap:10px;flex-wrap:wrap;margin-bottom:22px}
-.kpi{background:#161b22;border:1px solid #30363d;border-radius:8px;padding:12px 18px;min-width:130px}
-.kpi-l{font-size:.72rem;color:#8b949e;text-transform:uppercase;letter-spacing:.05em}
+.kpi{background:oklch(11% 0.006 95);border:1px solid oklch(28% 0.010 95);border-radius:2px;padding:12px 18px;min-width:130px}
+.kpi-l{font-size:.72rem;color:oklch(63% 0.024 82);text-transform:uppercase;letter-spacing:.05em}
 .kpi-v{font-size:1.4rem;font-weight:700;margin-top:3px}
-.card{background:#161b22;border:1px solid #30363d;border-radius:10px;padding:18px;margin-bottom:16px}
-.card h3{font-size:.80rem;color:#8b949e;margin-bottom:10px;text-transform:uppercase;letter-spacing:.04em}
+.card{background:oklch(11% 0.006 95);border:1px solid oklch(28% 0.010 95);border-radius:2px;padding:18px;margin-bottom:16px}
+.card h3{font-size:.80rem;color:oklch(63% 0.024 82);margin-bottom:10px;text-transform:uppercase;letter-spacing:.04em}
 table{width:100%;border-collapse:collapse;font-size:.83rem}
-th{text-align:left;color:#8b949e;padding:5px 8px;border-bottom:1px solid #30363d;font-weight:500}
-td{padding:5px 8px;border-bottom:1px solid #21262d;vertical-align:top}
+th{text-align:left;color:oklch(63% 0.024 82);padding:5px 8px;border-bottom:1px solid oklch(28% 0.010 95);font-weight:500}
+td{padding:5px 8px;border-bottom:1px solid oklch(15% 0.008 95);vertical-align:top}
 tr:last-child td{border-bottom:none}
-.teams{font-size:1.05rem;color:#e6edf3}
-.conf-badge{font-size:.72rem;font-weight:700;padding:3px 9px;border-radius:12px}
-.market-pill{font-size:.88rem;font-weight:700;color:#e6edf3}
-.edge-badge{font-size:.72rem;padding:2px 8px;border-radius:10px;font-weight:600}
-.edge-strong{background:#0d2818;color:#3fb950;border:1px solid #166534}
-.edge-moderate{background:#1c1a00;color:#d29922;border:1px solid #7d6608}
-.edge-weak{background:#1c0a0a;color:#f85149;border:1px solid #7f1d1d}
-.edge-insuf{background:#161b22;color:#6e7681;border:1px solid #30363d}
-.stat-line{font-size:.80rem;color:#8b949e;margin-bottom:3px;line-height:1.5}
-.stat-key{color:#6e7681}
-.kelly-line{margin-top:5px;padding-top:5px;border-top:1px solid #21262d}
-.legend{background:#0d1117;border:1px solid #21262d;border-radius:8px;padding:12px 16px;margin-bottom:20px;font-size:.78rem;color:#8b949e;line-height:1.7}
+.teams{font-size:1.05rem;color:oklch(84% 0.035 82)}
+.conf-badge{font-size:.72rem;font-weight:700;padding:3px 9px;border-radius:2px}
+.market-pill{font-size:.88rem;font-weight:700;color:oklch(84% 0.035 82)}
+.edge-badge{font-size:.72rem;padding:2px 8px;border-radius:2px;font-weight:600}
+.edge-strong{background:oklch(11% 0.006 95);color:oklch(70% 0.12 188);border:1px solid oklch(70% 0.12 188 / 0.45)}
+.edge-moderate{background:oklch(11% 0.006 95);color:oklch(84% 0.19 80.46);border:1px solid oklch(84% 0.19 80.46 / 0.45)}
+.edge-weak{background:oklch(11% 0.006 95);color:oklch(58% 0.15 35);border:1px solid oklch(58% 0.15 35 / 0.45)}
+.edge-insuf{background:oklch(11% 0.006 95);color:oklch(63% 0.024 82);border:1px solid oklch(28% 0.010 95)}
+.stat-line{font-size:.80rem;color:oklch(63% 0.024 82);margin-bottom:3px;line-height:1.5}
+.stat-key{color:oklch(55% 0.014 82)}
+.kelly-line{margin-top:5px;padding-top:5px;border-top:1px solid oklch(15% 0.008 95)}
+.legend{background:oklch(11% 0.006 95);border:1px solid oklch(28% 0.010 95);border-radius:2px;padding:12px 16px;margin-bottom:20px;font-size:.78rem;color:oklch(63% 0.024 82);line-height:1.7}
 @media(max-width:650px){.kpi-bar{gap:8px}}
 </style>
 </head>
 <body>
 <h1>🎯 Onde Apostar Hoje e Amanhã</h1>
-<p class="sub">Actualizado: 01/06/2026 15:49 UTC · picks do Matemática Da Bola qualificados pelo backtest</p>
+<p class="sub">Actualizado: 01/06/2026 16:29 UTC · picks do Matemática Da Bola qualificados pelo backtest</p>
 
 <div class="kpi-bar">
-<div class='kpi'><div class='kpi-l'>Jogos c/ Picks</div><div class='kpi-v' style='color:#58a6ff'>2</div></div>
-<div class='kpi'><div class='kpi-l'>Picks Fortes ✅</div><div class='kpi-v' style='color:#3fb950'>1</div></div>
-<div class='kpi'><div class='kpi-l'>Picks Moderadas ⚠️</div><div class='kpi-v' style='color:#d29922'>2</div></div>
-<div class='kpi'><div class='kpi-l'>Picks Rastreadas</div><div class='kpi-v' style='color:#8b949e'>86</div></div>
-<div class='kpi'><div class='kpi-l'>Acerto Próprio</div><div class='kpi-v' style='color:#3fb950'>64.4%</div></div>
-<div class='kpi'><div class='kpi-l'>ROI Próprio</div><div class='kpi-v' style='color:#3fb950'>+20.15u</div></div>
+<div class='kpi'><div class='kpi-l'>Jogos c/ Picks</div><div class='kpi-v' style='color:oklch(84% 0.19 80.46)'>2</div></div>
+<div class='kpi'><div class='kpi-l'>Picks Fortes ✅</div><div class='kpi-v' style='color:oklch(70% 0.12 188)'>1</div></div>
+<div class='kpi'><div class='kpi-l'>Picks Moderadas ⚠️</div><div class='kpi-v' style='color:oklch(48% 0.12 80)'>2</div></div>
+<div class='kpi'><div class='kpi-l'>Picks Rastreadas</div><div class='kpi-v' style='color:oklch(63% 0.024 82)'>86</div></div>
+<div class='kpi'><div class='kpi-l'>Acerto Próprio</div><div class='kpi-v' style='color:oklch(70% 0.12 188)'>64.4%</div></div>
+<div class='kpi'><div class='kpi-l'>ROI Próprio</div><div class='kpi-v' style='color:oklch(70% 0.12 188)'>+20.15u</div></div>
 </div>
 
 <div class="legend">
@@ -70,19 +71,19 @@ tr:last-child td{border-bottom:none}
       <th style='padding:5px 10px'>Confiança BAIXA</th>
       <th style='padding:5px 10px'>Global</th>
     </tr>
-    <tr><td style='padding:5px 10px;color:#8b949e;font-size:.78rem'>Over 2.5</td><td style='padding:5px 10px;color:#27ae60'>62.5%<br><span style='color:#6e7681;font-size:.70rem'>(n=16 ⚠) [39%–82%]</span></td><td style='padding:5px 10px;color:#27ae60'>60.3%<br><span style='color:#6e7681;font-size:.70rem'>(n=58) [48%–72%]</span></td><td style='padding:5px 10px;color:#6e7681;font-size:.78rem'>insuf.</td><td style='padding:5px 10px;color:#27ae60'><b>60.8%</b><br><span style='color:#6e7681;font-size:.70rem'>(n=74) [49%–71%]</span></td></tr>
-    <tr><td style='padding:5px 10px;color:#8b949e;font-size:.78rem'>BTTS</td><td style='padding:5px 10px;color:#27ae60'>66.7%<br><span style='color:#6e7681;font-size:.70rem'>(n=15 ⚠) [42%–85%]</span></td><td style='padding:5px 10px;color:#27ae60'>65.5%<br><span style='color:#6e7681;font-size:.70rem'>(n=55) [52%–77%]</span></td><td style='padding:5px 10px;color:#6e7681;font-size:.78rem'>insuf.</td><td style='padding:5px 10px;color:#27ae60'><b>65.7%</b><br><span style='color:#6e7681;font-size:.70rem'>(n=70) [54%–76%]</span></td></tr>
-    <tr><td style='padding:5px 10px;color:#8b949e;font-size:.78rem'>1X2</td><td style='padding:5px 10px;color:#6e7681;font-size:.78rem'>insuf.</td><td style='padding:5px 10px;color:#27ae60'>83.3%<br><span style='color:#6e7681;font-size:.70rem'>(n=12 ⚠) [55%–95%]</span></td><td style='padding:5px 10px;color:#6e7681;font-size:.78rem'>insuf.</td><td style='padding:5px 10px;color:#27ae60'><b>83.3%</b><br><span style='color:#6e7681;font-size:.70rem'>(n=12 ⚠) [55%–95%]</span></td></tr>
+    <tr><td style='padding:5px 10px;color:oklch(63% 0.024 82);font-size:.78rem'>Over 2.5</td><td style='padding:5px 10px;color:oklch(70% 0.12 188)'>62.5%<br><span style='color:oklch(55% 0.014 82);font-size:.70rem'>(n=16 ⚠) [39%–82%]</span></td><td style='padding:5px 10px;color:oklch(70% 0.12 188)'>60.3%<br><span style='color:oklch(55% 0.014 82);font-size:.70rem'>(n=58) [48%–72%]</span></td><td style='padding:5px 10px;color:oklch(55% 0.014 82);font-size:.78rem'>insuf.</td><td style='padding:5px 10px;color:oklch(70% 0.12 188)'><b>60.8%</b><br><span style='color:oklch(55% 0.014 82);font-size:.70rem'>(n=74) [49%–71%]</span></td></tr>
+    <tr><td style='padding:5px 10px;color:oklch(63% 0.024 82);font-size:.78rem'>BTTS</td><td style='padding:5px 10px;color:oklch(70% 0.12 188)'>66.7%<br><span style='color:oklch(55% 0.014 82);font-size:.70rem'>(n=15 ⚠) [42%–85%]</span></td><td style='padding:5px 10px;color:oklch(70% 0.12 188)'>65.5%<br><span style='color:oklch(55% 0.014 82);font-size:.70rem'>(n=55) [52%–77%]</span></td><td style='padding:5px 10px;color:oklch(55% 0.014 82);font-size:.78rem'>insuf.</td><td style='padding:5px 10px;color:oklch(70% 0.12 188)'><b>65.7%</b><br><span style='color:oklch(55% 0.014 82);font-size:.70rem'>(n=70) [54%–76%]</span></td></tr>
+    <tr><td style='padding:5px 10px;color:oklch(63% 0.024 82);font-size:.78rem'>1X2</td><td style='padding:5px 10px;color:oklch(55% 0.014 82);font-size:.78rem'>insuf.</td><td style='padding:5px 10px;color:oklch(70% 0.12 188)'>83.3%<br><span style='color:oklch(55% 0.014 82);font-size:.70rem'>(n=12 ⚠) [55%–95%]</span></td><td style='padding:5px 10px;color:oklch(55% 0.014 82);font-size:.78rem'>insuf.</td><td style='padding:5px 10px;color:oklch(70% 0.12 188)'><b>83.3%</b><br><span style='color:oklch(55% 0.014 82);font-size:.70rem'>(n=12 ⚠) [55%–95%]</span></td></tr>
   </table>
-  <p style='color:#6e7681;font-size:.72rem;margin-top:8px'>
+  <p style='color:oklch(55% 0.014 82);font-size:.72rem;margin-top:8px'>
     ⚠ n&lt;20 = amostra insuficiente · IC = intervalo de confiança Wilson 95% ·
     Break-even: O2.5&nbsp;52.6%, BTTS&nbsp;54.1%, 1X2&nbsp;45.5%
   </p>
 </div>
 
-<div class='card'><h3>Performance do Analista — Backtest Próprio · 73 resolvidas · 13 pendentes</h3><div style='display:flex;gap:24px;flex-wrap:wrap;margin-bottom:14px;font-size:.90rem'><div>Taxa de Acerto: <b style='color:#3fb950'>64.4%</b> <span style='color:#6e7681'>(47W / 26L)</span></div><div>ROI: <b style='color:#3fb950'>+20.15u</b> <span style='color:#6e7681'>(+27.6%/pick)</span></div></div><div style='display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-bottom:18px'><div><div style='font-size:.70rem;color:#6e7681;text-transform:uppercase;letter-spacing:.04em;margin-bottom:6px'>Por Sinal de Edge</div><table style='width:100%;border-collapse:collapse;font-size:.82rem'><thead><tr><th style='text-align:left;color:#6e7681;padding:4px 8px;border-bottom:1px solid #21262d;font-weight:500'>Sinal</th><th style='text-align:left;color:#6e7681;padding:4px 8px;border-bottom:1px solid #21262d;font-weight:500'>n</th><th style='text-align:left;color:#6e7681;padding:4px 8px;border-bottom:1px solid #21262d;font-weight:500'>Acerto</th><th style='text-align:left;color:#6e7681;padding:4px 8px;border-bottom:1px solid #21262d;font-weight:500'>ROI</th></tr></thead><tbody><tr><td style='padding:4px 8px;border-bottom:1px solid #21262d'>✅ Forte</td><td style='padding:4px 8px;border-bottom:1px solid #21262d;color:#8b949e'>19</td><td style='padding:4px 8px;border-bottom:1px solid #21262d;color:#27ae60;font-weight:600'>84.2%</td><td style='padding:4px 8px;border-bottom:1px solid #21262d;color:#27ae60'>+16.20u</td></tr><tr><td style='padding:4px 8px;border-bottom:1px solid #21262d'>⚠️ Moderado</td><td style='padding:4px 8px;border-bottom:1px solid #21262d;color:#8b949e'>54</td><td style='padding:4px 8px;border-bottom:1px solid #21262d;color:#27ae60;font-weight:600'>57.4%</td><td style='padding:4px 8px;border-bottom:1px solid #21262d;color:#27ae60'>+3.95u</td></tr></tbody></table></div><div><div style='font-size:.70rem;color:#6e7681;text-transform:uppercase;letter-spacing:.04em;margin-bottom:6px'>Por Mercado</div><table style='width:100%;border-collapse:collapse;font-size:.82rem'><thead><tr><th style='text-align:left;color:#6e7681;padding:4px 8px;border-bottom:1px solid #21262d;font-weight:500'>Mercado</th><th style='text-align:left;color:#6e7681;padding:4px 8px;border-bottom:1px solid #21262d;font-weight:500'>n</th><th style='text-align:left;color:#6e7681;padding:4px 8px;border-bottom:1px solid #21262d;font-weight:500'>Acerto</th><th style='text-align:left;color:#6e7681;padding:4px 8px;border-bottom:1px solid #21262d;font-weight:500'>ROI</th></tr></thead><tbody><tr><td style='padding:4px 8px;border-bottom:1px solid #21262d'>Over 2.5</td><td style='padding:4px 8px;border-bottom:1px solid #21262d;color:#8b949e'>24</td><td style='padding:4px 8px;border-bottom:1px solid #21262d;color:#27ae60;font-weight:600'>50.0%</td><td style='padding:4px 8px;border-bottom:1px solid #21262d;color:#e74c3c'>-1.20u</td></tr><tr><td style='padding:4px 8px;border-bottom:1px solid #21262d'>BTTS</td><td style='padding:4px 8px;border-bottom:1px solid #21262d;color:#8b949e'>30</td><td style='padding:4px 8px;border-bottom:1px solid #21262d;color:#27ae60;font-weight:600'>63.3%</td><td style='padding:4px 8px;border-bottom:1px solid #21262d;color:#27ae60'>+5.15u</td></tr><tr><td style='padding:4px 8px;border-bottom:1px solid #21262d'>1X2</td><td style='padding:4px 8px;border-bottom:1px solid #21262d;color:#8b949e'>19</td><td style='padding:4px 8px;border-bottom:1px solid #21262d;color:#27ae60;font-weight:600'>84.2%</td><td style='padding:4px 8px;border-bottom:1px solid #21262d;color:#27ae60'>+16.20u</td></tr></tbody></table></div></div>
+<div class='card'><h3>Performance do Analista — Backtest Próprio · 73 resolvidas · 13 pendentes</h3><div style='display:flex;gap:24px;flex-wrap:wrap;margin-bottom:14px;font-size:.90rem'><div>Taxa de Acerto: <b style='color:oklch(70% 0.12 188)'>64.4%</b> <span style='color:oklch(55% 0.014 82)'>(47W / 26L)</span></div><div>ROI: <b style='color:oklch(70% 0.12 188)'>+20.15u</b> <span style='color:oklch(55% 0.014 82)'>(+27.6%/pick)</span></div></div><div style='display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-bottom:18px'><div><div style='font-size:.70rem;color:oklch(55% 0.014 82);text-transform:uppercase;letter-spacing:.04em;margin-bottom:6px'>Por Sinal de Edge</div><table style='width:100%;border-collapse:collapse;font-size:.82rem'><thead><tr><th style='text-align:left;color:oklch(55% 0.014 82);padding:4px 8px;border-bottom:1px solid oklch(15% 0.008 95);font-weight:500'>Sinal</th><th style='text-align:left;color:oklch(55% 0.014 82);padding:4px 8px;border-bottom:1px solid oklch(15% 0.008 95);font-weight:500'>n</th><th style='text-align:left;color:oklch(55% 0.014 82);padding:4px 8px;border-bottom:1px solid oklch(15% 0.008 95);font-weight:500'>Acerto</th><th style='text-align:left;color:oklch(55% 0.014 82);padding:4px 8px;border-bottom:1px solid oklch(15% 0.008 95);font-weight:500'>ROI</th></tr></thead><tbody><tr><td style='padding:4px 8px;border-bottom:1px solid oklch(15% 0.008 95)'>✅ Forte</td><td style='padding:4px 8px;border-bottom:1px solid oklch(15% 0.008 95);color:oklch(63% 0.024 82)'>19</td><td style='padding:4px 8px;border-bottom:1px solid oklch(15% 0.008 95);color:oklch(70% 0.12 188);font-weight:600'>84.2%</td><td style='padding:4px 8px;border-bottom:1px solid oklch(15% 0.008 95);color:oklch(70% 0.12 188)'>+16.20u</td></tr><tr><td style='padding:4px 8px;border-bottom:1px solid oklch(15% 0.008 95)'>⚠️ Moderado</td><td style='padding:4px 8px;border-bottom:1px solid oklch(15% 0.008 95);color:oklch(63% 0.024 82)'>54</td><td style='padding:4px 8px;border-bottom:1px solid oklch(15% 0.008 95);color:oklch(70% 0.12 188);font-weight:600'>57.4%</td><td style='padding:4px 8px;border-bottom:1px solid oklch(15% 0.008 95);color:oklch(70% 0.12 188)'>+3.95u</td></tr></tbody></table></div><div><div style='font-size:.70rem;color:oklch(55% 0.014 82);text-transform:uppercase;letter-spacing:.04em;margin-bottom:6px'>Por Mercado</div><table style='width:100%;border-collapse:collapse;font-size:.82rem'><thead><tr><th style='text-align:left;color:oklch(55% 0.014 82);padding:4px 8px;border-bottom:1px solid oklch(15% 0.008 95);font-weight:500'>Mercado</th><th style='text-align:left;color:oklch(55% 0.014 82);padding:4px 8px;border-bottom:1px solid oklch(15% 0.008 95);font-weight:500'>n</th><th style='text-align:left;color:oklch(55% 0.014 82);padding:4px 8px;border-bottom:1px solid oklch(15% 0.008 95);font-weight:500'>Acerto</th><th style='text-align:left;color:oklch(55% 0.014 82);padding:4px 8px;border-bottom:1px solid oklch(15% 0.008 95);font-weight:500'>ROI</th></tr></thead><tbody><tr><td style='padding:4px 8px;border-bottom:1px solid oklch(15% 0.008 95)'>Over 2.5</td><td style='padding:4px 8px;border-bottom:1px solid oklch(15% 0.008 95);color:oklch(63% 0.024 82)'>24</td><td style='padding:4px 8px;border-bottom:1px solid oklch(15% 0.008 95);color:oklch(70% 0.12 188);font-weight:600'>50.0%</td><td style='padding:4px 8px;border-bottom:1px solid oklch(15% 0.008 95);color:oklch(58% 0.15 35)'>-1.20u</td></tr><tr><td style='padding:4px 8px;border-bottom:1px solid oklch(15% 0.008 95)'>BTTS</td><td style='padding:4px 8px;border-bottom:1px solid oklch(15% 0.008 95);color:oklch(63% 0.024 82)'>30</td><td style='padding:4px 8px;border-bottom:1px solid oklch(15% 0.008 95);color:oklch(70% 0.12 188);font-weight:600'>63.3%</td><td style='padding:4px 8px;border-bottom:1px solid oklch(15% 0.008 95);color:oklch(70% 0.12 188)'>+5.15u</td></tr><tr><td style='padding:4px 8px;border-bottom:1px solid oklch(15% 0.008 95)'>1X2</td><td style='padding:4px 8px;border-bottom:1px solid oklch(15% 0.008 95);color:oklch(63% 0.024 82)'>19</td><td style='padding:4px 8px;border-bottom:1px solid oklch(15% 0.008 95);color:oklch(70% 0.12 188);font-weight:600'>84.2%</td><td style='padding:4px 8px;border-bottom:1px solid oklch(15% 0.008 95);color:oklch(70% 0.12 188)'>+16.20u</td></tr></tbody></table></div></div>
 <div style='margin-bottom:18px'>
-  <div style='font-size:.70rem;color:#6e7681;text-transform:uppercase;letter-spacing:.04em;margin-bottom:8px'>ROI Acumulado (73 picks resolvidas)</div>
+  <div style='font-size:.70rem;color:oklch(55% 0.014 82);text-transform:uppercase;letter-spacing:.04em;margin-bottom:8px'>ROI Acumulado (73 picks resolvidas)</div>
   <canvas id='trackerChart' height='80'></canvas>
 </div>
 <script>
@@ -97,8 +98,8 @@ tr:last-child td{border-bottom:none}
         {
           label: 'ROI Acumulado (u)',
           data: [0.9, 2.1, 3.3, 4.2, 3.2, 4.4, 5.3, 6.15, 7.35, 6.35, 5.35, 6.55, 7.75, 8.95, 10.15, 11.35, 12.55, 11.55, 10.55, 9.55, 10.4, 11.3, 12.15, 13.05, 13.9, 14.75, 15.65, 14.65, 15.55, 16.4, 17.25, 16.25, 17.1, 17.95, 18.85, 19.7, 18.7, 19.6, 20.45, 21.65, 20.65, 21.5, 20.5, 19.5, 20.7, 21.9, 20.9, 19.9, 21.1, 20.1, 19.1, 20.3, 19.3, 20.15, 19.15, 20.05, 21.25, 22.15, 23.0, 22.0, 21.0, 20.0, 20.85, 19.85, 20.7, 21.55, 22.4, 21.4, 22.3, 21.3, 20.3, 21.15, 20.15],
-          borderColor: '#3fb950',
-          backgroundColor: 'rgba(63,185,80,0.07)',
+          borderColor: '#40b89a',
+          backgroundColor: 'rgba(64,184,154,0.07)',
           fill: true,
           tension: 0.15,
           pointRadius: 0,
@@ -108,7 +109,7 @@ tr:last-child td{border-bottom:none}
         {
           label: '',
           data: [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-          borderColor: '#30363d',
+          borderColor: '#2a2a28',
           borderDash: [4, 4],
           pointRadius: 0,
           fill: false,
@@ -128,81 +129,81 @@ tr:last-child td{border-bottom:none}
         }
       },
       scales: {
-        x: { ticks: { color: '#8b949e', maxTicksLimit: 12 }, grid: { color: '#21262d' } },
-        y: { ticks: { color: '#8b949e' }, grid: { color: '#21262d' } }
+        x: { ticks: { color: '#989490', maxTicksLimit: 12 }, grid: { color: '#232322' } },
+        y: { ticks: { color: '#989490' }, grid: { color: '#232322' } }
       }
     }
   });
 })();
-</script><div style='font-size:.70rem;color:#6e7681;text-transform:uppercase;letter-spacing:.04em;margin-bottom:6px'>Picks Recentes</div><div style='overflow-x:auto'><table style='width:100%;border-collapse:collapse;font-size:.82rem'><thead><tr><th style='text-align:left;color:#6e7681;padding:4px 8px;border-bottom:1px solid #21262d;font-weight:500'>Data</th><th style='text-align:left;color:#6e7681;padding:4px 8px;border-bottom:1px solid #21262d;font-weight:500'>Jogo</th><th style='text-align:left;color:#6e7681;padding:4px 8px;border-bottom:1px solid #21262d;font-weight:500'>Mercado</th><th style='text-align:left;color:#6e7681;padding:4px 8px;border-bottom:1px solid #21262d;font-weight:500'>Edge</th><th style='text-align:left;color:#6e7681;padding:4px 8px;border-bottom:1px solid #21262d;font-weight:500;text-align:center'>Res.</th><th style='text-align:left;color:#6e7681;padding:4px 8px;border-bottom:1px solid #21262d;font-weight:500;text-align:right'>P&L</th></tr></thead><tbody><tr><td style='color:#8b949e'>2026-05-31</td><td>Remo vs São Paulo</td><td style='color:#8b949e'>BTTS</td><td style='font-size:.75rem'>⚠️ Moderado</td><td style='text-align:center;font-size:1.05rem'>❌</td><td style='color:#f85149;text-align:right'>-1.00u</td></tr><tr><td style='color:#8b949e'>2026-05-31</td><td>Brazil vs Panama</td><td style='color:#8b949e'>BTTS</td><td style='font-size:.75rem'>⚠️ Moderado</td><td style='text-align:center;font-size:1.05rem'>✅</td><td style='color:#3fb950;text-align:right'>+0.85u</td></tr><tr><td style='color:#8b949e'>2026-05-31</td><td>Leganés vs Mirandés</td><td style='color:#8b949e'>BTTS</td><td style='font-size:.75rem'>⚠️ Moderado</td><td style='text-align:center;font-size:1.05rem'>❌</td><td style='color:#f85149;text-align:right'>-1.00u</td></tr><tr><td style='color:#8b949e'>2026-05-31</td><td>Vasco da Gama vs Atlético Mineiro</td><td style='color:#8b949e'>BTTS</td><td style='font-size:.75rem'>⚠️ Moderado</td><td style='text-align:center;font-size:1.05rem'>❌</td><td style='color:#f85149;text-align:right'>-1.00u</td></tr><tr><td style='color:#8b949e'>2026-05-31</td><td>CD Castellón vs Eibar</td><td style='color:#8b949e'>Over 2.5</td><td style='font-size:.75rem'>⚠️ Moderado</td><td style='text-align:center;font-size:1.05rem'>✅</td><td style='color:#3fb950;text-align:right'>+0.90u</td></tr><tr><td style='color:#8b949e'>2026-05-31</td><td>Levante UD vs FC Badalona</td><td style='color:#8b949e'>Over 2.5</td><td style='font-size:.75rem'>⚠️ Moderado</td><td style='text-align:center;font-size:1.05rem'>❌</td><td style='color:#f85149;text-align:right'>-1.00u</td></tr><tr><td style='color:#8b949e'>2026-05-31</td><td>Västerås SK vs IFK Göteborg</td><td style='color:#8b949e'>BTTS</td><td style='font-size:.75rem'>⚠️ Moderado</td><td style='text-align:center;font-size:1.05rem'>✅</td><td style='color:#3fb950;text-align:right'>+0.85u</td></tr><tr><td style='color:#8b949e'>2026-05-31</td><td>BK Häcken vs Hammarby IF</td><td style='color:#8b949e'>BTTS</td><td style='font-size:.75rem'>⚠️ Moderado</td><td style='text-align:center;font-size:1.05rem'>✅</td><td style='color:#3fb950;text-align:right'>+0.85u</td></tr><tr><td style='color:#8b949e'>2026-05-31</td><td>Wuhan Three Towns vs Yunnan Yukun</td><td style='color:#8b949e'>BTTS</td><td style='font-size:.75rem'>⚠️ Moderado</td><td style='text-align:center;font-size:1.05rem'>✅</td><td style='color:#3fb950;text-align:right'>+0.85u</td></tr><tr><td style='color:#8b949e'>2026-05-31</td><td>Tianjin Jinmen Tiger vs Dalian Yingbo FC</td><td style='color:#8b949e'>BTTS</td><td style='font-size:.75rem'>⚠️ Moderado</td><td style='text-align:center;font-size:1.05rem'>❌</td><td style='color:#f85149;text-align:right'>-1.00u</td></tr><tr><td style='color:#8b949e'>2026-05-31</td><td>Shimizu S-Pulse vs Yokohama F. Marinos</td><td style='color:#8b949e'>BTTS</td><td style='font-size:.75rem'>⚠️ Moderado</td><td style='text-align:center;font-size:1.05rem'>✅</td><td style='color:#3fb950;text-align:right'>+0.85u</td></tr><tr><td style='color:#8b949e'>2026-05-31</td><td>Shimizu S-Pulse vs Yokohama F. Marinos</td><td style='color:#8b949e'>Over 2.5</td><td style='font-size:.75rem'>⚠️ Moderado</td><td style='text-align:center;font-size:1.05rem'>❌</td><td style='color:#f85149;text-align:right'>-1.00u</td></tr><tr><td style='color:#8b949e'>2026-05-31</td><td>KAA Gent vs KRC Genk</td><td style='color:#8b949e'>Over 2.5</td><td style='font-size:.75rem'>⚠️ Moderado</td><td style='text-align:center;font-size:1.05rem'>❌</td><td style='color:#f85149;text-align:right'>-1.00u</td></tr><tr><td style='color:#8b949e'>2026-05-31</td><td>Fagiano Okayama vs Urawa Red Diamonds</td><td style='color:#8b949e'>Over 2.5</td><td style='font-size:.75rem'>⚠️ Moderado</td><td style='text-align:center;font-size:1.05rem'>❌</td><td style='color:#f85149;text-align:right'>-1.00u</td></tr><tr><td style='color:#8b949e'>2026-05-31</td><td>Degerfors IF vs IF Brommapojkarna</td><td style='color:#8b949e'>BTTS</td><td style='font-size:.75rem'>⚠️ Moderado</td><td style='text-align:center;font-size:1.05rem'>✅</td><td style='color:#3fb950;text-align:right'>+0.85u</td></tr></tbody></table></div><p style='font-size:.70rem;color:#6e7681;margin-top:6px'>ROI calculado com odds-base por mercado (O2.5 1.90x · BTTS 1.85x · 1X2 2.20x) · 1u por pick</p></div>
+</script><div style='font-size:.70rem;color:oklch(55% 0.014 82);text-transform:uppercase;letter-spacing:.04em;margin-bottom:6px'>Picks Recentes</div><div style='overflow-x:auto'><table style='width:100%;border-collapse:collapse;font-size:.82rem'><thead><tr><th style='text-align:left;color:oklch(55% 0.014 82);padding:4px 8px;border-bottom:1px solid oklch(15% 0.008 95);font-weight:500'>Data</th><th style='text-align:left;color:oklch(55% 0.014 82);padding:4px 8px;border-bottom:1px solid oklch(15% 0.008 95);font-weight:500'>Jogo</th><th style='text-align:left;color:oklch(55% 0.014 82);padding:4px 8px;border-bottom:1px solid oklch(15% 0.008 95);font-weight:500'>Mercado</th><th style='text-align:left;color:oklch(55% 0.014 82);padding:4px 8px;border-bottom:1px solid oklch(15% 0.008 95);font-weight:500'>Edge</th><th style='text-align:left;color:oklch(55% 0.014 82);padding:4px 8px;border-bottom:1px solid oklch(15% 0.008 95);font-weight:500;text-align:center'>Res.</th><th style='text-align:left;color:oklch(55% 0.014 82);padding:4px 8px;border-bottom:1px solid oklch(15% 0.008 95);font-weight:500;text-align:right'>P&L</th></tr></thead><tbody><tr><td style='color:oklch(63% 0.024 82)'>2026-05-31</td><td>Remo vs São Paulo</td><td style='color:oklch(63% 0.024 82)'>BTTS</td><td style='font-size:.75rem'>⚠️ Moderado</td><td style='text-align:center;font-size:1.05rem'>❌</td><td style='color:oklch(58% 0.15 35);text-align:right'>-1.00u</td></tr><tr><td style='color:oklch(63% 0.024 82)'>2026-05-31</td><td>Brazil vs Panama</td><td style='color:oklch(63% 0.024 82)'>BTTS</td><td style='font-size:.75rem'>⚠️ Moderado</td><td style='text-align:center;font-size:1.05rem'>✅</td><td style='color:oklch(70% 0.12 188);text-align:right'>+0.85u</td></tr><tr><td style='color:oklch(63% 0.024 82)'>2026-05-31</td><td>Leganés vs Mirandés</td><td style='color:oklch(63% 0.024 82)'>BTTS</td><td style='font-size:.75rem'>⚠️ Moderado</td><td style='text-align:center;font-size:1.05rem'>❌</td><td style='color:oklch(58% 0.15 35);text-align:right'>-1.00u</td></tr><tr><td style='color:oklch(63% 0.024 82)'>2026-05-31</td><td>Vasco da Gama vs Atlético Mineiro</td><td style='color:oklch(63% 0.024 82)'>BTTS</td><td style='font-size:.75rem'>⚠️ Moderado</td><td style='text-align:center;font-size:1.05rem'>❌</td><td style='color:oklch(58% 0.15 35);text-align:right'>-1.00u</td></tr><tr><td style='color:oklch(63% 0.024 82)'>2026-05-31</td><td>CD Castellón vs Eibar</td><td style='color:oklch(63% 0.024 82)'>Over 2.5</td><td style='font-size:.75rem'>⚠️ Moderado</td><td style='text-align:center;font-size:1.05rem'>✅</td><td style='color:oklch(70% 0.12 188);text-align:right'>+0.90u</td></tr><tr><td style='color:oklch(63% 0.024 82)'>2026-05-31</td><td>Levante UD vs FC Badalona</td><td style='color:oklch(63% 0.024 82)'>Over 2.5</td><td style='font-size:.75rem'>⚠️ Moderado</td><td style='text-align:center;font-size:1.05rem'>❌</td><td style='color:oklch(58% 0.15 35);text-align:right'>-1.00u</td></tr><tr><td style='color:oklch(63% 0.024 82)'>2026-05-31</td><td>Västerås SK vs IFK Göteborg</td><td style='color:oklch(63% 0.024 82)'>BTTS</td><td style='font-size:.75rem'>⚠️ Moderado</td><td style='text-align:center;font-size:1.05rem'>✅</td><td style='color:oklch(70% 0.12 188);text-align:right'>+0.85u</td></tr><tr><td style='color:oklch(63% 0.024 82)'>2026-05-31</td><td>BK Häcken vs Hammarby IF</td><td style='color:oklch(63% 0.024 82)'>BTTS</td><td style='font-size:.75rem'>⚠️ Moderado</td><td style='text-align:center;font-size:1.05rem'>✅</td><td style='color:oklch(70% 0.12 188);text-align:right'>+0.85u</td></tr><tr><td style='color:oklch(63% 0.024 82)'>2026-05-31</td><td>Wuhan Three Towns vs Yunnan Yukun</td><td style='color:oklch(63% 0.024 82)'>BTTS</td><td style='font-size:.75rem'>⚠️ Moderado</td><td style='text-align:center;font-size:1.05rem'>✅</td><td style='color:oklch(70% 0.12 188);text-align:right'>+0.85u</td></tr><tr><td style='color:oklch(63% 0.024 82)'>2026-05-31</td><td>Tianjin Jinmen Tiger vs Dalian Yingbo FC</td><td style='color:oklch(63% 0.024 82)'>BTTS</td><td style='font-size:.75rem'>⚠️ Moderado</td><td style='text-align:center;font-size:1.05rem'>❌</td><td style='color:oklch(58% 0.15 35);text-align:right'>-1.00u</td></tr><tr><td style='color:oklch(63% 0.024 82)'>2026-05-31</td><td>Shimizu S-Pulse vs Yokohama F. Marinos</td><td style='color:oklch(63% 0.024 82)'>BTTS</td><td style='font-size:.75rem'>⚠️ Moderado</td><td style='text-align:center;font-size:1.05rem'>✅</td><td style='color:oklch(70% 0.12 188);text-align:right'>+0.85u</td></tr><tr><td style='color:oklch(63% 0.024 82)'>2026-05-31</td><td>Shimizu S-Pulse vs Yokohama F. Marinos</td><td style='color:oklch(63% 0.024 82)'>Over 2.5</td><td style='font-size:.75rem'>⚠️ Moderado</td><td style='text-align:center;font-size:1.05rem'>❌</td><td style='color:oklch(58% 0.15 35);text-align:right'>-1.00u</td></tr><tr><td style='color:oklch(63% 0.024 82)'>2026-05-31</td><td>KAA Gent vs KRC Genk</td><td style='color:oklch(63% 0.024 82)'>Over 2.5</td><td style='font-size:.75rem'>⚠️ Moderado</td><td style='text-align:center;font-size:1.05rem'>❌</td><td style='color:oklch(58% 0.15 35);text-align:right'>-1.00u</td></tr><tr><td style='color:oklch(63% 0.024 82)'>2026-05-31</td><td>Fagiano Okayama vs Urawa Red Diamonds</td><td style='color:oklch(63% 0.024 82)'>Over 2.5</td><td style='font-size:.75rem'>⚠️ Moderado</td><td style='text-align:center;font-size:1.05rem'>❌</td><td style='color:oklch(58% 0.15 35);text-align:right'>-1.00u</td></tr><tr><td style='color:oklch(63% 0.024 82)'>2026-05-31</td><td>Degerfors IF vs IF Brommapojkarna</td><td style='color:oklch(63% 0.024 82)'>BTTS</td><td style='font-size:.75rem'>⚠️ Moderado</td><td style='text-align:center;font-size:1.05rem'>✅</td><td style='color:oklch(70% 0.12 188);text-align:right'>+0.85u</td></tr></tbody></table></div><p style='font-size:.70rem;color:oklch(55% 0.014 82);margin-top:6px'>ROI calculado com odds-base por mercado (O2.5 1.90x · BTTS 1.85x · 1X2 2.20x) · 1u por pick</p></div>
 
-<h2 style='color:#e6edf3;font-size:1rem;margin:24px 0 12px'>Hoje <span style='color:#6e7681;font-size:.82rem'>· 01/06</span> — 0 jogos com picks</h2>
-<div style='background:#161b22;border:1px solid #30363d;border-radius:8px;padding:24px;text-align:center;color:#8b949e;margin-bottom:16px'>
+<h2 style='color:oklch(84% 0.035 82);font-size:1rem;margin:24px 0 12px'>Hoje <span style='color:oklch(55% 0.014 82);font-size:.82rem'>· 01/06</span> — 0 jogos com picks</h2>
+<div style='background:oklch(11% 0.006 95);border:1px solid oklch(28% 0.010 95);border-radius:2px;padding:24px;text-align:center;color:oklch(63% 0.024 82);margin-bottom:16px'>
   <div style='font-size:1.5rem;margin-bottom:8px'>📭</div>
-  <div style='font-size:.9rem;color:#e6edf3'>Sem jogos com picks disponíveis para hoje</div>
+  <div style='font-size:.9rem;color:oklch(84% 0.035 82)'>Sem jogos com picks disponíveis para hoje</div>
   <div style='font-size:.78rem;margin-top:6px'>O pipeline do football-dashboard ainda não processou estes jogos.</div>
-</div><h2 style='color:#e6edf3;font-size:1rem;margin:24px 0 12px'>Amanhã <span style='color:#6e7681;font-size:.82rem'>· 02/06</span> — 2 jogos com picks · <span style="color:#3fb950">1 fortes</span></h2>
-<div class='card' style='border-color:#7d6608'>
+</div><h2 style='color:oklch(84% 0.035 82);font-size:1rem;margin:24px 0 12px'>Amanhã <span style='color:oklch(55% 0.014 82);font-size:.82rem'>· 02/06</span> — 2 jogos com picks · <span style="color:oklch(70% 0.12 188)">1 fortes</span></h2>
+<div class='card' style='border-color:oklch(84% 0.19 80.46 / 0.4)'>
   <div style='display:flex;justify-content:space-between;align-items:flex-start;flex-wrap:wrap;gap:6px;margin-bottom:10px'>
     <div>
-      <div style='font-size:.78rem;color:#8b949e;margin-bottom:3px'>International Friendly Games</div>
-      <div class='teams'><b>Croatia</b> <span style='color:#6e7681'>vs</span> <b>Belgium</b></div>
+      <div style='font-size:.78rem;color:oklch(63% 0.024 82);margin-bottom:3px'>International Friendly Games</div>
+      <div class='teams'><b>Croatia</b> <span style='color:oklch(55% 0.014 82)'>vs</span> <b>Belgium</b></div>
     </div>
     <div style='display:flex;align-items:center;gap:8px;flex-wrap:wrap'>
-      <span class='conf-badge' style='background:#1c1a00;color:#d29922;border:1px solid #7d6608'>MÉDIA</span>
-      <span style='color:#8b949e;font-size:.8rem'>🕐 16:00</span>
+      <span class='conf-badge' style='background:oklch(11% 0.006 95);color:oklch(84% 0.19 80.46);border:1px solid oklch(84% 0.19 80.46 / 0.45)'>MÉDIA</span>
+      <span style='color:oklch(63% 0.024 82);font-size:.8rem'>🕐 16:00</span>
     </div>
   </div>
   
-<div class='pick-block' style='background:#1c1a00;border:1px solid #7d6608;border-radius:8px;padding:12px 14px;margin-bottom:8px'>
+<div class='pick-block' style='background:oklch(11% 0.006 95);border:1px solid oklch(84% 0.19 80.46 / 0.45);border-radius:2px;padding:12px 14px;margin-bottom:8px'>
   <div style='display:flex;align-items:center;gap:10px;margin-bottom:8px'>
     <span class='market-pill'>Over 2.5</span>
     <span class='edge-badge edge-moderate'>⚠️ Moderado</span>
   </div>
-  <div class='stat-line'><span class='stat-key'>Backtest MÉDIA:</span> <b style='color:#27ae60'>60.3%</b> (n=58) <span style='color:#6e7681'>[48%–72%]</span></div>
+  <div class='stat-line'><span class='stat-key'>Backtest MÉDIA:</span> <b style='color:oklch(70% 0.12 188)'>60.3%</b> (n=58) <span style='color:oklch(55% 0.014 82)'>[48%–72%]</span></div>
   <div class='stat-line'><span class='stat-key'>Backtest global:</span> 60.8% (n=74)</div>
   
-  <div class='stat-line kelly-line'><span class='stat-key'>Kelly ¼:</span> <b style='color:#d29922'>3.0% da banca</b> <span style='color:#6e7681'>(odds base 1.90x)</span></div>
+  <div class='stat-line kelly-line'><span class='stat-key'>Kelly ¼:</span> <b style='color:oklch(84% 0.19 80.46)'>3.0% da banca</b> <span style='color:oklch(55% 0.014 82)'>(odds base 1.90x)</span></div>
 </div>
-<div class='pick-block' style='background:#1c1a00;border:1px solid #7d6608;border-radius:8px;padding:12px 14px;margin-bottom:8px'>
+<div class='pick-block' style='background:oklch(11% 0.006 95);border:1px solid oklch(84% 0.19 80.46 / 0.45);border-radius:2px;padding:12px 14px;margin-bottom:8px'>
   <div style='display:flex;align-items:center;gap:10px;margin-bottom:8px'>
     <span class='market-pill'>BTTS</span>
     <span class='edge-badge edge-moderate'>⚠️ Moderado</span>
   </div>
-  <div class='stat-line'><span class='stat-key'>Backtest MÉDIA:</span> <b style='color:#27ae60'>65.5%</b> (n=55) <span style='color:#6e7681'>[52%–77%]</span></div>
+  <div class='stat-line'><span class='stat-key'>Backtest MÉDIA:</span> <b style='color:oklch(70% 0.12 188)'>65.5%</b> (n=55) <span style='color:oklch(55% 0.014 82)'>[52%–77%]</span></div>
   <div class='stat-line'><span class='stat-key'>Backtest global:</span> 65.7% (n=70)</div>
   
-  <div class='stat-line kelly-line'><span class='stat-key'>Kelly ¼:</span> <b style='color:#d29922'>3.0% da banca</b> <span style='color:#6e7681'>(odds base 1.85x)</span></div>
+  <div class='stat-line kelly-line'><span class='stat-key'>Kelly ¼:</span> <b style='color:oklch(84% 0.19 80.46)'>3.0% da banca</b> <span style='color:oklch(55% 0.014 82)'>(odds base 1.85x)</span></div>
 </div>
-  <div style='margin-top:8px;font-size:.78rem;color:#6e7681'><span style='color:#3fb950'>O2.5 <b>70%</b></span> · <span style='color:#3fb950'>BTTS <b>68%</b></span> · <span style='color:#8b949e'>xG <b>4.5</b></span></div>
+  <div style='margin-top:8px;font-size:.78rem;color:oklch(55% 0.014 82)'><span style='color:oklch(70% 0.12 188)'>O2.5 <b>70%</b></span> · <span style='color:oklch(70% 0.12 188)'>BTTS <b>68%</b></span> · <span style='color:oklch(63% 0.024 82)'>xG <b>4.5</b></span></div>
 </div>
 
-<div class='card' style='border-color:#166534'>
+<div class='card' style='border-color:oklch(70% 0.12 188 / 0.5)'>
   <div style='display:flex;justify-content:space-between;align-items:flex-start;flex-wrap:wrap;gap:6px;margin-bottom:10px'>
     <div>
-      <div style='font-size:.78rem;color:#8b949e;margin-bottom:3px'>International Friendly Games</div>
-      <div class='teams'><b>Georgia</b> <span style='color:#6e7681'>vs</span> <b>Romania</b></div>
+      <div style='font-size:.78rem;color:oklch(63% 0.024 82);margin-bottom:3px'>International Friendly Games</div>
+      <div class='teams'><b>Georgia</b> <span style='color:oklch(55% 0.014 82)'>vs</span> <b>Romania</b></div>
     </div>
     <div style='display:flex;align-items:center;gap:8px;flex-wrap:wrap'>
-      <span class='conf-badge' style='background:#1c1a00;color:#d29922;border:1px solid #7d6608'>MÉDIA</span>
-      <span style='color:#8b949e;font-size:.8rem'>🕐 17:00</span>
+      <span class='conf-badge' style='background:oklch(11% 0.006 95);color:oklch(84% 0.19 80.46);border:1px solid oklch(84% 0.19 80.46 / 0.45)'>MÉDIA</span>
+      <span style='color:oklch(63% 0.024 82);font-size:.8rem'>🕐 17:00</span>
     </div>
   </div>
   
-<div class='pick-block' style='background:#0d2818;border:1px solid #166534;border-radius:8px;padding:12px 14px;margin-bottom:8px'>
+<div class='pick-block' style='background:oklch(11% 0.006 95);border:1px solid oklch(70% 0.12 188 / 0.5);border-radius:2px;padding:12px 14px;margin-bottom:8px'>
   <div style='display:flex;align-items:center;gap:10px;margin-bottom:8px'>
-    <span class='market-pill'>1X2 <span style='font-size:.78rem;color:#8b949e'>(Vitória Casa)</span></span>
+    <span class='market-pill'>1X2 <span style='font-size:.78rem;color:oklch(63% 0.024 82)'>(Vitória Casa)</span></span>
     <span class='edge-badge edge-strong'>✅ Forte</span>
   </div>
-  <div class='stat-line'><span class='stat-key'>Backtest MÉDIA:</span> <b style='color:#27ae60'>83.3%</b> (n=12) <span style='color:#6e7681'>[55%–95%]</span> <span style='color:#d29922;font-size:.72rem'>⚠ n&lt;20</span></div>
+  <div class='stat-line'><span class='stat-key'>Backtest MÉDIA:</span> <b style='color:oklch(70% 0.12 188)'>83.3%</b> (n=12) <span style='color:oklch(55% 0.014 82)'>[55%–95%]</span> <span style='color:oklch(48% 0.12 80);font-size:.72rem'>⚠ n&lt;20</span></div>
   <div class='stat-line'><span class='stat-key'>Backtest global:</span> 83.3% (n=12)</div>
   
-  <div class='stat-line kelly-line'><span class='stat-key'>Kelly ¼:</span> <b style='color:#3fb950'>3.0% da banca</b> <span style='color:#6e7681'>(odds base 2.20x)</span></div>
+  <div class='stat-line kelly-line'><span class='stat-key'>Kelly ¼:</span> <b style='color:oklch(70% 0.12 188)'>3.0% da banca</b> <span style='color:oklch(55% 0.014 82)'>(odds base 2.20x)</span></div>
 </div>
-  <div style='margin-top:8px;font-size:.78rem;color:#6e7681'><span style='color:#8b949e'>O2.5 <b>54%</b></span> · <span style='color:#8b949e'>BTTS <b>36%</b></span> · <span style='color:#8b949e'>xG <b>3.6</b></span><div style='color:#8b949e;font-size:.78rem;margin-top:4px'>1X2: Casa 58% · Empate 23% · Fora 18%</div></div>
+  <div style='margin-top:8px;font-size:.78rem;color:oklch(55% 0.014 82)'><span style='color:oklch(63% 0.024 82)'>O2.5 <b>54%</b></span> · <span style='color:oklch(63% 0.024 82)'>BTTS <b>36%</b></span> · <span style='color:oklch(63% 0.024 82)'>xG <b>3.6</b></span><div style='color:oklch(63% 0.024 82);font-size:.78rem;margin-top:4px'>1X2: Casa 58% · Empate 23% · Fora 18%</div></div>
 </div>
 
-<p style='text-align:center;color:#6e7681;font-size:.75rem;margin-top:20px'>
+<p style='text-align:center;color:oklch(55% 0.014 82);font-size:.75rem;margin-top:20px'>
   Analista · Baseado no backtest do Matemática Da Bola · nunovinhas-creator/Analista
 </p>
 </body>
