@@ -188,7 +188,7 @@ def _tracker_section(perf):
     mkt_rows_html = "".join(mkt_rows)
 
     tables_html = (
-        f"<div style='display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-bottom:18px'>"
+        f"<div class='tracker-grid' style='display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-bottom:18px'>"
         f"<div>"
         f"<div style='font-size:.70rem;color:oklch(55% 0.014 82);text-transform:uppercase;letter-spacing:.04em;margin-bottom:6px'>Por Sinal de Edge</div>"
         f"<table style='{TS}'>"
@@ -534,7 +534,7 @@ tr:last-child td{{border-bottom:none}}
 .stat-key{{color:oklch(55% 0.014 82)}}
 .kelly-line{{margin-top:5px;padding-top:5px;border-top:1px solid oklch(15% 0.008 95)}}
 .legend{{background:oklch(11% 0.006 95);border:1px solid oklch(28% 0.010 95);border-radius:2px;padding:12px 16px;margin-bottom:20px;font-size:.78rem;color:oklch(63% 0.024 82);line-height:1.7}}
-@media(max-width:650px){{.kpi-bar{{gap:8px}}}}
+@media(max-width:650px){{.kpi-bar{{gap:8px}}.tracker-grid{{grid-template-columns:1fr!important}}}}
 </style>
 </head>
 <body>
