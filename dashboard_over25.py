@@ -5,13 +5,15 @@ from datetime import datetime, timezone
 
 DOCS_DIR = "docs"
 
+_MOV_COLORS = {"SHORTENING": "oklch(70% 0.12 188)", "DRIFTING": "oklch(78% 0.18 80)"}
+
 
 def _pct(v, d=1):
     return f"{v * 100:.{d}f}%"
 
 
 def _color(v, threshold=0.0):
-    return "#3fb950" if v >= threshold else "#f85149"
+    return "oklch(70% 0.12 188)" if v >= threshold else "oklch(58% 0.15 35)"
 
 
 def _breakdown_rows(data: dict):
@@ -22,13 +24,13 @@ def _breakdown_rows(data: dict):
             continue
         reliable  = s.get("reliable", True)
         row_style = "opacity:.55;font-style:italic" if not reliable else ""
-        warn_tag  = ("<span style='color:#d29922;font-size:.68rem;margin-left:3px' "
+        warn_tag  = ("<span style='color:oklch(48% 0.12 80);font-size:.68rem;margin-left:3px' "
                      "title='Menos de 20 picks resolvidos'>⚠ n&lt;20</span>") if not reliable else ""
-        wrc  = _color(s["win_rate"], 0.52) if reliable else "#6e7681"
-        roic = _color(s.get("roi", 0), 0)  if reliable else "#6e7681"
+        wrc  = _color(s["win_rate"], 0.52) if reliable else "oklch(55% 0.014 82)"
+        roic = _color(s.get("roi", 0), 0)  if reliable else "oklch(55% 0.014 82)"
         ci_str = ""
         if s.get("ci_low") is not None:
-            ci_str = (f" <span style='font-size:.70rem;color:#6e7681'>"
+            ci_str = (f" <span style='font-size:.70rem;color:oklch(55% 0.014 82)'>"
                       f"[{s['ci_low']:.0%}–{s['ci_high']:.0%}]</span>")
         rows += (
             f"<tr style='{row_style}'>"
@@ -60,11 +62,11 @@ def _picks_table(picks):
     for p in picks:
         result = p.get("result_over25") or ""
         if result == "WIN":
-            badge = "<span style='color:#3fb950;font-weight:700'>WIN</span>"
+            badge = "<span style='color:oklch(70% 0.12 188);font-weight:700'>WIN</span>"
         elif result == "LOSS":
-            badge = "<span style='color:#f85149;font-weight:700'>LOSS</span>"
+            badge = "<span style='color:oklch(58% 0.15 35);font-weight:700'>LOSS</span>"
         else:
-            badge = "<span style='color:#d29922'>Pendente</span>"
+            badge = "<span style='color:oklch(48% 0.12 80)'>Pendente</span>"
 
         casa  = p.get("casa")  or "—"
         fora  = p.get("fora")  or "—"
@@ -73,20 +75,17 @@ def _picks_table(picks):
         odds  = p.get("odds_over")     or "—"
         xg    = p.get("xg_total")      or "—"
         mov   = p.get("movimento")     or "—"
-        mov_c = "#3fb950" if mov == "SHORTENING" else ("#f0883e" if mov == "DRIFTING" else "#8b949e")
+        mov_c = _MOV_COLORS.get(mov, "oklch(63% 0.024 82)")
         sharp = p.get("sharp_label")   or ""
-        prob  = p.get("prob_over25")   or ""
-        prob_str = f"{float(prob):.0f}%" if prob else "—"
 
         rows += (
             f"<tr>"
-            f"<td><b>{casa}</b> vs {fora}<br><span style='color:#8b949e;font-size:.78rem'>{liga}</span></td>"
+            f"<td><b>{casa}</b> vs {fora}<br><span style='color:oklch(63% 0.024 82);font-size:.78rem'>{liga}</span></td>"
             f"<td style='color:{mov_c}'>{mov}</td>"
             f"<td>{score}</td>"
-            f"<td>{prob_str}</td>"
             f"<td>{odds}</td>"
             f"<td>{xg}</td>"
-            f"<td style='color:#8b949e;font-size:.8rem'>{sharp}</td>"
+            f"<td style='color:oklch(63% 0.024 82);font-size:.8rem'>{sharp}</td>"
             f"<td>{badge}</td>"
             f"</tr>"
         )
@@ -103,7 +102,7 @@ def gen_dashboard_over25(stats):
     if not stats or total == 0:
         html = f"""<!DOCTYPE html><html lang="pt"><head><meta charset="UTF-8">
 <title>Over 2.5 Scanner</title>
-<style>body{{background:#0d1117;color:#8b949e;font-family:sans-serif;display:flex;align-items:center;justify-content:center;height:100vh;margin:0;}}</style>
+<style>@import url('https://fonts.googleapis.com/css2?family=Albert+Sans:wght@300;400;500;600&family=Alumni+Sans+Pinstripe&display=swap');body{{background:oklch(7% 0.006 95);color:oklch(63% 0.024 82);font-family:"Albert Sans","Avenir Next","Helvetica Neue",Arial,system-ui,sans-serif;display:flex;align-items:center;justify-content:center;height:100vh;margin:0;}}</style>
 </head><body><p>Sem picks carregados — {now}</p></body></html>"""
         with open(f"{DOCS_DIR}/over25_dashboard.html", "w", encoding="utf-8") as f:
             f.write(html)
@@ -124,8 +123,8 @@ def gen_dashboard_over25(stats):
     clv_alert = ""
     if clv is not None and clv < -1:
         clv_alert = (
-            "<div style='background:#1c2128;border:1px solid #f85149;border-radius:8px;"
-            "padding:12px 16px;margin-bottom:16px;color:#f85149;font-size:.85rem;'>"
+            "<div style='background:oklch(11% 0.006 95);border:1px solid oklch(58% 0.15 35);border-radius:2px;"
+            "padding:12px 16px;margin-bottom:16px;color:oklch(58% 0.15 35);font-size:.85rem;'>"
             f"<b>⚠️ CLV Médio: {clv:+.2f}%</b> — as odds fecham acima da entrada. "
             "Sistema a apostar depois do mercado mover. "
             "Apostar mais cedo após publicação do pick para capturar edge real."
@@ -133,8 +132,8 @@ def gen_dashboard_over25(stats):
         )
     elif clv is not None and clv >= 2:
         clv_alert = (
-            "<div style='background:#1c2128;border:1px solid #3fb950;border-radius:8px;"
-            "padding:12px 16px;margin-bottom:16px;color:#3fb950;font-size:.85rem;'>"
+            "<div style='background:oklch(11% 0.006 95);border:1px solid oklch(70% 0.12 188);border-radius:2px;"
+            "padding:12px 16px;margin-bottom:16px;color:oklch(70% 0.12 188);font-size:.85rem;'>"
             f"<b>✅ CLV Médio: {clv:+.2f}%</b> — apostas a ser feitas antes do mercado mover. Edge real confirmado."
             "</div>"
         )
@@ -150,7 +149,7 @@ def gen_dashboard_over25(stats):
         last30          = list(daily.keys())[-30:]
         d_labels_json   = json.dumps(last30)
         d_roi_json      = json.dumps([round(daily[d]["roi"], 2) for d in last30])
-        d_colors_json   = json.dumps(["rgba(63,185,80,.75)" if daily[d]["roi"] >= 0 else "rgba(248,81,73,.75)" for d in last30])
+        d_colors_json   = json.dumps(["rgba(64,184,154,.75)" if daily[d]["roi"] >= 0 else "rgba(192,69,57,.75)" for d in last30])
 
         charts_html = """
 <div class="charts">
@@ -164,31 +163,31 @@ new Chart(document.getElementById('cRoi').getContext('2d'), {{
   data:{{
     labels:{cum_labels_json},
     datasets:[
-      {{data:{cum_roi_json},label:'ROI',borderColor:'#58a6ff',backgroundColor:'rgba(88,166,255,.08)',
+      {{data:{cum_roi_json},label:'ROI',borderColor:'#c9a030',backgroundColor:'rgba(201,160,48,.08)',
        borderWidth:2,pointRadius:0,fill:true,tension:.3,yAxisID:'y'}},
-      {{data:{rolling_wr_json},label:'WR Móvel',borderColor:'#f0883e',borderWidth:1.5,
+      {{data:{rolling_wr_json},label:'WR Móvel',borderColor:'#40b89a',borderWidth:1.5,
        pointRadius:0,tension:.3,fill:false,yAxisID:'y1',borderDash:[4,2]}}
     ]
   }},
   options:{{
-    plugins:{{legend:{{display:true,labels:{{color:'#8b949e',boxWidth:12,font:{{size:11}}}}}}}},
+    plugins:{{legend:{{display:true,labels:{{color:'#989490',boxWidth:12,font:{{size:11}}}}}}}},
     scales:{{
       x:{{display:false}},
-      y:{{grid:{{color:'#21262d'}},ticks:{{color:'#8b949e'}}}},
+      y:{{grid:{{color:'#232322'}},ticks:{{color:'#989490'}}}},
       y1:{{position:'right',min:0,max:1,grid:{{display:false}},
-           ticks:{{color:'#f0883e',callback:function(v){{return (v*100).toFixed(0)+'%'}}}}}}
+           ticks:{{color:'#40b89a',callback:function(v){{return (v*100).toFixed(0)+'%'}}}}}}
     }}
   }}
 }});
 new Chart(document.getElementById('cDaily').getContext('2d'), {{
   type:'bar',
-  data:{{labels:{d_labels_json},datasets:[{{data:{d_roi_json},backgroundColor:{d_colors_json},borderRadius:3}}]}},
-  options:{{plugins:{{legend:{{display:false}}}},scales:{{x:{{display:false}},y:{{grid:{{color:'#21262d'}},ticks:{{color:'#8b949e'}}}}}}}}
+  data:{{labels:{d_labels_json},datasets:[{{data:{d_roi_json},backgroundColor:{d_colors_json},borderRadius:0}}]}},
+  options:{{plugins:{{legend:{{display:false}}}},scales:{{x:{{display:false}},y:{{grid:{{color:'#232322'}},ticks:{{color:'#989490'}}}}}}}}
 }});"""
 
     # KPI bar
-    dd_color = "#3fb950" if max_dd == 0 else ("#d29922" if max_dd < 5 else "#f85149")
-    ci_str   = (f"<span style='font-size:.72rem;color:#6e7681;display:block;margin-top:1px'>"
+    dd_color = "oklch(70% 0.12 188)" if max_dd == 0 else ("oklch(48% 0.12 80)" if max_dd < 5 else "oklch(58% 0.15 35)")
+    ci_str   = (f"<span style='font-size:.72rem;color:oklch(55% 0.014 82);display:block;margin-top:1px'>"
                 f"[{ci_low:.0%}–{ci_high:.0%}]</span>") if resolved > 0 else ""
 
     if resolved > 0:
@@ -204,7 +203,7 @@ new Chart(document.getElementById('cDaily').getContext('2d'), {{
   <div class="kpi"><div class="kpi-l">Yield</div>
     <div class="kpi-v" style="color:{_color(roi_pct)}">{roi_pct:+.1f}%</div></div>
   <div class="kpi"><div class="kpi-l">Streak</div>
-    <div class="kpi-v" style="color:{_color(1 if streak_type=='WIN' else -1)}">{'+' if streak_type=='WIN' else '-'}{streak}</div></div>
+    <div class="kpi-v" style="color:{_color(1 if streak_type=='WIN' else (-1 if streak_type=='LOSS' else 0))}">{'+' if streak_type=='WIN' else ('-' if streak_type=='LOSS' else '')}{streak if streak_type else '—'}</div></div>
   <div class="kpi"><div class="kpi-l">Max Drawdown</div>
     <div class="kpi-v" style="color:{dd_color}">-{max_dd:.2f}u</div></div>
   {clv_kpi}
@@ -215,9 +214,9 @@ new Chart(document.getElementById('cDaily').getContext('2d'), {{
     else:
         pending = stats.get("pending", total)
         kpi_bar = f"""
-  <div class="kpi"><div class="kpi-l">Total Picks</div><div class="kpi-v" style="color:#58a6ff">{total}</div></div>
-  <div class="kpi"><div class="kpi-l">Pendentes</div><div class="kpi-v" style="color:#d29922">{pending}</div></div>
-  <div class="kpi"><div class="kpi-l">Resolvidos</div><div class="kpi-v" style="color:#8b949e">0</div></div>"""
+  <div class="kpi"><div class="kpi-l">Total Picks</div><div class="kpi-v" style="color:oklch(84% 0.19 80.46)">{total}</div></div>
+  <div class="kpi"><div class="kpi-l">Pendentes</div><div class="kpi-v" style="color:oklch(48% 0.12 80)">{pending}</div></div>
+  <div class="kpi"><div class="kpi-l">Resolvidos</div><div class="kpi-v" style="color:oklch(63% 0.024 82)">0</div></div>"""
 
     # Breakdowns
     breakdowns_html = ""
@@ -228,10 +227,10 @@ new Chart(document.getElementById('cDaily').getContext('2d'), {{
                 continue
             reliable = s.get("reliable", True)
             row_s    = "opacity:.55;font-style:italic" if not reliable else ""
-            warn     = "<span style='color:#d29922;font-size:.68rem'> ⚠</span>" if not reliable else ""
-            lg_wrc   = _color(s["win_rate"], 0.52) if reliable else "#6e7681"
-            lg_roic  = _color(s.get("roi", 0))     if reliable else "#6e7681"
-            ci_s     = (f" <span style='font-size:.70rem;color:#6e7681'>"
+            warn     = "<span style='color:oklch(48% 0.12 80);font-size:.68rem'> ⚠</span>" if not reliable else ""
+            lg_wrc   = _color(s["win_rate"], 0.52) if reliable else "oklch(55% 0.014 82)"
+            lg_roic  = _color(s.get("roi", 0))     if reliable else "oklch(55% 0.014 82)"
+            ci_s     = (f" <span style='font-size:.70rem;color:oklch(55% 0.014 82)'>"
                         f"[{s.get('ci_low',0):.0%}–{s.get('ci_high',1):.0%}]</span>")
             league_rows += (
                 f"<tr style='{row_s}'><td>{lg}{warn}</td><td>{s['count']}</td>"
@@ -255,7 +254,7 @@ new Chart(document.getElementById('cDaily').getContext('2d'), {{
     if picks_1x2.get("resolved", 0) > 0:
         ci_l     = picks_1x2.get("ci_low", 0)
         ci_h     = picks_1x2.get("ci_high", 1)
-        rel_note = "" if picks_1x2.get("reliable") else "<span style='color:#d29922;font-size:.75rem'> ⚠ n&lt;20</span>"
+        rel_note = "" if picks_1x2.get("reliable") else "<span style='color:oklch(48% 0.12 80);font-size:.75rem'> ⚠ n&lt;20</span>"
         p1x2_html = f"""
 <div class="card">
   <h3>Sharp 1X2</h3>
@@ -264,7 +263,7 @@ new Chart(document.getElementById('cDaily').getContext('2d'), {{
     <tr>
       <td>{picks_1x2["resolved"]}{rel_note}</td>
       <td style="color:{_color(picks_1x2['win_rate'], 0.52)}">{_pct(picks_1x2['win_rate'])}
-        <span style='font-size:.72rem;color:#6e7681'>[{ci_l:.0%}–{ci_h:.0%}]</span></td>
+        <span style='font-size:.72rem;color:oklch(55% 0.014 82)'>[{ci_l:.0%}–{ci_h:.0%}]</span></td>
       <td style="color:{_color(picks_1x2['roi'])}">{picks_1x2['roi']:+.2f}u</td>
       <td style="color:{_color(picks_1x2['roi_pct'])}">{picks_1x2['roi_pct']:+.1f}%</td>
     </tr>
@@ -274,7 +273,7 @@ new Chart(document.getElementById('cDaily').getContext('2d'), {{
     all_picks      = stats.get("all_picks_raw", [])
     picks_rows     = _picks_table(all_picks)
     pending_notice = "" if resolved > 0 else """
-<div style="background:#1c2128;border:1px solid #d29922;border-radius:8px;padding:12px 16px;margin-bottom:16px;color:#d29922;font-size:.85rem;">
+<div style="background:oklch(11% 0.006 95);border:1px solid oklch(48% 0.12 80);border-radius:2px;padding:12px 16px;margin-bottom:16px;color:oklch(48% 0.12 80);font-size:.85rem;">
   ⏳ Sem resultados ainda — picks abaixo estão pendentes de resultado.
 </div>"""
 
@@ -289,20 +288,21 @@ new Chart(document.getElementById('cDaily').getContext('2d'), {{
 <meta http-equiv="refresh" content="900">
 {script_tag}
 <style>
+@import url('https://fonts.googleapis.com/css2?family=Albert+Sans:wght@300;400;500;600&family=Alumni+Sans+Pinstripe&display=swap');
 *{{box-sizing:border-box;margin:0;padding:0}}
-body{{background:#0d1117;color:#e6edf3;font-family:'Segoe UI',sans-serif;padding:20px;font-size:14px}}
-h1{{font-size:1.5rem;color:#58a6ff;margin-bottom:4px}}
-.sub{{color:#8b949e;font-size:.82rem;margin-bottom:20px}}
+body{{background:oklch(7% 0.006 95);color:oklch(84% 0.035 82);font-family:"Albert Sans","Avenir Next","Helvetica Neue",Arial,system-ui,sans-serif;padding:20px;font-size:14px}}
+h1{{font-size:1.5rem;color:oklch(84% 0.19 80.46);margin-bottom:4px;font-family:"Alumni Sans Pinstripe","Albert Sans",sans-serif;font-weight:300;letter-spacing:.02em;}}
+.sub{{color:oklch(63% 0.024 82);font-size:.82rem;margin-bottom:20px;font-family:"SFMono-Regular","Roboto Mono",Consolas,monospace;letter-spacing:.04em;text-transform:uppercase;font-size:.72rem;}}
 .kpi-bar{{display:flex;gap:10px;flex-wrap:wrap;margin-bottom:22px}}
-.kpi{{background:#161b22;border:1px solid #30363d;border-radius:8px;padding:12px 18px;min-width:120px}}
-.kpi-l{{font-size:.72rem;color:#8b949e;text-transform:uppercase;letter-spacing:.05em}}
+.kpi{{background:oklch(11% 0.006 95);border:1px solid oklch(28% 0.010 95);border-radius:2px;padding:12px 18px;min-width:120px}}
+.kpi-l{{font-size:.72rem;color:oklch(63% 0.024 82);text-transform:uppercase;letter-spacing:.09em}}
 .kpi-v{{font-size:1.5rem;font-weight:700;margin-top:3px}}
 .charts{{display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-bottom:20px}}
-.card{{background:#161b22;border:1px solid #30363d;border-radius:8px;padding:16px;margin-bottom:14px}}
-.card h3{{font-size:.82rem;color:#8b949e;margin-bottom:10px;text-transform:uppercase;letter-spacing:.04em}}
+.card{{background:oklch(11% 0.006 95);border:1px solid oklch(28% 0.010 95);border-radius:2px;padding:16px;margin-bottom:14px}}
+.card h3{{font-size:.82rem;color:oklch(63% 0.024 82);margin-bottom:10px;text-transform:uppercase;letter-spacing:.09em}}
 table{{width:100%;border-collapse:collapse;font-size:.83rem}}
-th{{text-align:left;color:#8b949e;padding:5px 8px;border-bottom:1px solid #30363d;font-weight:500}}
-td{{padding:5px 8px;border-bottom:1px solid #21262d;vertical-align:top}}
+th{{text-align:left;color:oklch(63% 0.024 82);padding:5px 8px;border-bottom:1px solid oklch(28% 0.010 95);font-weight:500}}
+td{{padding:5px 8px;border-bottom:1px solid oklch(15% 0.008 95);vertical-align:top}}
 tr:last-child td{{border-bottom:none}}
 @media(max-width:650px){{.charts{{grid-template-columns:1fr}}}}
 </style>
@@ -322,8 +322,8 @@ tr:last-child td{{border-bottom:none}}
 <div class="card">
   <h3>Picks Recentes</h3>
   <table>
-    <tr><th>Jogo</th><th>Mov.</th><th>Score</th><th>Prob</th><th>Odds</th><th>xG</th><th>Sharp</th><th>Result.</th></tr>
-    {picks_rows if picks_rows else "<tr><td colspan='8' style='color:#8b949e;text-align:center'>Sem picks</td></tr>"}
+    <tr><th>Jogo</th><th>Mov.</th><th>Score</th><th>Odds</th><th>xG</th><th>Sharp</th><th>Result.</th></tr>
+    {picks_rows if picks_rows else "<tr><td colspan='8' style='color:oklch(63% 0.024 82);text-align:center'>Sem picks</td></tr>"}
   </table>
 </div>
 

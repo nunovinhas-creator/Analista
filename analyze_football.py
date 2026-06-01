@@ -1,46 +1,6 @@
 # analyze_football.py — Métricas e análise do football-dashboard (Matemática Da Bola)
 from datetime import datetime, timezone, timedelta
-
-
-def _parse_date(s):
-    if not s:
-        return None
-    try:
-        dt = datetime.fromisoformat(str(s).replace("Z", "+00:00"))
-        if dt.tzinfo is None:
-            dt = dt.replace(tzinfo=timezone.utc)
-        return dt
-    except Exception:
-        return None
-
-
-def _wilson_ci(wins, n, z=1.96):
-    """Intervalo de confiança Wilson 95%."""
-    if n == 0:
-        return 0.0, 1.0
-    p = wins / n
-    denom = 1 + z**2 / n
-    centre = (p + z**2 / (2 * n)) / denom
-    margin = (z * (p * (1 - p) / n + z**2 / (4 * n**2)) ** 0.5) / denom
-    return round(max(0.0, centre - margin), 3), round(min(1.0, centre + margin), 3)
-
-
-def _market_segment(records, pick_key, hit_key):
-    picks = [r for r in records if r.get(pick_key) and r.get(hit_key) is not None]
-    wins  = [r for r in picks  if r.get(hit_key)]
-    n, k  = len(picks), len(wins)
-    roi   = k - (n - k)  # odds 2.0 implícitas (flat)
-    ci_low, ci_high = _wilson_ci(k, n)
-    return {
-        "picks":    n,
-        "wins":     k,
-        "win_rate": k / n if n else 0.0,
-        "ci_low":   ci_low,
-        "ci_high":  ci_high,
-        "reliable": n >= 20,
-        "roi":      roi,
-        "roi_pct":  (roi / n * 100) if n else 0.0,
-    }
+from utils import wilson_ci, parse_date, segment_stats
 
 
 def _brier_score(records, prob_key, hit_key):
@@ -101,6 +61,18 @@ def _est_odds(t):
     return round(combined, 2) if combined > 1.01 else None
 
 
+def _treble_profit(t):
+    if t.get("hit") is True:
+        profit = t.get("profit_1u")
+        if profit is None:
+            odds = _est_odds(t)
+            profit = (odds - 1) if odds else 0.0
+    else:
+        profit = t.get("profit_1u")
+        profit = profit if profit is not None else -1.0
+    return profit
+
+
 def analyze_football(history, trebles):
     records = history.get("records", [])
 
@@ -124,7 +96,7 @@ def analyze_football(history, trebles):
     # hit_xg não existe no schema actual — o resultado de xG está em hit_goal_range
     markets = [("1x2", "pick_1x2", "hit_1x2"), ("o25", "pick_o25", "hit_o25"),
                ("btts", "pick_btts", "hit_btts"), ("xg", "pick_xg", "hit_goal_range")]
-    per_market = {m: _market_segment(records, pk, hk) for m, pk, hk in markets}
+    per_market = {m: segment_stats(records, pk, hk) for m, pk, hk in markets}
 
     # Brier Scores — campos reais: po (prob over, 0-100), pb (prob btts, 0-100)
     brier_scores = {
@@ -145,7 +117,7 @@ def analyze_football(history, trebles):
         combos = [("pick_1x2", "hit_1x2"), ("pick_o25", "hit_o25"), ("pick_btts", "hit_btts")]
         all_picks = sum(1 for r in subset for pk, hk in combos if r.get(pk) and r.get(hk) is not None)
         all_wins  = sum(1 for r in subset for pk, hk in combos if r.get(pk) and r.get(hk))
-        ci_low, ci_high = _wilson_ci(all_wins, all_picks)
+        ci_low, ci_high = wilson_ci(all_wins, all_picks)
         by_confidence[conf] = {
             "records":  len(subset),
             "picks":    all_picks,
@@ -164,8 +136,8 @@ def analyze_football(history, trebles):
 
     by_league = {}
     for lg, recs in sorted(leagues.items(), key=lambda x: len(x[1]), reverse=True)[:12]:
-        o25 = _market_segment(recs, "pick_o25", "hit_o25")
-        bts = _market_segment(recs, "pick_btts", "hit_btts")
+        o25 = segment_stats(recs, "pick_o25", "hit_o25")
+        bts = segment_stats(recs, "pick_btts", "hit_btts")
         by_league[lg] = {
             "records":       len(recs),
             "o25_picks":     o25["picks"],  "o25_wr":   o25["win_rate"],
@@ -179,20 +151,16 @@ def analyze_football(history, trebles):
     t_resolved = [t for t in t_hist if t.get("hit") is not None]
     t_won      = [t for t in t_resolved if t.get("hit") is True]
     treble_roi = 0.0
+    cum_treble, cum_treble_series = 0.0, []
     for t in t_resolved:
-        if t.get("hit") is True:
-            profit = t.get("profit_1u")
-            if profit is None:
-                odds = _est_odds(t)
-                profit = (odds - 1) if odds else 0.0
-            treble_roi += profit
-        else:
-            profit = t.get("profit_1u")
-            treble_roi += profit if profit is not None else -1.0
+        profit = _treble_profit(t)
+        treble_roi += profit
+        cum_treble += profit
+        cum_treble_series.append(round(cum_treble, 2))
 
     est_odds_list = [o for o in (_est_odds(t) for t in t_resolved) if o]
     n_tr, k_tr = len(t_resolved), len(t_won)
-    ci_tr_l, ci_tr_h = _wilson_ci(k_tr, n_tr)
+    ci_tr_l, ci_tr_h = wilson_ci(k_tr, n_tr)
     treble_stats = {
         "total":          n_tr,
         "won":            k_tr,
@@ -211,9 +179,9 @@ def analyze_football(history, trebles):
     cutoff = datetime.now(timezone.utc) - timedelta(days=7)
     dates_processed = history.get("dates_processed", [])
     _min_aware = datetime.min.replace(tzinfo=timezone.utc)
-    recent_dates = {d[:10] for d in dates_processed if (_parse_date(d) or _min_aware) >= cutoff}
+    recent_dates = {d[:10] for d in dates_processed if (parse_date(d) or _min_aware) >= cutoff}
     recent_records = [r for r in records if r.get("date", "")[:10] in recent_dates]
-    recent_pm = {m: _market_segment(recent_records, pk, hk) for m, pk, hk in markets}
+    recent_pm = {m: segment_stats(recent_records, pk, hk) for m, pk, hk in markets}
 
     # Stats diárias
     daily: dict = {}
@@ -243,19 +211,6 @@ def analyze_football(history, trebles):
         if r.get("pick_btts") and r.get("hit_btts") is not None:
             cum_btts += 1 if r.get("hit_btts") else -1
             cum_btts_series.append(round(cum_btts, 2))
-
-    cum_treble, cum_treble_series = 0.0, []
-    for t in t_resolved:
-        if t.get("hit") is True:
-            profit = t.get("profit_1u")
-            if profit is None:
-                odds = _est_odds(t)
-                profit = (odds - 1) if odds else 0.0
-            cum_treble += profit
-        else:
-            profit = t.get("profit_1u")
-            cum_treble += profit if profit is not None else -1.0
-        cum_treble_series.append(round(cum_treble, 2))
 
     return {
         "total":            len(records),

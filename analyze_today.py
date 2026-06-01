@@ -2,9 +2,8 @@
 import re
 from datetime import datetime, timedelta, timezone
 from picks_tracker import record_and_resolve, tracker_stats
+from utils import wilson_ci, kelly_quarter, MARKET_BASE_ODDS, MARKET_LABELS, segment_stats, safe_float
 
-MARKET_BASE_ODDS = {"o25": 1.90, "btts": 1.85, "1x2": 2.20}
-MARKET_LABELS    = {"o25": "Over 2.5", "btts": "BTTS", "1x2": "1X2"}
 CONF_RANK        = {"ALTA": 0, "MÉDIA": 1, "BAIXA": 2}
 MIN_N_EDGE       = 10   # mínimo para sinalizar edge (strong/moderate)
 MIN_N_SHOW       = 5    # mínimo para mostrar qualquer stat
@@ -27,36 +26,21 @@ PICK_THRESH_BTTS = 60.0
 PICK_THRESH_1X2  = 55.0
 
 
-def _wilson_ci(wins, n, z=1.96):
-    if n == 0:
-        return 0.0, 1.0
-    p = wins / n
-    denom = 1 + z**2 / n
-    centre = (p + z**2 / (2 * n)) / denom
-    margin = (z * (p * (1 - p) / n + z**2 / (4 * n**2)) ** 0.5) / denom
-    return round(max(0.0, centre - margin), 3), round(min(1.0, centre + margin), 3)
+def _extract_1x2_dir(tip_text):
+    if "Vitória Casa" in tip_text:
+        return "H"
+    if "Vitória Fora" in tip_text:
+        return "A"
+    return None
 
 
-def _seg(records, pick_key, hit_key):
-    bets = [r for r in records if r.get(pick_key) and r.get(hit_key) is not None]
-    wins = sum(1 for r in bets if r.get(hit_key))
-    n, k = len(bets), wins
-    ci_l, ci_h = _wilson_ci(k, n)
-    return {
-        "n": n, "wins": k,
-        "win_rate": k / n if n else 0.0,
-        "ci_low":   ci_l,
-        "ci_high":  ci_h,
-        "reliable": n >= 20,
-        "roi":      k - (n - k),
-    }
+def _best_1x2(prob_hw, prob_aw):
+    best_dir = "H" if prob_hw >= prob_aw else "A"
+    return best_dir, (prob_hw if best_dir == "H" else prob_aw)
 
 
-def _kelly_q(wr, odds, cap=3.0):
-    if odds <= 1.01 or wr <= 0:
-        return 0.0
-    b = odds - 1
-    return round(min(max((wr * b - (1 - wr)) / b / 4, 0.0) * 100, cap), 1)
+def _f(key, attrs):
+    return safe_float(attrs.get(key, 0))
 
 
 def parse_dashboard_html(html, dates):
@@ -77,16 +61,10 @@ def parse_dashboard_html(html, dates):
         if not home_m or not away_m:
             continue
 
-        def _f(key):
-            try:
-                return float(attrs.get(key, 0))
-            except (ValueError, TypeError):
-                return 0.0
-
-        prob_o25  = _f("o25")
-        prob_btts = _f("btts")
-        prob_hw   = _f("hw")
-        prob_aw   = _f("aw")
+        prob_o25  = _f("o25", attrs)
+        prob_btts = _f("btts", attrs)
+        prob_hw   = _f("hw", attrs)
+        prob_aw   = _f("aw", attrs)
         conf_card = attrs.get("conf", "BAIXA")
 
         tip_m = re.search(r'class="tip-badge">([^<]+)<', block)
@@ -97,10 +75,8 @@ def parse_dashboard_html(html, dates):
         pick_btts = prob_btts >= PICK_THRESH_BTTS
 
         # 1X2: apenas ALTA/MÉDIA, sem empate, direção do tip ou da probabilidade mais alta
-        pick_dir = ("H" if "Vitória Casa" in tip
-                    else ("A" if "Vitória Fora" in tip else None))
-        best_dir  = "H" if prob_hw >= prob_aw else "A"
-        best_prob = prob_hw if best_dir == "H" else prob_aw
+        pick_dir = _extract_1x2_dir(tip)
+        best_dir, best_prob = _best_1x2(prob_hw, prob_aw)
         pick_1x2  = conf_card in ("ALTA", "MÉDIA") and best_prob >= PICK_THRESH_1X2
         if pick_1x2 and pick_dir is None:
             pick_dir = best_dir  # fallback quando o tip não especifica direcção
@@ -123,9 +99,9 @@ def parse_dashboard_html(html, dates):
             "prob_o25":  prob_o25,
             "prob_btts": prob_btts,
             "prob_hw":   prob_hw,
-            "prob_dr":   _f("dr"),
+            "prob_dr":   _f("dr", attrs),
             "prob_aw":   prob_aw,
-            "xg_total":  _f("xgtotal"),
+            "xg_total":  _f("xgtotal", attrs),
         })
 
     return games
@@ -144,19 +120,19 @@ def analyze_today(history, dashboard_html):
     ]
 
     # --- Backtest: estatísticas do corpus resolvido ---
-    global_stats = {mk: _seg(records, pk, hk) for mk, pk, hk in markets}
+    global_stats = {mk: segment_stats(records, pk, hk) for mk, pk, hk in markets}
 
     conf_stats = {}
     for conf in ("ALTA", "MÉDIA", "BAIXA"):
         subset = [r for r in records if r.get("conf") == conf]
-        conf_stats[conf] = {mk: _seg(subset, pk, hk) for mk, pk, hk in markets}
+        conf_stats[conf] = {mk: segment_stats(subset, pk, hk) for mk, pk, hk in markets}
 
     league_map: dict = {}
     for r in records:
         lg = r.get("league") or "Desconhecida"
         league_map.setdefault(lg, []).append(r)
     league_stats = {
-        lg: {mk: _seg(recs, pk, hk) for mk, pk, hk in markets}
+        lg: {mk: segment_stats(recs, pk, hk) for mk, pk, hk in markets}
         for lg, recs in league_map.items()
     }
 
@@ -199,7 +175,7 @@ def analyze_today(history, dashboard_html):
             ref_ci_l  = ref.get("ci_low", 0)
             ref_ci_h  = ref.get("ci_high", 1)
 
-            kq = _kelly_q(ref_wr, odds)
+            kq = kelly_quarter(ref_wr, odds)
 
             # Sinal de edge
             break_even = 1.0 / odds
