@@ -2,6 +2,7 @@
 import json
 import os
 from datetime import datetime, timedelta, timezone
+from utils import normalize_str as _norm
 
 try:
     import fcntl as _fcntl
@@ -30,10 +31,6 @@ def save_db(db):
     os.makedirs("docs", exist_ok=True)
     with open(DB_PATH, "w", encoding="utf-8") as f:
         json.dump(db, f, ensure_ascii=False, indent=2)
-
-
-def _norm(s):
-    return (s or "").strip().lower()
 
 
 def _match(pick, rec):

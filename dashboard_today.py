@@ -2,7 +2,7 @@
 import json
 import os
 from datetime import datetime, timedelta, timezone
-from utils import DOCS_DIR, pct, color, escape, MARKET_BASE_ODDS
+from utils import DOCS_DIR, pct, color, escape, MARKET_BASE_ODDS, MARKET_LABELS
 
 
 def _edge_badge(edge):
@@ -16,12 +16,7 @@ def _edge_badge(edge):
 
 
 def _conf_badge(conf):
-    styles = {
-        "ALTA":  "background:#0d2818;color:#3fb950;border:1px solid #166534",
-        "MÉDIA": "background:#1c1a00;color:#d29922;border:1px solid #7d6608",
-        "BAIXA": "background:#1c0a0a;color:#f85149;border:1px solid #7f1d1d",
-    }
-    s = styles.get(conf, "background:#161b22;color:#8b949e;border:1px solid #30363d")
+    s = _CONF_STYLES.get(conf, _CONF_STYLE_DEFAULT)
     return f"<span class='conf-badge' style='{s}'>{conf}</span>"
 
 
@@ -119,7 +114,13 @@ _EDGE_LABELS = {
     "weak":        "❌ Fraco",
     "insufficient": "📊 Insuf.",
 }
-_MKT_LABELS = {"o25": "Over 2.5", "btts": "BTTS", "1x2": "1X2"}
+
+_CONF_STYLES = {
+    "ALTA":  "background:#0d2818;color:#3fb950;border:1px solid #166534",
+    "MÉDIA": "background:#1c1a00;color:#d29922;border:1px solid #7d6608",
+    "BAIXA": "background:#1c0a0a;color:#f85149;border:1px solid #7f1d1d",
+}
+_CONF_STYLE_DEFAULT = "background:#161b22;color:#8b949e;border:1px solid #30363d"
 
 
 def _tracker_section(perf):
@@ -178,7 +179,7 @@ def _tracker_section(perf):
         rc   = color(seg["roi"], 0)
         mkt_rows.append(
             f"<tr>"
-            f"<td style='{TD}'>{_MKT_LABELS.get(mkt, mkt)}</td>"
+            f"<td style='{TD}'>{MARKET_LABELS.get(mkt, mkt)}</td>"
             f"<td style='{TDN}'>{seg['n']}</td>"
             f"<td style='{TD};color:{color(wr_m, 0.50)};font-weight:600'>{wr_m:.1%}</td>"
             f"<td style='{TD};color:{rc}'>{seg['roi']:+.2f}u</td>"
@@ -282,7 +283,7 @@ def _tracker_section(perf):
             f"<tr>"
             f"<td style='color:#8b949e'>{p.get('date','')}</td>"
             f"<td>{escape(p.get('home',''))} vs {escape(p.get('away',''))}</td>"
-            f"<td style='color:#8b949e'>{_MKT_LABELS.get(p.get('market',''), p.get('market',''))}</td>"
+            f"<td style='color:#8b949e'>{MARKET_LABELS.get(p.get('market',''), p.get('market',''))}</td>"
             f"<td style='font-size:.75rem'>{edge_s}</td>"
             f"<td style='text-align:center;font-size:1.05rem'>{hit_s}</td>"
             f"<td style='color:{p_color};text-align:right'>{profit:+.2f}u</td>"

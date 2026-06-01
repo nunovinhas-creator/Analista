@@ -5,6 +5,8 @@ from datetime import datetime, timezone
 
 DOCS_DIR = "docs"
 
+_MOV_COLORS = {"SHORTENING": "#3fb950", "DRIFTING": "#f0883e"}
+
 
 def _pct(v, d=1):
     return f"{v * 100:.{d}f}%"
@@ -73,7 +75,7 @@ def _picks_table(picks):
         odds  = p.get("odds_over")     or "—"
         xg    = p.get("xg_total")      or "—"
         mov   = p.get("movimento")     or "—"
-        mov_c = "#3fb950" if mov == "SHORTENING" else ("#f0883e" if mov == "DRIFTING" else "#8b949e")
+        mov_c = _MOV_COLORS.get(mov, "#8b949e")
         sharp = p.get("sharp_label")   or ""
 
         rows += (

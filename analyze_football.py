@@ -1,24 +1,6 @@
 # analyze_football.py — Métricas e análise do football-dashboard (Matemática Da Bola)
 from datetime import datetime, timezone, timedelta
-from utils import wilson_ci, parse_date
-
-
-def _market_segment(records, pick_key, hit_key):
-    picks = [r for r in records if r.get(pick_key) and r.get(hit_key) is not None]
-    wins  = [r for r in picks  if r.get(hit_key)]
-    n, k  = len(picks), len(wins)
-    roi   = k - (n - k)  # odds 2.0 implícitas (flat)
-    ci_low, ci_high = wilson_ci(k, n)
-    return {
-        "picks":    n,
-        "wins":     k,
-        "win_rate": k / n if n else 0.0,
-        "ci_low":   ci_low,
-        "ci_high":  ci_high,
-        "reliable": n >= 20,
-        "roi":      roi,
-        "roi_pct":  (roi / n * 100) if n else 0.0,
-    }
+from utils import wilson_ci, parse_date, segment_stats
 
 
 def _brier_score(records, prob_key, hit_key):
@@ -114,7 +96,7 @@ def analyze_football(history, trebles):
     # hit_xg não existe no schema actual — o resultado de xG está em hit_goal_range
     markets = [("1x2", "pick_1x2", "hit_1x2"), ("o25", "pick_o25", "hit_o25"),
                ("btts", "pick_btts", "hit_btts"), ("xg", "pick_xg", "hit_goal_range")]
-    per_market = {m: _market_segment(records, pk, hk) for m, pk, hk in markets}
+    per_market = {m: segment_stats(records, pk, hk) for m, pk, hk in markets}
 
     # Brier Scores — campos reais: po (prob over, 0-100), pb (prob btts, 0-100)
     brier_scores = {
@@ -154,8 +136,8 @@ def analyze_football(history, trebles):
 
     by_league = {}
     for lg, recs in sorted(leagues.items(), key=lambda x: len(x[1]), reverse=True)[:12]:
-        o25 = _market_segment(recs, "pick_o25", "hit_o25")
-        bts = _market_segment(recs, "pick_btts", "hit_btts")
+        o25 = segment_stats(recs, "pick_o25", "hit_o25")
+        bts = segment_stats(recs, "pick_btts", "hit_btts")
         by_league[lg] = {
             "records":       len(recs),
             "o25_picks":     o25["picks"],  "o25_wr":   o25["win_rate"],
@@ -199,7 +181,7 @@ def analyze_football(history, trebles):
     _min_aware = datetime.min.replace(tzinfo=timezone.utc)
     recent_dates = {d[:10] for d in dates_processed if (parse_date(d) or _min_aware) >= cutoff}
     recent_records = [r for r in records if r.get("date", "")[:10] in recent_dates]
-    recent_pm = {m: _market_segment(recent_records, pk, hk) for m, pk, hk in markets}
+    recent_pm = {m: segment_stats(recent_records, pk, hk) for m, pk, hk in markets}
 
     # Stats diárias
     daily: dict = {}

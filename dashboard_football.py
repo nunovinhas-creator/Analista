@@ -5,6 +5,16 @@ from datetime import datetime, timezone
 from utils import DOCS_DIR, pct, color, escape
 
 
+def _brier_interp(bs):
+    if bs < 0.15:
+        return "excelente"
+    if bs < 0.20:
+        return "bom"
+    if bs < 0.25:
+        return "aceitável"
+    return "fraco"
+
+
 def _market_row(name, s):
     if s.get("picks", 0) == 0:
         return ""
@@ -108,7 +118,7 @@ def gen_dashboard_football(stats):
     bs_btts = bs.get("btts")
     brier_note = ""
     if bs_o25 is not None:
-        interp = "excelente" if bs_o25 < 0.15 else ("bom" if bs_o25 < 0.20 else ("aceitável" if bs_o25 < 0.25 else "fraco"))
+        interp = _brier_interp(bs_o25)
         brier_note = (f"<p style='color:#8b949e;font-size:.72rem;margin-top:8px'>"
                       f"Brier Score O2.5: <b>{bs_o25:.4f}</b> ({interp})"
                       + (f" · BTTS: <b>{bs_btts:.4f}</b>" if bs_btts is not None else "")

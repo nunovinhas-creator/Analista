@@ -2,7 +2,7 @@
 import re
 from datetime import datetime, timedelta, timezone
 from picks_tracker import record_and_resolve, tracker_stats
-from utils import wilson_ci, kelly_quarter, MARKET_BASE_ODDS, MARKET_LABELS
+from utils import wilson_ci, kelly_quarter, MARKET_BASE_ODDS, MARKET_LABELS, segment_stats, safe_float
 
 CONF_RANK        = {"ALTA": 0, "MÉDIA": 1, "BAIXA": 2}
 MIN_N_EDGE       = 10   # mínimo para sinalizar edge (strong/moderate)
@@ -26,26 +26,21 @@ PICK_THRESH_BTTS = 60.0
 PICK_THRESH_1X2  = 55.0
 
 
-def _seg(records, pick_key, hit_key):
-    bets = [r for r in records if r.get(pick_key) and r.get(hit_key) is not None]
-    wins = sum(1 for r in bets if r.get(hit_key))
-    n, k = len(bets), wins
-    ci_l, ci_h = wilson_ci(k, n)
-    return {
-        "n": n, "wins": k,
-        "win_rate": k / n if n else 0.0,
-        "ci_low":   ci_l,
-        "ci_high":  ci_h,
-        "reliable": n >= 20,
-        "roi":      k - (n - k),
-    }
+def _extract_1x2_dir(tip_text):
+    if "Vitória Casa" in tip_text:
+        return "H"
+    if "Vitória Fora" in tip_text:
+        return "A"
+    return None
+
+
+def _best_1x2(prob_hw, prob_aw):
+    best_dir = "H" if prob_hw >= prob_aw else "A"
+    return best_dir, (prob_hw if best_dir == "H" else prob_aw)
 
 
 def _f(key, attrs):
-    try:
-        return float(attrs.get(key, 0))
-    except (ValueError, TypeError):
-        return 0.0
+    return safe_float(attrs.get(key, 0))
 
 
 def parse_dashboard_html(html, dates):
@@ -80,10 +75,8 @@ def parse_dashboard_html(html, dates):
         pick_btts = prob_btts >= PICK_THRESH_BTTS
 
         # 1X2: apenas ALTA/MÉDIA, sem empate, direção do tip ou da probabilidade mais alta
-        pick_dir = ("H" if "Vitória Casa" in tip
-                    else ("A" if "Vitória Fora" in tip else None))
-        best_dir  = "H" if prob_hw >= prob_aw else "A"
-        best_prob = prob_hw if best_dir == "H" else prob_aw
+        pick_dir = _extract_1x2_dir(tip)
+        best_dir, best_prob = _best_1x2(prob_hw, prob_aw)
         pick_1x2  = conf_card in ("ALTA", "MÉDIA") and best_prob >= PICK_THRESH_1X2
         if pick_1x2 and pick_dir is None:
             pick_dir = best_dir  # fallback quando o tip não especifica direcção
@@ -127,19 +120,19 @@ def analyze_today(history, dashboard_html):
     ]
 
     # --- Backtest: estatísticas do corpus resolvido ---
-    global_stats = {mk: _seg(records, pk, hk) for mk, pk, hk in markets}
+    global_stats = {mk: segment_stats(records, pk, hk) for mk, pk, hk in markets}
 
     conf_stats = {}
     for conf in ("ALTA", "MÉDIA", "BAIXA"):
         subset = [r for r in records if r.get("conf") == conf]
-        conf_stats[conf] = {mk: _seg(subset, pk, hk) for mk, pk, hk in markets}
+        conf_stats[conf] = {mk: segment_stats(subset, pk, hk) for mk, pk, hk in markets}
 
     league_map: dict = {}
     for r in records:
         lg = r.get("league") or "Desconhecida"
         league_map.setdefault(lg, []).append(r)
     league_stats = {
-        lg: {mk: _seg(recs, pk, hk) for mk, pk, hk in markets}
+        lg: {mk: segment_stats(recs, pk, hk) for mk, pk, hk in markets}
         for lg, recs in league_map.items()
     }
 

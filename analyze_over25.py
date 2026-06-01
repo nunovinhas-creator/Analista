@@ -1,21 +1,11 @@
 # analyze_over25.py — Métricas e análise do over25-scanner
 # Nota: todos os campos numéricos chegam como strings do JSON do scanner
 from datetime import datetime, timezone, timedelta
-from utils import wilson_ci, parse_date, kelly_quarter
-
-
-def _flt(p, key, default=0.0):
-    v = p.get(key)
-    if v is None or v == "":
-        return default
-    try:
-        return float(v)
-    except Exception:
-        return default
+from utils import wilson_ci, parse_date, kelly_quarter, safe_float
 
 
 def _safe_odds(p):
-    v = _flt(p, "odds_over")
+    v = safe_float(p.get("odds_over"))
     return v if 1.01 <= v <= 50.0 else None
 
 
@@ -112,12 +102,12 @@ def analyze_over25(picks, picks_1x2):
     # Por score do sistema
     by_score = {}
     for lo, hi, label in [(0, 40, "0–40"), (40, 60, "40–60"), (60, 75, "60–75"), (75, 101, "75–100")]:
-        by_score[label] = _segment([p for p in picks if lo <= _flt(p, "score_sistema") < hi])
+        by_score[label] = _segment([p for p in picks if lo <= safe_float(p.get("score_sistema")) < hi])
 
     # Por xG total
     by_xg = {}
     for lo, hi, label in [(0, 2.0, "< 2.0"), (2.0, 2.5, "2.0–2.5"), (2.5, 3.0, "2.5–3.0"), (3.0, 99, "≥ 3.0")]:
-        by_xg[label] = _segment([p for p in picks if lo <= _flt(p, "xg_total") < hi])
+        by_xg[label] = _segment([p for p in picks if lo <= safe_float(p.get("xg_total")) < hi])
 
     # Por banda de odds
     by_odds = {}
@@ -179,7 +169,7 @@ def analyze_over25(picks, picks_1x2):
     wins_1x2 = sum(1 for p in p1x2_resolved if p["resultado_outcome"] == "WIN")
     roi_1x2, cnt_1x2 = 0.0, 0
     for p in p1x2_resolved:
-        odds = _flt(p, "odds_entrada")
+        odds = safe_float(p.get("odds_entrada"))
         if 1.01 <= odds <= 50.0:
             cnt_1x2 += 1
             roi_1x2 += (odds - 1) if p["resultado_outcome"] == "WIN" else -1
@@ -205,9 +195,9 @@ def analyze_over25(picks, picks_1x2):
             "fora":      p.get("fora") or "—",
             "liga":      p.get("liga") or "—",
             "odds":      odds or 0.0,
-            "score":     _flt(p, "score_sistema"),
+            "score":     safe_float(p.get("score_sistema")),
             "movimento": p.get("movimento") or "—",
-            "xg":        _flt(p, "xg_total"),
+            "xg":        safe_float(p.get("xg_total")),
 
             "kelly_pct": kq,
             "kelly_ok":  kq >= 0.5,

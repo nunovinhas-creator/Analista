@@ -1,13 +1,12 @@
 # emailer.py — Envia relatório diário por email via Gmail SMTP
 import html as _html
 import os
-import re
 import smtplib
 from datetime import datetime, timezone
 from email.mime.multipart import MIMEMultipart
 from email.mime.text import MIMEText
 
-from utils import color, pct
+from utils import color, pct, markdown_to_html
 
 RECIPIENT  = os.environ.get("EMAIL_RECIPIENT", "nunovinhas@gmail.com")
 PAGES_BASE = "https://nunovinhas-creator.github.io/Analista"
@@ -40,59 +39,6 @@ def _market_table_row(name, s):
         f"<td style='padding:6px 10px;color:{rc}'>{s.get('roi',0):+.1f}u ({s.get('roi_pct',0):+.1f}%)</td>"
         f"</tr>"
     )
-
-
-def _md_to_html(text: str) -> str:
-    def _inline(s):
-        s = _html.escape(s)
-        s = re.sub(r'\*\*(.+?)\*\*', r'<b>\1</b>', s)
-        return s
-
-    lines_out = []
-    in_ul = in_ol = False
-
-    def _close_lists():
-        nonlocal in_ul, in_ol
-        if in_ul:
-            lines_out.append("</ul>")
-            in_ul = False
-        if in_ol:
-            lines_out.append("</ol>")
-            in_ol = False
-
-    for line in text.split("\n"):
-        s = line.strip()
-        if s.startswith("### "):
-            _close_lists()
-            lines_out.append(f"<h4 style='color:#2c3e50;margin:16px 0 6px;font-size:.95rem'>{_inline(s[4:])}</h4>")
-        elif s.startswith("## "):
-            _close_lists()
-            lines_out.append(f"<h3 style='color:#2c3e50;margin:18px 0 6px;font-size:1rem'>{_inline(s[3:])}</h3>")
-        elif s.startswith("- "):
-            if in_ol:
-                lines_out.append("</ol>")
-                in_ol = False
-            if not in_ul:
-                lines_out.append("<ul style='margin:4px 0;padding-left:20px'>")
-                in_ul = True
-            lines_out.append(f"<li style='margin-bottom:4px'>{_inline(s[2:])}</li>")
-        elif re.match(r'^\d+\.\s', s):
-            if in_ul:
-                lines_out.append("</ul>")
-                in_ul = False
-            if not in_ol:
-                lines_out.append("<ol style='margin:4px 0;padding-left:20px'>")
-                in_ol = True
-            item = re.sub(r'^\d+\.\s+', '', s)
-            lines_out.append(f"<li style='margin-bottom:4px'>{_inline(item)}</li>")
-        elif s:
-            _close_lists()
-            lines_out.append(f"<p style='margin:4px 0'>{_inline(s)}</p>")
-        else:
-            _close_lists()
-            lines_out.append("<br>")
-    _close_lists()
-    return "\n".join(lines_out)
 
 
 def build_html_email(over25_stats: dict, football_stats: dict, ai_report: str, today_stats: dict = None) -> str:
@@ -209,7 +155,7 @@ def build_html_email(over25_stats: dict, football_stats: dict, ai_report: str, t
     </table>
   </div>"""
 
-    ai_html = _md_to_html(ai_report) if ai_report else "<p style='color:#888'>Análise não disponível.</p>"
+    ai_html = markdown_to_html(ai_report) if ai_report else "<p style='color:#888'>Análise não disponível.</p>"
 
     # Secção Onde Apostar Hoje e Amanhã
     today_section = ""
