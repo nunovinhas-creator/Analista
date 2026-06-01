@@ -383,7 +383,7 @@ def gen_dashboard_today(today_stats):
     {_bt_row("btts", "BTTS")}
     {_bt_row("1x2",  "1X2")}
   </table>
-  <p style='color:#6e7681;font-size:.72rem;margin-top:8px'>
+  <p style='color:oklch(55% 0.014 82);font-size:.72rem;margin-top:8px'>
     ⚠ n&lt;20 = amostra insuficiente · IC = intervalo de confiança Wilson 95% ·
     Break-even: O2.5&nbsp;52.6%, BTTS&nbsp;54.1%, 1X2&nbsp;45.5%
   </p>
@@ -403,13 +403,13 @@ def gen_dashboard_today(today_stats):
             # Model probabilities
             probs = []
             if g["prob_o25"] > 0:
-                c = "#3fb950" if g["prob_o25"] >= 60 else "#8b949e"
+                c = "oklch(70% 0.12 188)" if g["prob_o25"] >= 60 else "oklch(63% 0.024 82)"
                 probs.append(f"<span style='color:{c}'>O2.5 <b>{g['prob_o25']:.0f}%</b></span>")
             if g["prob_btts"] > 0:
-                c = "#3fb950" if g["prob_btts"] >= 60 else "#8b949e"
+                c = "oklch(70% 0.12 188)" if g["prob_btts"] >= 60 else "oklch(63% 0.024 82)"
                 probs.append(f"<span style='color:{c}'>BTTS <b>{g['prob_btts']:.0f}%</b></span>")
             if g["xg_total"] > 0:
-                probs.append(f"<span style='color:#8b949e'>xG <b>{g['xg_total']:.1f}</b></span>")
+                probs.append(f"<span style='color:oklch(63% 0.024 82)'>xG <b>{g['xg_total']:.1f}</b></span>")
             probs_html = (" · ".join(probs)) if probs else ""
 
             # 1X2 probabilities if relevant
@@ -423,44 +423,44 @@ def gen_dashboard_today(today_stats):
                 if g["prob_aw"]:
                     dirs.append(f"Fora {g['prob_aw']:.0f}%")
                 if dirs:
-                    p1x2_html = f"<div style='color:#8b949e;font-size:.78rem;margin-top:4px'>1X2: {' · '.join(dirs)}</div>"
+                    p1x2_html = f"<div style='color:oklch(63% 0.024 82);font-size:.78rem;margin-top:4px'>1X2: {' · '.join(dirs)}</div>"
 
             n_strong   = g["n_strong"]
             n_moderate = g["n_moderate"]
-            card_border = "#166534" if n_strong > 0 else ("#7d6608" if n_moderate > 0 else "#30363d")
+            card_border = "oklch(70% 0.12 188 / 0.5)" if n_strong > 0 else ("oklch(84% 0.19 80.46 / 0.4)" if n_moderate > 0 else "oklch(28% 0.010 95)")
 
             cards.append(f"""
 <div class='card' style='border-color:{card_border}'>
   <div style='display:flex;justify-content:space-between;align-items:flex-start;flex-wrap:wrap;gap:6px;margin-bottom:10px'>
     <div>
-      <div style='font-size:.78rem;color:#8b949e;margin-bottom:3px'>{escape(g['league'])}</div>
-      <div class='teams'><b>{escape(g['home'])}</b> <span style='color:#6e7681'>vs</span> <b>{escape(g['away'])}</b></div>
+      <div style='font-size:.78rem;color:oklch(63% 0.024 82);margin-bottom:3px'>{escape(g['league'])}</div>
+      <div class='teams'><b>{escape(g['home'])}</b> <span style='color:oklch(55% 0.014 82)'>vs</span> <b>{escape(g['away'])}</b></div>
     </div>
     <div style='display:flex;align-items:center;gap:8px;flex-wrap:wrap'>
       {conf_b}
-      <span style='color:#8b949e;font-size:.8rem'>{ko}</span>
+      <span style='color:oklch(63% 0.024 82);font-size:.8rem'>{ko}</span>
     </div>
   </div>
   {picks_html}
-  <div style='margin-top:8px;font-size:.78rem;color:#6e7681'>{probs_html}{p1x2_html}</div>
+  <div style='margin-top:8px;font-size:.78rem;color:oklch(55% 0.014 82)'>{probs_html}{p1x2_html}</div>
 </div>""")
 
         return "\n".join(cards)
 
     def _empty_section(label):
         return f"""
-<div style='background:#161b22;border:1px solid #30363d;border-radius:8px;padding:24px;text-align:center;color:#8b949e;margin-bottom:16px'>
+<div style='background:oklch(11% 0.006 95);border:1px solid oklch(28% 0.010 95);border-radius:2px;padding:24px;text-align:center;color:oklch(63% 0.024 82);margin-bottom:16px'>
   <div style='font-size:1.5rem;margin-bottom:8px'>📭</div>
-  <div style='font-size:.9rem;color:#e6edf3'>Sem jogos com picks disponíveis {label}</div>
+  <div style='font-size:.9rem;color:oklch(84% 0.035 82)'>Sem jogos com picks disponíveis {label}</div>
   <div style='font-size:.78rem;margin-top:6px'>O pipeline do football-dashboard ainda não processou estes jogos.</div>
 </div>"""
 
     def _section_header(label, date_str, game_list):
         n_g = len(game_list)
         n_s = sum(g["n_strong"] for g in game_list)
-        strong_note = f' · <span style="color:#3fb950">{n_s} fortes</span>' if n_s else ""
-        return (f"<h2 style='color:#e6edf3;font-size:1rem;margin:24px 0 12px'>"
-                f"{label} <span style='color:#6e7681;font-size:.82rem'>· {date_str}</span>"
+        strong_note = f' · <span style="color:oklch(70% 0.12 188)">{n_s} fortes</span>' if n_s else ""
+        return (f"<h2 style='color:oklch(84% 0.035 82);font-size:1rem;margin:24px 0 12px'>"
+                f"{label} <span style='color:oklch(55% 0.014 82);font-size:.82rem'>· {date_str}</span>"
                 f" — {n_g} jogo{'s' if n_g != 1 else ''} com picks{strong_note}</h2>")
 
     today_pt_label    = datetime.strptime(today_str,    "%Y-%m-%d").strftime("%d/%m") if today_str    else ""
@@ -478,8 +478,8 @@ def gen_dashboard_today(today_stats):
     t_pending = tracker.get("total_pending",  0)
     t_wr      = tracker.get("win_rate",  0.0)
     t_roi     = tracker.get("roi",       0.0)
-    t_wr_c    = "#3fb950" if t_wr >= 0.50 else ("#8b949e" if t_n == 0 else "#f85149")
-    t_roi_c   = "#3fb950" if t_roi >= 0   else ("#8b949e" if t_n == 0 else "#f85149")
+    t_wr_c    = "oklch(70% 0.12 188)" if t_wr >= 0.50 else ("oklch(63% 0.024 82)" if t_n == 0 else "oklch(58% 0.15 35)")
+    t_roi_c   = "oklch(70% 0.12 188)" if t_roi >= 0   else ("oklch(63% 0.024 82)" if t_n == 0 else "oklch(58% 0.15 35)")
     t_wr_s    = f"{t_wr:.1%}" if t_n > 0 else "—"
     t_roi_s   = f"{t_roi:+.2f}u" if t_n > 0 else "—"
 
@@ -487,10 +487,10 @@ def gen_dashboard_today(today_stats):
 
     # --- Summary strip ---
     summary_items = [
-        f"<div class='kpi'><div class='kpi-l'>Jogos c/ Picks</div><div class='kpi-v' style='color:#58a6ff'>{total_games}</div></div>",
-        f"<div class='kpi'><div class='kpi-l'>Picks Fortes ✅</div><div class='kpi-v' style='color:#3fb950'>{strong_picks}</div></div>",
-        f"<div class='kpi'><div class='kpi-l'>Picks Moderadas ⚠️</div><div class='kpi-v' style='color:#d29922'>{sum(g['n_moderate'] for g in all_games)}</div></div>",
-        f"<div class='kpi'><div class='kpi-l'>Picks Rastreadas</div><div class='kpi-v' style='color:#8b949e'>{t_n + t_pending}</div></div>",
+        f"<div class='kpi'><div class='kpi-l'>Jogos c/ Picks</div><div class='kpi-v' style='color:oklch(84% 0.19 80.46)'>{total_games}</div></div>",
+        f"<div class='kpi'><div class='kpi-l'>Picks Fortes ✅</div><div class='kpi-v' style='color:oklch(70% 0.12 188)'>{strong_picks}</div></div>",
+        f"<div class='kpi'><div class='kpi-l'>Picks Moderadas ⚠️</div><div class='kpi-v' style='color:oklch(48% 0.12 80)'>{sum(g['n_moderate'] for g in all_games)}</div></div>",
+        f"<div class='kpi'><div class='kpi-l'>Picks Rastreadas</div><div class='kpi-v' style='color:oklch(63% 0.024 82)'>{t_n + t_pending}</div></div>",
         f"<div class='kpi'><div class='kpi-l'>Acerto Próprio</div><div class='kpi-v' style='color:{t_wr_c}'>{t_wr_s}</div></div>",
         f"<div class='kpi'><div class='kpi-l'>ROI Próprio</div><div class='kpi-v' style='color:{t_roi_c}'>{t_roi_s}</div></div>",
     ]
@@ -559,7 +559,7 @@ tr:last-child td{{border-bottom:none}}
 
 {games_html}
 
-<p style='text-align:center;color:#6e7681;font-size:.75rem;margin-top:20px'>
+<p style='text-align:center;color:oklch(55% 0.014 82);font-size:.75rem;margin-top:20px'>
   Analista · Baseado no backtest do Matemática Da Bola · nunovinhas-creator/Analista
 </p>
 </body>
