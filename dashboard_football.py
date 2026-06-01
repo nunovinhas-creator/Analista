@@ -2,16 +2,7 @@
 import json
 import os
 from datetime import datetime, timezone
-
-DOCS_DIR = "docs"
-
-
-def _pct(v, d=1):
-    return f"{v * 100:.{d}f}%"
-
-
-def _color(v, threshold=0.0):
-    return "#3fb950" if v >= threshold else "#f85149"
+from utils import DOCS_DIR, pct, color, escape
 
 
 def _market_row(name, s):
@@ -20,15 +11,15 @@ def _market_row(name, s):
     reliable = s.get("reliable", True)
     row_s    = "opacity:.6;font-style:italic" if not reliable else ""
     warn     = "<span style='color:#d29922;font-size:.68rem'> ⚠</span>" if not reliable else ""
-    wrc      = _color(s["win_rate"], 0.52) if reliable else "#6e7681"
-    roic     = _color(s["roi"]) if reliable else "#6e7681"
+    wrc      = color(s["win_rate"], 0.52) if reliable else "#6e7681"
+    roic     = color(s["roi"]) if reliable else "#6e7681"
     ci_l     = s.get("ci_low", 0)
     ci_h     = s.get("ci_high", 1)
     ci_str   = f" <span style='font-size:.70rem;color:#6e7681'>[{ci_l:.0%}–{ci_h:.0%}]</span>"
     return (
-        f"<tr style='{row_s}'><td><b>{name}</b>{warn}</td>"
+        f"<tr style='{row_s}'><td><b>{escape(name)}</b>{warn}</td>"
         f"<td>{s['picks']}</td>"
-        f"<td style='color:{wrc}'>{_pct(s['win_rate'])}{ci_str}</td>"
+        f"<td style='color:{wrc}'>{pct(s['win_rate'])}{ci_str}</td>"
         f"<td style='color:{roic}'>{s['roi']:+.0f}u ({s['roi_pct']:+.1f}%)</td></tr>"
     )
 
@@ -63,7 +54,7 @@ def gen_dashboard_football(stats):
     d_labels_json = json.dumps(last30)
 
     # Tabela por confiança com IC
-    conf_rows = ""
+    conf_rows = []
     for level in ["ALTA", "MÉDIA", "BAIXA"]:
         s = conf.get(level, {})
         if s.get("picks", 0) == 0:
@@ -71,44 +62,47 @@ def gen_dashboard_football(stats):
         reliable = s.get("reliable", True)
         row_s    = "opacity:.6;font-style:italic" if not reliable else ""
         warn     = "<span style='color:#d29922;font-size:.68rem'> ⚠</span>" if not reliable else ""
-        wrc      = _color(s["win_rate"], 0.55) if reliable else "#6e7681"
+        wrc      = color(s["win_rate"], 0.55) if reliable else "#6e7681"
         ci_l, ci_h = s.get("ci_low", 0), s.get("ci_high", 1)
-        conf_rows += (
+        conf_rows.append(
             f"<tr style='{row_s}'><td><b>{level}</b>{warn}</td>"
             f"<td>{s['records']}</td>"
             f"<td>{s['picks']}</td>"
-            f"<td style='color:{wrc}'>{_pct(s['win_rate'])}"
+            f"<td style='color:{wrc}'>{pct(s['win_rate'])}"
             f" <span style='font-size:.70rem;color:#6e7681'>[{ci_l:.0%}–{ci_h:.0%}]</span></td></tr>"
         )
+    conf_rows_html = "".join(conf_rows)
 
     # Tabela por liga com flag de fiabilidade
-    league_rows = ""
+    league_rows = []
     for lg, s in stats.get("by_league", {}).items():
-        o25c  = _color(s["o25_wr"], 0.52)  if s.get("o25_reliable")  else "#6e7681"
-        bttsc = _color(s["btts_wr"], 0.55) if s.get("btts_reliable") else "#6e7681"
+        o25c  = color(s["o25_wr"], 0.52)  if s.get("o25_reliable")  else "#6e7681"
+        bttsc = color(s["btts_wr"], 0.55) if s.get("btts_reliable") else "#6e7681"
         o25w  = "" if s.get("o25_reliable")  else "<span style='color:#d29922;font-size:.68rem'>⚠</span>"
         bttsw = "" if s.get("btts_reliable") else "<span style='color:#d29922;font-size:.68rem'>⚠</span>"
-        league_rows += (
-            f"<tr><td>{lg}</td><td>{s['records']}</td>"
-            f"<td style='color:{o25c}'>{_pct(s['o25_wr'])} ({s['o25_picks']}){o25w}</td>"
-            f"<td style='color:{bttsc}'>{_pct(s['btts_wr'])} ({s['btts_picks']}){bttsw}</td></tr>"
+        league_rows.append(
+            f"<tr><td>{escape(lg)}</td><td>{s['records']}</td>"
+            f"<td style='color:{o25c}'>{pct(s['o25_wr'])} ({s['o25_picks']}){o25w}</td>"
+            f"<td style='color:{bttsc}'>{pct(s['btts_wr'])} ({s['btts_picks']}){bttsw}</td></tr>"
         )
+    league_rows_html = "".join(league_rows)
 
     # Calibração O2.5 (reliability diagram como tabela)
-    calib_rows = ""
+    calib_rows = []
     for band in cal.get("o25", []):
         if band["n"] == 0 or band["actual"] is None:
             continue
         diff  = band["actual"] - band["predicted"]
         dc    = "#3fb950" if diff > 0.03 else ("#f85149" if diff < -0.03 else "#e6edf3")
         arrow = "↑" if diff > 0.03 else ("↓" if diff < -0.03 else "≈")
-        calib_rows += (
+        calib_rows.append(
             f"<tr><td>{band['band']}</td>"
             f"<td>{band['n']}</td>"
             f"<td>{band['predicted']:.0%}</td>"
             f"<td style='color:{dc}'>{band['actual']:.0%} {arrow}</td>"
             f"<td style='color:{dc}'>{diff:+.1%}</td></tr>"
         )
+    calib_rows_html = "".join(calib_rows)
 
     bs_o25  = bs.get("o25")
     bs_btts = bs.get("btts")
@@ -121,13 +115,13 @@ def gen_dashboard_football(stats):
                       + " — 0=perfeito, 0.25=aleatório</p>")
 
     calibration_card = ""
-    if calib_rows:
+    if calib_rows_html:
         calibration_card = f"""
 <div class="card">
   <h3>Calibração do Modelo — Reliability Diagram O2.5</h3>
   <table>
     <tr><th>Banda Prob</th><th>N</th><th>Previsto</th><th>Real</th><th>Desvio</th></tr>
-    {calib_rows}
+    {calib_rows_html}
   </table>
   {brier_note}
 </div>"""
@@ -174,13 +168,13 @@ tr:last-child td{{border-bottom:none}}
 <p class="sub">Actualizado: {now} · {stats['total']} registos · {stats['dates_processed']} dias processados</p>
 
 <div class="kpi-bar">
-  <div class="kpi"><div class="kpi-l">O2.5 WR</div><div class="kpi-v" style="color:{_color(pm.get('o25',{}).get('win_rate',0),.52)}">{_pct(pm.get('o25',{}).get('win_rate',0))}</div></div>
-  <div class="kpi"><div class="kpi-l">BTTS WR</div><div class="kpi-v" style="color:{_color(pm.get('btts',{}).get('win_rate',0),.55)}">{_pct(pm.get('btts',{}).get('win_rate',0))}</div></div>
-  <div class="kpi"><div class="kpi-l">1X2 WR</div><div class="kpi-v" style="color:{_color(pm.get('1x2',{}).get('win_rate',0),.52)}">{_pct(pm.get('1x2',{}).get('win_rate',0))}</div></div>
-  <div class="kpi"><div class="kpi-l">Triplas WR</div><div class="kpi-v" style="color:{_color(tr.get('win_rate',0),.3)}">{_pct(tr.get('win_rate',0))}</div></div>
-  <div class="kpi"><div class="kpi-l">Triplas ROI</div><div class="kpi-v" style="color:{_color(tr.get('roi',0))}">{tr.get('roi',0):+.1f}u</div></div>
-  <div class="kpi"><div class="kpi-l">O2.5 7d WR</div><div class="kpi-v" style="color:{_color(r7_o25.get('win_rate',0),.52)}">{_pct(r7_o25.get('win_rate',0))}</div></div>
-  <div class="kpi"><div class="kpi-l">BTTS 7d WR</div><div class="kpi-v" style="color:{_color(r7_btts.get('win_rate',0),.55)}">{_pct(r7_btts.get('win_rate',0))}</div></div>
+  <div class="kpi"><div class="kpi-l">O2.5 WR</div><div class="kpi-v" style="color:{color(pm.get('o25',dict()).get('win_rate',0),.52)}">{pct(pm.get('o25',dict()).get('win_rate',0))}</div></div>
+  <div class="kpi"><div class="kpi-l">BTTS WR</div><div class="kpi-v" style="color:{color(pm.get('btts',dict()).get('win_rate',0),.55)}">{pct(pm.get('btts',dict()).get('win_rate',0))}</div></div>
+  <div class="kpi"><div class="kpi-l">1X2 WR</div><div class="kpi-v" style="color:{color(pm.get('1x2',dict()).get('win_rate',0),.52)}">{pct(pm.get('1x2',dict()).get('win_rate',0))}</div></div>
+  <div class="kpi"><div class="kpi-l">Triplas WR</div><div class="kpi-v" style="color:{color(tr.get('win_rate',0),.3)}">{pct(tr.get('win_rate',0))}</div></div>
+  <div class="kpi"><div class="kpi-l">Triplas ROI</div><div class="kpi-v" style="color:{color(tr.get('roi',0))}">{tr.get('roi',0):+.1f}u</div></div>
+  <div class="kpi"><div class="kpi-l">O2.5 7d WR</div><div class="kpi-v" style="color:{color(r7_o25.get('win_rate',0),.52)}">{pct(r7_o25.get('win_rate',0))}</div></div>
+  <div class="kpi"><div class="kpi-l">BTTS 7d WR</div><div class="kpi-v" style="color:{color(r7_btts.get('win_rate',0),.55)}">{pct(r7_btts.get('win_rate',0))}</div></div>
 </div>
 
 <div class="charts">
@@ -205,7 +199,7 @@ tr:last-child td{{border-bottom:none}}
   <h3>Calibração por Confiança</h3>
   <table>
     <tr><th>Nível</th><th>Jogos</th><th>Picks</th><th>WR (todos os mercados)</th></tr>
-    {conf_rows}
+    {conf_rows_html}
   </table>
 </div>
 
@@ -219,9 +213,9 @@ tr:last-child td{{border-bottom:none}}
     <tr>
       <td>{tr.get('total',0)}{tr_rel}</td>
       <td>{tr.get('won',0)}</td>
-      <td style="color:{_color(tr.get('win_rate',0),.3)}">{_pct(tr.get('win_rate',0))}
+      <td style="color:{color(tr.get('win_rate',0),.3)}">{pct(tr.get('win_rate',0))}
         <span style='font-size:.72rem;color:#6e7681'>[{tr_ci_l:.0%}–{tr_ci_h:.0%}]</span></td>
-      <td style="color:{_color(tr.get('roi',0))}">{tr.get('roi',0):+.2f}u ({tr.get('roi_pct',0):+.1f}%)</td>
+      <td style="color:{color(tr.get('roi',0))}">{tr.get('roi',0):+.2f}u ({tr.get('roi_pct',0):+.1f}%)</td>
       <td>{tr.get('avg_odds',0):.2f}x</td>
     </tr>
   </table>
@@ -231,7 +225,7 @@ tr:last-child td{{border-bottom:none}}
   <h3>Por Liga</h3>
   <table>
     <tr><th>Liga</th><th>Jogos</th><th>O2.5 WR (picks)</th><th>BTTS WR (picks)</th></tr>
-    {league_rows}
+    {league_rows_html}
   </table>
 </div>
 

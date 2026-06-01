@@ -1,18 +1,7 @@
 # analyze_over25.py — Métricas e análise do over25-scanner
 # Nota: todos os campos numéricos chegam como strings do JSON do scanner
 from datetime import datetime, timezone, timedelta
-
-
-def _parse_date(s):
-    if not s:
-        return None
-    try:
-        dt = datetime.fromisoformat(str(s).replace("Z", "+00:00"))
-        if dt.tzinfo is None:
-            dt = dt.replace(tzinfo=timezone.utc)
-        return dt
-    except Exception:
-        return None
+from utils import wilson_ci, parse_date, kelly_quarter
 
 
 def _flt(p, key, default=0.0):
@@ -28,17 +17,6 @@ def _flt(p, key, default=0.0):
 def _safe_odds(p):
     v = _flt(p, "odds_over")
     return v if 1.01 <= v <= 50.0 else None
-
-
-def _wilson_ci(wins, n, z=1.96):
-    """Intervalo de confiança Wilson 95% — mais fiável que normal para proporções pequenas."""
-    if n == 0:
-        return 0.0, 1.0
-    p = wins / n
-    denom = 1 + z**2 / n
-    centre = (p + z**2 / (2 * n)) / denom
-    margin = (z * (p * (1 - p) / n + z**2 / (4 * n**2)) ** 0.5) / denom
-    return round(max(0.0, centre - margin), 3), round(min(1.0, centre + margin), 3)
 
 
 def _max_drawdown(cum_series):
@@ -73,7 +51,7 @@ def _segment(subset):
     wins = sum(1 for p in resolved if p["result_over25"] == "WIN")
     roi, cnt = _roi_for_list(resolved)
     n, k = len(resolved), wins
-    ci_low, ci_high = _wilson_ci(k, n)
+    ci_low, ci_high = wilson_ci(k, n)
     return {
         "count":    n,
         "wins":     k,
@@ -86,15 +64,6 @@ def _segment(subset):
     }
 
 
-def _kelly_pick(wr, odds, cap=3.0):
-    """Quarter Kelly para um pick individual, com tecto de 3% da banca."""
-    if not odds or odds <= 1.01 or wr <= 0:
-        return 0.0
-    b = odds - 1
-    f = (wr * b - (1 - wr)) / b
-    return round(min(max(f / 4, 0.0) * 100, cap), 1)
-
-
 def analyze_over25(picks, picks_1x2):
     resolved = [p for p in picks if p.get("result_over25") in ("WIN", "LOSS")]
     wins = sum(1 for p in resolved if p["result_over25"] == "WIN")
@@ -102,12 +71,12 @@ def analyze_over25(picks, picks_1x2):
 
     n, k = len(resolved), wins
     wr = k / n if n else 0.0
-    ci_low, ci_high = _wilson_ci(k, n)
+    ci_low, ci_high = wilson_ci(k, n)
     _min = datetime.min.replace(tzinfo=timezone.utc)
 
     # Série de vitórias/derrotas actual — sorted by date for correctness
     streak, streak_type = 0, None
-    for p in reversed(sorted(resolved, key=lambda x: _parse_date(x.get("data")) or _min)):
+    for p in reversed(sorted(resolved, key=lambda x: parse_date(x.get("data")) or _min)):
         r = p["result_over25"]
         if streak_type is None:
             streak_type = r
@@ -130,7 +99,7 @@ def analyze_over25(picks, picks_1x2):
 
     # Últimos 7 dias
     cutoff = datetime.now(timezone.utc) - timedelta(days=7)
-    recent = [p for p in resolved if (_parse_date(p.get("data")) or _min) >= cutoff]
+    recent = [p for p in resolved if (parse_date(p.get("data")) or _min) >= cutoff]
     roi_recent, cnt_recent = _roi_for_list(recent)
     wins_recent = sum(1 for p in recent if p["result_over25"] == "WIN")
 
@@ -170,7 +139,7 @@ def analyze_over25(picks, picks_1x2):
     # Stats diárias
     daily: dict = {}
     for p in resolved:
-        d = _parse_date(p.get("data"))
+        d = parse_date(p.get("data"))
         if not d:
             continue
         day = d.strftime("%Y-%m-%d")
@@ -188,7 +157,7 @@ def analyze_over25(picks, picks_1x2):
     rolling_wr_series = []
     cum = 0.0
     window = 20
-    sorted_resolved = sorted(resolved, key=lambda x: _parse_date(x.get("data")) or _min)
+    sorted_resolved = sorted(resolved, key=lambda x: parse_date(x.get("data")) or _min)
     bet_results: list = []
     for p in sorted_resolved:
         odds = _safe_odds(p)
@@ -215,7 +184,7 @@ def analyze_over25(picks, picks_1x2):
             cnt_1x2 += 1
             roi_1x2 += (odds - 1) if p["resultado_outcome"] == "WIN" else -1
     n_1x2, k_1x2 = len(p1x2_resolved), wins_1x2
-    ci_1x2_l, ci_1x2_h = _wilson_ci(k_1x2, n_1x2)
+    ci_1x2_l, ci_1x2_h = wilson_ci(k_1x2, n_1x2)
 
     # Picks pendentes com Kelly recomendado
     pending_with_kelly = []
@@ -224,7 +193,7 @@ def analyze_over25(picks, picks_1x2):
             continue
         odds = _safe_odds(p)
         if n >= 10:
-            kq = _kelly_pick(wr, odds)
+            kq = kelly_quarter(wr, odds or 0.0, cap=3.0)
             if avg_clv is not None and avg_clv < 0 and kq > 0:
                 kq = round(kq * 0.5, 1)
             note = "CLV negativo: stake reduzido 50%" if (avg_clv is not None and avg_clv < 0) else ""
@@ -286,10 +255,10 @@ def analyze_over25(picks, picks_1x2):
             "roi":      roi_1x2,
             "roi_pct":  (roi_1x2 / cnt_1x2 * 100) if cnt_1x2 else 0.0,
         },
-        "all_picks_raw": sorted(picks, key=lambda x: _parse_date(x.get("data")) or _min, reverse=True)[:30],
+        "all_picks_raw": sorted(picks, key=lambda x: parse_date(x.get("data")) or _min, reverse=True)[:30],
         "pending_picks": sorted(
             [p for p in picks if p.get("result_over25") not in ("WIN", "LOSS")],
-            key=lambda x: _parse_date(x.get("data")) or _min,
+            key=lambda x: parse_date(x.get("data")) or _min,
             reverse=True,
         ),
         "pending_with_kelly": pending_with_kelly,

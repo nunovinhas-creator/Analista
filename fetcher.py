@@ -7,7 +7,7 @@ FOOTBALL_RAW = "https://raw.githubusercontent.com/nunovinhas-creator/football-da
 FOOTBALL_DASHBOARD_HTML_URL = f"{FOOTBALL_RAW}/docs/dashboard.html"
 
 
-def _get(url):
+def _fetch_json(url):
     r = requests.get(url, timeout=20)
     r.raise_for_status()
     return r.json()
@@ -24,7 +24,7 @@ def fetch_all_data():
     }
 
     try:
-        fetched = _get(f"{OVER25_RAW}/data/picks.json")
+        fetched = _fetch_json(f"{OVER25_RAW}/data/picks.json")
         if not isinstance(fetched, list):
             raise ValueError(f"tipo inesperado: {type(fetched).__name__}")
         data["over25_picks"] = fetched
@@ -33,7 +33,7 @@ def fetch_all_data():
         print(f"[WARN] over25 picks.json: {e}")
 
     try:
-        fetched = _get(f"{OVER25_RAW}/data/picks_1x2.json")
+        fetched = _fetch_json(f"{OVER25_RAW}/data/picks_1x2.json")
         if not isinstance(fetched, list):
             raise ValueError(f"tipo inesperado: {type(fetched).__name__}")
         data["over25_picks_1x2"] = fetched
@@ -42,7 +42,7 @@ def fetch_all_data():
         print(f"[WARN] over25 picks_1x2.json: {e}")
 
     try:
-        fetched = _get(f"{FOOTBALL_RAW}/docs/history.json")
+        fetched = _fetch_json(f"{FOOTBALL_RAW}/docs/history.json")
         if not isinstance(fetched, dict):
             raise ValueError(f"tipo inesperado: {type(fetched).__name__}")
         data["football_history"] = fetched
@@ -52,7 +52,7 @@ def fetch_all_data():
         print(f"[WARN] football history.json: {e}")
 
     try:
-        fetched = _get(f"{FOOTBALL_RAW}/docs/trebles.json")
+        fetched = _fetch_json(f"{FOOTBALL_RAW}/docs/trebles.json")
         if not isinstance(fetched, dict):
             raise ValueError(f"tipo inesperado: {type(fetched).__name__}")
         data["football_trebles"] = fetched

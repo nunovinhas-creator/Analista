@@ -2,16 +2,7 @@
 import json
 import os
 from datetime import datetime, timedelta, timezone
-
-DOCS_DIR = "docs"
-
-
-def _pct(v, d=1):
-    return f"{v * 100:.{d}f}%"
-
-
-def _color(v, threshold=0.0):
-    return "#3fb950" if v >= threshold else "#f85149"
+from utils import DOCS_DIR, pct, color, escape, MARKET_BASE_ODDS
 
 
 def _edge_badge(edge):
@@ -72,7 +63,7 @@ def _pick_card(pick):
     ref_src_label = ref_label if ref_label in ("ALTA", "MÉDIA", "BAIXA") else "global"
     ref_line = (f"<div class='stat-line'>"
                 f"<span class='stat-key'>Backtest {ref_src_label}:</span>"
-                f" <b style='color:{_color(ref_wr, 1/odds)}'>{_pct(ref_wr)}</b>"
+                f" <b style='color:{color(ref_wr, 1/odds)}'>{pct(ref_wr)}</b>"
                 f" (n={ref_n})"
                 f" <span style='color:#6e7681'>[{ref_ci_l:.0%}–{ref_ci_h:.0%}]</span>"
                 f"{warn_n}</div>")
@@ -82,7 +73,7 @@ def _pick_card(pick):
     if ref_label not in ("global",) and global_n >= 5:
         global_line = (f"<div class='stat-line'>"
                        f"<span class='stat-key'>Backtest global:</span>"
-                       f" {_pct(global_wr)} (n={global_n})"
+                       f" {pct(global_wr)} (n={global_n})"
                        f"</div>")
 
     # League line
@@ -92,7 +83,7 @@ def _pick_card(pick):
         league_ci   = f" <span style='color:#6e7681'>[{pick['league_ci_l']:.0%}–{pick['league_ci_h']:.0%}]</span>" if league_n >= 5 else ""
         league_line = (f"<div class='stat-line'>"
                        f"<span class='stat-key'>Liga:</span>"
-                       f" <b style='color:{_color(league_wr, 1/odds)}'>{_pct(league_wr)}</b>"
+                       f" <b style='color:{color(league_wr, 1/odds)}'>{pct(league_wr)}</b>"
                        f" (n={league_n}){league_ci}{league_warn}</div>")
 
     # Kelly line
@@ -159,45 +150,41 @@ def _tracker_section(perf):
     TD  = "padding:4px 8px;border-bottom:1px solid #21262d"
     TDN = "padding:4px 8px;border-bottom:1px solid #21262d;color:#8b949e"
 
-    def _pos(v):
-        return "#3fb950" if v >= 0 else "#f85149"
-
-    def _wr_c(v):
-        return "#3fb950" if v >= 0.50 else "#f85149"
-
     # -- Tabela por edge --
-    edge_rows = ""
+    edge_rows = []
     for edge in ("strong", "moderate", "weak", "insufficient"):
         seg = perf["by_edge"].get(edge)
         if not seg:
             continue
         wr_e  = seg["win_rate"]
-        rc    = _pos(seg["roi"])
-        edge_rows += (
+        rc    = color(seg["roi"], 0)
+        edge_rows.append(
             f"<tr>"
             f"<td style='{TD}'>{_EDGE_LABELS.get(edge, edge)}</td>"
             f"<td style='{TDN}'>{seg['n']}</td>"
-            f"<td style='{TD};color:{_wr_c(wr_e)};font-weight:600'>{wr_e:.1%}</td>"
+            f"<td style='{TD};color:{color(wr_e, 0.50)};font-weight:600'>{wr_e:.1%}</td>"
             f"<td style='{TD};color:{rc}'>{seg['roi']:+.2f}u</td>"
             f"</tr>"
         )
+    edge_rows_html = "".join(edge_rows)
 
     # -- Tabela por mercado --
-    mkt_rows = ""
+    mkt_rows = []
     for mkt in ("o25", "btts", "1x2"):
         seg = perf["by_market"].get(mkt)
         if not seg:
             continue
         wr_m = seg["win_rate"]
-        rc   = _pos(seg["roi"])
-        mkt_rows += (
+        rc   = color(seg["roi"], 0)
+        mkt_rows.append(
             f"<tr>"
             f"<td style='{TD}'>{_MKT_LABELS.get(mkt, mkt)}</td>"
             f"<td style='{TDN}'>{seg['n']}</td>"
-            f"<td style='{TD};color:{_wr_c(wr_m)};font-weight:600'>{wr_m:.1%}</td>"
+            f"<td style='{TD};color:{color(wr_m, 0.50)};font-weight:600'>{wr_m:.1%}</td>"
             f"<td style='{TD};color:{rc}'>{seg['roi']:+.2f}u</td>"
             f"</tr>"
         )
+    mkt_rows_html = "".join(mkt_rows)
 
     tables_html = (
         f"<div style='display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-bottom:18px'>"
@@ -205,13 +192,13 @@ def _tracker_section(perf):
         f"<div style='font-size:.70rem;color:#6e7681;text-transform:uppercase;letter-spacing:.04em;margin-bottom:6px'>Por Sinal de Edge</div>"
         f"<table style='{TS}'>"
         f"<thead><tr><th style='{TH}'>Sinal</th><th style='{TH}'>n</th><th style='{TH}'>Acerto</th><th style='{TH}'>ROI</th></tr></thead>"
-        f"<tbody>{edge_rows}</tbody></table>"
+        f"<tbody>{edge_rows_html}</tbody></table>"
         f"</div>"
         f"<div>"
         f"<div style='font-size:.70rem;color:#6e7681;text-transform:uppercase;letter-spacing:.04em;margin-bottom:6px'>Por Mercado</div>"
         f"<table style='{TS}'>"
         f"<thead><tr><th style='{TH}'>Mercado</th><th style='{TH}'>n</th><th style='{TH}'>Acerto</th><th style='{TH}'>ROI</th></tr></thead>"
-        f"<tbody>{mkt_rows}</tbody></table>"
+        f"<tbody>{mkt_rows_html}</tbody></table>"
         f"</div>"
         f"</div>"
     )
@@ -285,25 +272,26 @@ def _tracker_section(perf):
 
     # -- Tabela de picks recentes --
     recent = perf.get("recent", [])
-    recent_rows = ""
+    recent_rows = []
     for p in recent[:15]:
         hit_s   = "✅" if p.get("hit") else "❌"
         profit  = (p["odds"] - 1) if p.get("hit") else -1.0
         p_color = "#3fb950" if profit > 0 else "#f85149"
         edge_s  = _EDGE_LABELS.get(p.get("edge", ""), p.get("edge", ""))
-        recent_rows += (
+        recent_rows.append(
             f"<tr>"
             f"<td style='color:#8b949e'>{p.get('date','')}</td>"
-            f"<td>{p.get('home','')} vs {p.get('away','')}</td>"
+            f"<td>{escape(p.get('home',''))} vs {escape(p.get('away',''))}</td>"
             f"<td style='color:#8b949e'>{_MKT_LABELS.get(p.get('market',''), p.get('market',''))}</td>"
             f"<td style='font-size:.75rem'>{edge_s}</td>"
             f"<td style='text-align:center;font-size:1.05rem'>{hit_s}</td>"
             f"<td style='color:{p_color};text-align:right'>{profit:+.2f}u</td>"
             f"</tr>"
         )
+    recent_rows_html = "".join(recent_rows)
 
     recent_html = ""
-    if recent_rows:
+    if recent_rows_html:
         recent_html = (
             f"<div style='font-size:.70rem;color:#6e7681;text-transform:uppercase;letter-spacing:.04em;margin-bottom:6px'>Picks Recentes</div>"
             f"<div style='overflow-x:auto'><table style='{TS}'>"
@@ -315,7 +303,7 @@ def _tracker_section(perf):
             f"<th style='{TH};text-align:center'>Res.</th>"
             f"<th style='{TH};text-align:right'>P&L</th>"
             f"</tr></thead>"
-            f"<tbody>{recent_rows}</tbody>"
+            f"<tbody>{recent_rows_html}</tbody>"
             f"</table></div>"
             f"<p style='font-size:.70rem;color:#6e7681;margin-top:6px'>ROI calculado com odds-base por mercado (O2.5 1.90x · BTTS 1.85x · 1X2 2.20x) · 1u por pick</p>"
         )
@@ -362,9 +350,9 @@ def gen_dashboard_today(today_stats):
             ci_l = cs.get("ci_low", 0)
             ci_h = cs.get("ci_high", 1)
             if n >= 5:
-                c    = _color(wr, 1 / {"o25": 1.90, "btts": 1.85, "1x2": 2.20}.get(market_key, 2.0))
+                c    = color(wr, 1 / MARKET_BASE_ODDS.get(market_key, 2.0))
                 warn = " ⚠" if not cs.get("reliable") else ""
-                rows.append(f"<td style='padding:5px 10px;color:{c}'>{_pct(wr)}<br><span style='color:#6e7681;font-size:.70rem'>(n={n}{warn}) [{ci_l:.0%}–{ci_h:.0%}]</span></td>")
+                rows.append(f"<td style='padding:5px 10px;color:{c}'>{pct(wr)}<br><span style='color:#6e7681;font-size:.70rem'>(n={n}{warn}) [{ci_l:.0%}–{ci_h:.0%}]</span></td>")
             else:
                 rows.append("<td style='padding:5px 10px;color:#6e7681;font-size:.78rem'>insuf.</td>")
         n_g  = gs.get("n", 0)
@@ -372,9 +360,9 @@ def gen_dashboard_today(today_stats):
         ci_gl = gs.get("ci_low", 0)
         ci_gh = gs.get("ci_high", 1)
         if n_g >= 5:
-            c    = _color(wr_g, 1 / {"o25": 1.90, "btts": 1.85, "1x2": 2.20}.get(market_key, 2.0))
+            c    = color(wr_g, 1 / MARKET_BASE_ODDS.get(market_key, 2.0))
             warn = " ⚠" if not gs.get("reliable") else ""
-            rows.append(f"<td style='padding:5px 10px;color:{c}'><b>{_pct(wr_g)}</b><br><span style='color:#6e7681;font-size:.70rem'>(n={n_g}{warn}) [{ci_gl:.0%}–{ci_gh:.0%}]</span></td>")
+            rows.append(f"<td style='padding:5px 10px;color:{c}'><b>{pct(wr_g)}</b><br><span style='color:#6e7681;font-size:.70rem'>(n={n_g}{warn}) [{ci_gl:.0%}–{ci_gh:.0%}]</span></td>")
         else:
             rows.append("<td style='padding:5px 10px;color:#6e7681;font-size:.78rem'>insuf.</td>")
         return "<tr>" + "".join(rows) + "</tr>"
@@ -444,8 +432,8 @@ def gen_dashboard_today(today_stats):
 <div class='card' style='border-color:{card_border}'>
   <div style='display:flex;justify-content:space-between;align-items:flex-start;flex-wrap:wrap;gap:6px;margin-bottom:10px'>
     <div>
-      <div style='font-size:.78rem;color:#8b949e;margin-bottom:3px'>{g['league']}</div>
-      <div class='teams'><b>{g['home']}</b> <span style='color:#6e7681'>vs</span> <b>{g['away']}</b></div>
+      <div style='font-size:.78rem;color:#8b949e;margin-bottom:3px'>{escape(g['league'])}</div>
+      <div class='teams'><b>{escape(g['home'])}</b> <span style='color:#6e7681'>vs</span> <b>{escape(g['away'])}</b></div>
     </div>
     <div style='display:flex;align-items:center;gap:8px;flex-wrap:wrap'>
       {conf_b}
