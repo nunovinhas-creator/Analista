@@ -1,0 +1,16 @@
+{
+  "hooks": {
+    "Stop": [
+      {
+        "hooks": [
+          {
+            "type": "command",
+            "command": "bash /home/user/Analista/.claude/hooks/auto-sync.sh",
+            "timeout": 90,
+            "statusMessage": "A regenerar dashboards e a sincronizar..."
+          }
+        ]
+      }
+    ]
+  }
+}

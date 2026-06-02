@@ -3,4 +3,4 @@ __pycache__/
 *.pyo
 .env
 docs/*.lock
-.claude/
+.claude/settings.local.json
