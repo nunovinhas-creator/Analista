@@ -142,6 +142,28 @@
       "edge": "strong",
       "odds": 2.2,
       "kelly_pct": 3.0
+    },
+    {
+      "date": "2026-06-03",
+      "home": "Poland",
+      "away": "Nigeria",
+      "league": "International Friendly Games",
+      "conf": "MÉDIA",
+      "market": "1x2",
+      "edge": "strong",
+      "odds": 2.2,
+      "kelly_pct": 3.0
+    },
+    {
+      "date": "2026-06-03",
+      "home": "Raja Club Athletic",
+      "away": "RS Berkane",
+      "league": "Botola Pro",
+      "conf": "MÉDIA",
+      "market": "1x2",
+      "edge": "strong",
+      "odds": 2.2,
+      "kelly_pct": 3.0
     }
   ],
   "resolved": [
