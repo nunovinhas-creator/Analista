@@ -230,6 +230,17 @@
       "edge": "strong",
       "odds": 2.2,
       "kelly_pct": 3.0
+    },
+    {
+      "date": "2026-06-04",
+      "home": "France",
+      "away": "Côte d&#x27;Ivoire",
+      "league": "International Friendly Games",
+      "conf": "MÉDIA",
+      "market": "1x2",
+      "edge": "strong",
+      "odds": 2.2,
+      "kelly_pct": 3.0
     }
   ],
   "resolved": [
