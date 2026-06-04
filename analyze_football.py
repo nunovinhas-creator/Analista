@@ -68,8 +68,8 @@ def _treble_profit(t):
             odds = _est_odds(t)
             profit = (odds - 1) if odds else 0.0
     else:
-        profit = t.get("profit_1u")
-        profit = profit if profit is not None else -1.0
+        p = t.get("profit_1u")
+        profit = p if p is not None else -1.0
     return profit
 
 

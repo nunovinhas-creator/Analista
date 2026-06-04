@@ -8,7 +8,7 @@ from email.mime.text import MIMEText
 
 from utils import color, pct, markdown_to_html
 
-RECIPIENT  = os.environ.get("EMAIL_RECIPIENT", "nunovinhas@gmail.com")
+RECIPIENT  = os.environ.get("EMAIL_RECIPIENT") or os.environ.get("GMAIL_USER", "")
 PAGES_BASE = "https://nunovinhas-creator.github.io/Analista"
 
 
@@ -179,7 +179,7 @@ def build_html_email(over25_stats: dict, football_stats: dict, ai_report: str, t
             )
             for g in games:
                 ko_raw = str(g.get("ko_hour", ""))
-                ko = (":" in ko_raw and ko_raw or f"{ko_raw}:00") if ko_raw else "—"
+                ko = (ko_raw if ":" in ko_raw else f"{ko_raw}:00") if ko_raw else "—"
                 conf = g.get("conf", "")
                 if conf == "ALTA":
                     conf_badge = "<span style='background:#1a7f37;color:#fff;border-radius:3px;padding:1px 5px;font-size:.73rem'>ALTA</span>"

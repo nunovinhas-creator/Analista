@@ -127,18 +127,20 @@ def analyze_today(history, dashboard_html):
         subset = [r for r in records if r.get("conf") == conf]
         conf_stats[conf] = {mk: segment_stats(subset, pk, hk) for mk, pk, hk in markets}
 
+    # --- Picks de hoje e amanhã ---
+    today_games = parse_dashboard_html(dashboard_html, {today_str, tomorrow_str}) if dashboard_html else []
+    print(f"[today] {len(today_games)} jogos com picks ({today_str} + {tomorrow_str})")
+
+    today_leagues = {g["league"] for g in today_games}
     league_map: dict = {}
     for r in records:
         lg = r.get("league") or "Desconhecida"
-        league_map.setdefault(lg, []).append(r)
+        if lg in today_leagues:
+            league_map.setdefault(lg, []).append(r)
     league_stats = {
         lg: {mk: segment_stats(recs, pk, hk) for mk, pk, hk in markets}
         for lg, recs in league_map.items()
     }
-
-    # --- Picks de hoje e amanhã ---
-    today_games = parse_dashboard_html(dashboard_html, {today_str, tomorrow_str}) if dashboard_html else []
-    print(f"[today] {len(today_games)} jogos com picks ({today_str} + {tomorrow_str})")
 
     # --- Qualificar cada pick ---
     pick_defs = [

@@ -12,7 +12,8 @@ except ImportError:
     def _lock(f):   pass
     def _unlock(f): pass
 
-DB_PATH   = os.path.join("docs", "picks_today_db.json")
+_HERE     = os.path.dirname(os.path.abspath(__file__))
+DB_PATH   = os.path.join(_HERE, "docs", "picks_today_db.json")
 LOCK_PATH = DB_PATH + ".lock"
 TTL_DAYS  = 30
 
@@ -28,7 +29,7 @@ def load_db():
 
 
 def save_db(db):
-    os.makedirs("docs", exist_ok=True)
+    os.makedirs(os.path.dirname(DB_PATH), exist_ok=True)
     with open(DB_PATH, "w", encoding="utf-8") as f:
         json.dump(db, f, ensure_ascii=False, indent=2)
 
@@ -52,7 +53,7 @@ def record_and_resolve(today_games, history_records):
     Resolve picks pendentes contra history_records, depois regista as picks de hoje.
     Devolve o DB actualizado.
     """
-    os.makedirs("docs", exist_ok=True)
+    os.makedirs(os.path.dirname(DB_PATH), exist_ok=True)
     with open(LOCK_PATH, "w") as _lf:
         _lock(_lf)
         try:
@@ -74,19 +75,23 @@ def _record_and_resolve_locked(today_games, history_records):
         print(f"[tracker] {n_expired} picks expirados removidos (>{TTL_DAYS}d sem resolução)")
     db["pending"] = new_pending
 
+    # Índice por (date, home_norm, away_norm) para resolução O(1)
+    hist_index = {}
+    for rec in history_records:
+        k = (rec.get("date", "")[:10], _norm(rec.get("home", "")), _norm(rec.get("away", "")))
+        hist_index[k] = rec
+
     # 1. Resolver picks pendentes
     still_pending, newly_resolved = [], []
     for pick in db["pending"]:
-        resolved = False
-        for rec in history_records:
-            if _match(pick, rec):
-                hit = _get_hit(rec, pick["market"])
-                if hit is not None:
-                    newly_resolved.append({**pick, "hit": hit, "resolved_at": now_iso})
-                    resolved = True
-                    break
-        if not resolved:
-            still_pending.append(pick)
+        k = (pick["date"], _norm(pick["home"]), _norm(pick["away"]))
+        rec = hist_index.get(k)
+        if rec is not None:
+            hit = _get_hit(rec, pick["market"])
+            if hit is not None:
+                newly_resolved.append({**pick, "hit": hit, "resolved_at": now_iso})
+                continue
+        still_pending.append(pick)
 
     db["pending"]  = still_pending
     db["resolved"].extend(newly_resolved)
