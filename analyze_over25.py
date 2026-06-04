@@ -183,7 +183,10 @@ def analyze_over25(picks, picks_1x2):
             continue
         odds = _safe_odds(p)
         if n >= 10:
-            kq = kelly_quarter(wr, odds or 0.0, cap=3.0)
+            mov = p.get("movimento")
+            mov_data = by_movement.get(mov, {})
+            eff_wr = mov_data.get("win_rate", wr) if mov_data.get("count", 0) >= 10 else wr
+            kq = kelly_quarter(eff_wr, odds or 0.0, cap=3.0)
             if avg_clv is not None and avg_clv < 0 and kq > 0:
                 kq = round(kq * 0.5, 1)
             note = "CLV negativo: stake reduzido 50%" if (avg_clv is not None and avg_clv < 0) else ""
