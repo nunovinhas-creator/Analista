@@ -2,9 +2,17 @@
 import html as _html
 import os
 from datetime import datetime, timezone
+from zoneinfo import ZoneInfo
 
 MARKET_BASE_ODDS = {"o25": 1.90, "btts": 1.85, "1x2": 2.20}
 MARKET_LABELS    = {"o25": "Over 2.5", "btts": "BTTS", "1x2": "1X2"}
+
+_LISBON_TZ = ZoneInfo("Europe/Lisbon")
+
+
+def now_lisbon():
+    """Devolve datetime actual no fuso Europe/Lisbon (WEST/WET — imune a UTC drift)."""
+    return datetime.now(_LISBON_TZ)
 
 DOCS_DIR = os.path.join(os.path.dirname(os.path.abspath(__file__)), "docs")
 

@@ -1,8 +1,8 @@
 # picks_tracker.py — Backtest próprio do Analista: regista picks do dia e resolve resultados
 import json
 import os
-from datetime import datetime, timedelta, timezone
-from utils import normalize_str as _norm
+from datetime import timedelta
+from utils import normalize_str as _norm, now_lisbon as _now_lisbon
 
 try:
     import fcntl as _fcntl
@@ -64,11 +64,12 @@ def record_and_resolve(today_games, history_records):
 
 def _record_and_resolve_locked(today_games, history_records):
     db        = load_db()
-    now_iso   = datetime.now(timezone.utc).isoformat()
-    today_str = datetime.now(timezone.utc).strftime("%Y-%m-%d")
+    _now      = _now_lisbon()
+    now_iso   = _now.isoformat()
+    today_str = _now.strftime("%Y-%m-%d")
 
     # Expirar picks pendentes sem resolução há mais de TTL_DAYS dias
-    cutoff      = (datetime.now(timezone.utc) - timedelta(days=TTL_DAYS)).strftime("%Y-%m-%d")
+    cutoff      = (_now - timedelta(days=TTL_DAYS)).strftime("%Y-%m-%d")
     new_pending = [p for p in db["pending"] if p.get("date", "") >= cutoff]
     n_expired   = len(db["pending"]) - len(new_pending)
     if n_expired:

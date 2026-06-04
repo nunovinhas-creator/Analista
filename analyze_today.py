@@ -1,8 +1,8 @@
 # analyze_today.py — "Onde Apostar Hoje": picks do dia qualificados pelo backtest
 import re
-from datetime import datetime, timedelta, timezone
+from datetime import timedelta
 from picks_tracker import record_and_resolve, tracker_stats
-from utils import wilson_ci, kelly_quarter, MARKET_BASE_ODDS, MARKET_LABELS, segment_stats, safe_float
+from utils import wilson_ci, kelly_quarter, MARKET_BASE_ODDS, MARKET_LABELS, segment_stats, safe_float, now_lisbon
 
 CONF_RANK        = {"ALTA": 0, "MÉDIA": 1, "BAIXA": 2}
 MIN_N_EDGE       = 10   # mínimo para sinalizar edge (strong/moderate)
@@ -109,8 +109,9 @@ def parse_dashboard_html(html, dates):
 
 def analyze_today(history, dashboard_html):
     """Cruza picks de hoje e amanhã com estatísticas do backtest e devolve recomendações."""
-    today_str    = datetime.now(timezone.utc).strftime("%Y-%m-%d")
-    tomorrow_str = (datetime.now(timezone.utc) + timedelta(days=1)).strftime("%Y-%m-%d")
+    _now         = now_lisbon()
+    today_str    = _now.strftime("%Y-%m-%d")
+    tomorrow_str = (_now + timedelta(days=1)).strftime("%Y-%m-%d")
     records      = history.get("records", [])
 
     markets = [

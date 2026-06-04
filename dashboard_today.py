@@ -1,8 +1,8 @@
 # dashboard_today.py — Gera docs/today_dashboard.html ("Onde Apostar Hoje")
 import json
 import os
-from datetime import datetime, timedelta, timezone
-from utils import DOCS_DIR, pct, color, escape, MARKET_BASE_ODDS, MARKET_LABELS
+from datetime import datetime
+from utils import DOCS_DIR, pct, color, escape, MARKET_BASE_ODDS, MARKET_LABELS, now_lisbon
 
 
 def _edge_badge(edge):
@@ -325,7 +325,7 @@ def _tracker_section(perf):
 
 def gen_dashboard_today(today_stats):
     os.makedirs(DOCS_DIR, exist_ok=True)
-    now      = datetime.now(timezone.utc).strftime("%d/%m/%Y %H:%M UTC")
+    now      = now_lisbon().strftime("%d/%m/%Y %H:%M Lisboa")
 
     backtest_n    = today_stats.get("backtest_n", 0)
     total_games   = today_stats.get("total_games", 0)
