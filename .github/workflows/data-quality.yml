@@ -1,0 +1,82 @@
+name: Data Quality
+
+on:
+  schedule:
+    # Verificação diária às 06:00 UTC
+    - cron: "0 6 * * *"
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  data-quality:
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Setup Python 3.12
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+          cache: "pip"
+
+      - name: Instalar dependências
+        run: pip install -r requirements.txt
+
+      - name: Verificações de qualidade dos dados
+        run: |
+          python -c "
+          import sys
+          sys.path.insert(0, '.')
+          from fetcher import fetch_all_data
+          from analyze_over25 import analyze_over25
+          from analyze_football import analyze_football
+          from data_quality.monitor import run_all_checks, save_monitor_report, format_monitor_report
+
+          data = fetch_all_data()
+          o25 = analyze_over25(data['over25_picks'], data['over25_picks_1x2'])
+          fb = analyze_football(data['football_history'], data['football_trebles'])
+          report = run_all_checks(o25, fb)
+          save_monitor_report(report)
+          print(format_monitor_report(report))
+          "
+
+      - name: Validação de schema Pandera
+        run: |
+          python -c "
+          import sys
+          sys.path.insert(0, '.')
+          from fetcher import fetch_all_data
+          from data.schema.picks_schema import validate_picks, picks_quality_report
+          from data.schema.history_schema import validate_history, history_quality_report
+
+          data = fetch_all_data()
+          valid_p, errors_p, n_p = validate_picks(data['over25_picks'])
+          valid_h, errors_h, n_h = validate_history(data['football_history'])
+          print(f'Picks schema: {\"PASS\" if valid_p else \"FAIL\"} ({n_p} records, {len(errors_p)} errors)')
+          print(f'History schema: {\"PASS\" if valid_h else \"FAIL\"} ({n_h} records, {len(errors_h)} errors)')
+          if errors_p: print('Picks errors:', errors_p[:3])
+          if errors_h: print('History errors:', errors_h[:3])
+          "
+
+      - name: Executar testes
+        run: python -m pytest tests/ -v --tb=short || true
+
+      - name: Commit e push relatório de qualidade
+        run: |
+          BRANCH="${GITHUB_REF_NAME}"
+          git config user.name  "analista-bot"
+          git config user.email "analista@noreply.github.com"
+          git add docs/monitor_report.json
+          git diff --staged --quiet || git commit -m "update: data quality report $(date -u +'%Y-%m-%dT%H:%M')"
+          pushed=false
+          for i in 1 2 3 4; do
+            if git pull --rebase origin "$BRANCH" && git push origin HEAD:"$BRANCH"; then
+              pushed=true && break
+            fi
+            echo "Push falhou (tentativa $i), a aguardar $((i * 2))s..."
+            sleep $((i * 2))
+          done
+          $pushed || { echo "[ERROR] Push falhou após 4 tentativas"; exit 1; }

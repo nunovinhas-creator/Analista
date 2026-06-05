@@ -190,17 +190,6 @@
     {
       "date": "2026-06-04",
       "home": "France",
-      "away": "Côte d'Ivoire",
-      "league": "International Friendly Games",
-      "conf": "MÉDIA",
-      "market": "1x2",
-      "edge": "strong",
-      "odds": 2.2,
-      "kelly_pct": 3.0
-    },
-    {
-      "date": "2026-06-04",
-      "home": "France",
       "away": "Côte d&#x27;Ivoire",
       "league": "International Friendly Games",
       "conf": "MÉDIA",
@@ -372,6 +361,292 @@
       "market": "1x2",
       "edge": "strong",
       "odds": 2.2,
+      "kelly_pct": 3.0
+    },
+    {
+      "date": "2026-06-05",
+      "home": "Benin",
+      "away": "Niger",
+      "league": "International Friendly Games",
+      "conf": "ALTA",
+      "market": "1x2",
+      "edge": "strong",
+      "odds": 2.2,
+      "kelly_pct": 3.0
+    },
+    {
+      "date": "2026-06-06",
+      "home": "Kashima Antlers",
+      "away": "Vissel Kobe",
+      "league": "J1 League",
+      "conf": "MÉDIA",
+      "market": "o25",
+      "edge": "moderate",
+      "odds": 1.9,
+      "kelly_pct": 3.0
+    },
+    {
+      "date": "2026-06-06",
+      "home": "FC Tokyo",
+      "away": "Cerezo Osaka",
+      "league": "J1 League",
+      "conf": "BAIXA",
+      "market": "btts",
+      "edge": "moderate",
+      "odds": 1.85,
+      "kelly_pct": 3.0
+    },
+    {
+      "date": "2026-06-06",
+      "home": "JEF United Chiba",
+      "away": "Avispa Fukuoka",
+      "league": "J1 League",
+      "conf": "BAIXA",
+      "market": "btts",
+      "edge": "moderate",
+      "odds": 1.85,
+      "kelly_pct": 3.0
+    },
+    {
+      "date": "2026-06-06",
+      "home": "Mito Hollyhock",
+      "away": "V-Varen Nagasaki",
+      "league": "J1 League",
+      "conf": "MÉDIA",
+      "market": "btts",
+      "edge": "moderate",
+      "odds": 1.85,
+      "kelly_pct": 3.0
+    },
+    {
+      "date": "2026-06-06",
+      "home": "Urawa Red Diamonds",
+      "away": "Fagiano Okayama",
+      "league": "J1 League",
+      "conf": "MÉDIA",
+      "market": "o25",
+      "edge": "moderate",
+      "odds": 1.9,
+      "kelly_pct": 3.0
+    },
+    {
+      "date": "2026-06-06",
+      "home": "Urawa Red Diamonds",
+      "away": "Fagiano Okayama",
+      "league": "J1 League",
+      "conf": "MÉDIA",
+      "market": "btts",
+      "edge": "moderate",
+      "odds": 1.85,
+      "kelly_pct": 3.0
+    },
+    {
+      "date": "2026-06-06",
+      "home": "Yokohama F. Marinos",
+      "away": "Shimizu S-Pulse",
+      "league": "J1 League",
+      "conf": "BAIXA",
+      "market": "btts",
+      "edge": "moderate",
+      "odds": 1.85,
+      "kelly_pct": 3.0
+    },
+    {
+      "date": "2026-06-06",
+      "home": "Kashiwa Reysol",
+      "away": "Kyoto Sanga FC",
+      "league": "J1 League",
+      "conf": "ALTA",
+      "market": "1x2",
+      "edge": "strong",
+      "odds": 2.2,
+      "kelly_pct": 3.0
+    },
+    {
+      "date": "2026-06-06",
+      "home": "Kawasaki Frontale",
+      "away": "Sanfrecce Hiroshima",
+      "league": "J1 League",
+      "conf": "BAIXA",
+      "market": "o25",
+      "edge": "moderate",
+      "odds": 1.9,
+      "kelly_pct": 3.0
+    },
+    {
+      "date": "2026-06-06",
+      "home": "Kawasaki Frontale",
+      "away": "Sanfrecce Hiroshima",
+      "league": "J1 League",
+      "conf": "BAIXA",
+      "market": "btts",
+      "edge": "moderate",
+      "odds": 1.85,
+      "kelly_pct": 3.0
+    },
+    {
+      "date": "2026-06-06",
+      "home": "Kyrgyzstan",
+      "away": "Palestine",
+      "league": "International Friendly Games",
+      "conf": "BAIXA",
+      "market": "o25",
+      "edge": "moderate",
+      "odds": 1.9,
+      "kelly_pct": 3.0
+    },
+    {
+      "date": "2026-06-06",
+      "home": "Criciúma",
+      "away": "Londrina",
+      "league": "Brasileirão Serie B",
+      "conf": "MÉDIA",
+      "market": "btts",
+      "edge": "moderate",
+      "odds": 1.85,
+      "kelly_pct": 3.0
+    },
+    {
+      "date": "2026-06-06",
+      "home": "Criciúma",
+      "away": "Londrina",
+      "league": "Brasileirão Serie B",
+      "conf": "MÉDIA",
+      "market": "1x2",
+      "edge": "strong",
+      "odds": 2.2,
+      "kelly_pct": 3.0
+    },
+    {
+      "date": "2026-06-06",
+      "home": "British Virgin Islands",
+      "away": "Bonaire",
+      "league": "International Friendly Games",
+      "conf": "ALTA",
+      "market": "o25",
+      "edge": "moderate",
+      "odds": 1.9,
+      "kelly_pct": 3.0
+    },
+    {
+      "date": "2026-06-06",
+      "home": "British Virgin Islands",
+      "away": "Bonaire",
+      "league": "International Friendly Games",
+      "conf": "ALTA",
+      "market": "1x2",
+      "edge": "strong",
+      "odds": 2.2,
+      "kelly_pct": 3.0
+    },
+    {
+      "date": "2026-06-06",
+      "home": "Cabo Verde",
+      "away": "Bermuda",
+      "league": "International Friendly Games",
+      "conf": "ALTA",
+      "market": "1x2",
+      "edge": "strong",
+      "odds": 2.2,
+      "kelly_pct": 3.0
+    },
+    {
+      "date": "2026-06-06",
+      "home": "Portugal",
+      "away": "Chile",
+      "league": "International Friendly Games",
+      "conf": "MÉDIA",
+      "market": "1x2",
+      "edge": "strong",
+      "odds": 2.2,
+      "kelly_pct": 3.0
+    },
+    {
+      "date": "2026-06-06",
+      "home": "USA",
+      "away": "Germany",
+      "league": "International Friendly Games",
+      "conf": "MÉDIA",
+      "market": "o25",
+      "edge": "moderate",
+      "odds": 1.9,
+      "kelly_pct": 3.0
+    },
+    {
+      "date": "2026-06-06",
+      "home": "USA",
+      "away": "Germany",
+      "league": "International Friendly Games",
+      "conf": "MÉDIA",
+      "market": "btts",
+      "edge": "moderate",
+      "odds": 1.85,
+      "kelly_pct": 3.0
+    },
+    {
+      "date": "2026-06-06",
+      "home": "USA",
+      "away": "Germany",
+      "league": "International Friendly Games",
+      "conf": "MÉDIA",
+      "market": "1x2",
+      "edge": "strong",
+      "odds": 2.2,
+      "kelly_pct": 3.0
+    },
+    {
+      "date": "2026-06-06",
+      "home": "CD Castellón",
+      "away": "Almería",
+      "league": "Segunda División",
+      "conf": "MÉDIA",
+      "market": "o25",
+      "edge": "moderate",
+      "odds": 1.9,
+      "kelly_pct": 3.0
+    },
+    {
+      "date": "2026-06-06",
+      "home": "CD Castellón",
+      "away": "Almería",
+      "league": "Segunda División",
+      "conf": "MÉDIA",
+      "market": "btts",
+      "edge": "moderate",
+      "odds": 1.85,
+      "kelly_pct": 3.0
+    },
+    {
+      "date": "2026-06-06",
+      "home": "CD Castellón",
+      "away": "Almería",
+      "league": "Segunda División",
+      "conf": "MÉDIA",
+      "market": "1x2",
+      "edge": "strong",
+      "odds": 2.2,
+      "kelly_pct": 3.0
+    },
+    {
+      "date": "2026-06-06",
+      "home": "Switzerland",
+      "away": "Australia",
+      "league": "International Friendly Games",
+      "conf": "BAIXA",
+      "market": "o25",
+      "edge": "moderate",
+      "odds": 1.9,
+      "kelly_pct": 3.0
+    },
+    {
+      "date": "2026-06-06",
+      "home": "Cabo Verde",
+      "away": "Bermuda",
+      "league": "International Friendly Games",
+      "conf": "ALTA",
+      "market": "o25",
+      "edge": "moderate",
+      "odds": 1.9,
       "kelly_pct": 3.0
     }
   ],
@@ -1467,6 +1742,19 @@
       "kelly_pct": 3.0,
       "hit": false,
       "resolved_at": "2026-06-04T16:19:18.485389+00:00"
+    },
+    {
+      "date": "2026-06-04",
+      "home": "France",
+      "away": "Côte d'Ivoire",
+      "league": "International Friendly Games",
+      "conf": "MÉDIA",
+      "market": "1x2",
+      "edge": "strong",
+      "odds": 2.2,
+      "kelly_pct": 3.0,
+      "hit": false,
+      "resolved_at": "2026-06-05T15:01:44.817521+01:00"
     }
   ]
 }

@@ -1,0 +1,81 @@
+name: Backtesting
+
+on:
+  schedule:
+    # Backtesting semanal às segundas-feiras 08:00 UTC
+    - cron: "0 8 * * 1"
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  backtest:
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Setup Python 3.12
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+          cache: "pip"
+
+      - name: Instalar dependências
+        run: pip install -r requirements.txt
+
+      - name: Executar backtest e gerar relatório
+        run: |
+          python -c "
+          import sys
+          sys.path.insert(0, '.')
+          from fetcher import fetch_all_data
+          from analyze_football import analyze_football
+          from backtesting.engine import compare_strategies
+          from backtesting.report import generate_report, save_report
+
+          data = fetch_all_data()
+          history = data['football_history']
+          records = history.get('records', [])
+          print(f'Running backtest on {len(records)} records...')
+          results = compare_strategies(records, market='o25')
+          for name, r in results.items():
+              print(f'{name}: ROI={r.roi:+.2f}u, WR={r.win_rate:.1%}, MaxDD={r.max_drawdown:.2f}u, n={r.n_bets}')
+          save_report(results)
+          print('Backtest report saved to docs/backtest_report.html')
+          "
+
+      - name: Gerar dashboard avançado
+        run: |
+          python -c "
+          import sys
+          sys.path.insert(0, '.')
+          from fetcher import fetch_all_data
+          from analyze_over25 import analyze_over25
+          from analyze_football import analyze_football
+          from dashboard.gen_advanced import save_advanced_dashboard
+
+          data = fetch_all_data()
+          o25 = analyze_over25(data['over25_picks'], data['over25_picks_1x2'])
+          fb = analyze_football(data['football_history'], data['football_trebles'])
+          save_advanced_dashboard(o25, fb, picks_raw=data['over25_picks'])
+          print('Advanced dashboard saved')
+          "
+
+      - name: Commit e push resultados
+        run: |
+          BRANCH="${GITHUB_REF_NAME}"
+          git config user.name  "analista-bot"
+          git config user.email "analista@noreply.github.com"
+          git add docs/
+          git diff --staged --quiet || git commit -m "update: backtest + advanced dashboard $(date -u +'%Y-%m-%dT%H:%M')"
+          pushed=false
+          for i in 1 2 3 4; do
+            if git pull --rebase origin "$BRANCH" && git push origin HEAD:"$BRANCH"; then
+              pushed=true && break
+            fi
+            echo "Push falhou (tentativa $i), a aguardar $((i * 2))s..."
+            sleep $((i * 2))
+          done
+          $pushed || { echo "[ERROR] Push falhou após 4 tentativas"; exit 1; }

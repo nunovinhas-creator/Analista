@@ -1,0 +1,122 @@
+<!DOCTYPE html>
+<html lang="pt">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Relatório de Backtesting</title>
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+body{background:#0d0d0b;color:#c8c4be;font-family:"Albert Sans","Helvetica Neue",Arial,sans-serif;padding:24px;font-size:14px}
+h1{font-size:1.4rem;color:#c9a030;margin-bottom:4px}
+h2{font-size:.85rem;color:#7a7670;text-transform:uppercase;letter-spacing:.06em;margin:28px 0 12px}
+.card{background:#131311;border:1px solid #232322;border-radius:2px;padding:20px;margin-bottom:20px}
+table{width:100%;border-collapse:collapse;font-size:.83rem}
+th{text-align:left;border-bottom:1px solid #232322;color:#7a7670;font-size:.75rem;padding:8px 12px;text-transform:uppercase;letter-spacing:.04em}
+td{border-bottom:1px solid #232322;vertical-align:middle}
+tr:last-child td{border-bottom:none}
+.sub{color:#7a7670;font-size:.78rem;font-family:monospace;text-transform:uppercase;letter-spacing:.04em}
+</style>
+</head>
+<body>
+<h1>📊 Relatório de Backtesting</h1>
+<p class="sub" style="margin-bottom:24px">Gerado: 05/06/2026 14:01 UTC</p>
+
+<div class="card">
+<h2>Comparação de Estratégias</h2>
+<div style="overflow-x:auto">
+<table><thead><tr><th style='padding:8px 12px;text-align:left;border-bottom:1px solid #232322;color:#7a7670;font-size:.78rem;text-transform:uppercase;letter-spacing:.04em'>Estratégia</th><th style='padding:8px 12px;text-align:left;border-bottom:1px solid #232322;color:#7a7670;font-size:.78rem;text-transform:uppercase;letter-spacing:.04em'>Saldo Final</th><th style='padding:8px 12px;text-align:left;border-bottom:1px solid #232322;color:#7a7670;font-size:.78rem;text-transform:uppercase;letter-spacing:.04em'>ROI (u)</th><th style='padding:8px 12px;text-align:left;border-bottom:1px solid #232322;color:#7a7670;font-size:.78rem;text-transform:uppercase;letter-spacing:.04em'>Yield</th><th style='padding:8px 12px;text-align:left;border-bottom:1px solid #232322;color:#7a7670;font-size:.78rem;text-transform:uppercase;letter-spacing:.04em'>WR</th><th style='padding:8px 12px;text-align:left;border-bottom:1px solid #232322;color:#7a7670;font-size:.78rem;text-transform:uppercase;letter-spacing:.04em'>Max DD</th><th style='padding:8px 12px;text-align:left;border-bottom:1px solid #232322;color:#7a7670;font-size:.78rem;text-transform:uppercase;letter-spacing:.04em'>Bets</th><th style='padding:8px 12px;text-align:left;border-bottom:1px solid #232322;color:#7a7670;font-size:.78rem;text-transform:uppercase;letter-spacing:.04em'>Sharpe</th></tr></thead><tbody>
+<tr>
+  <td style='padding:8px 12px;font-weight:600'>flat</td>
+  <td style='padding:8px 12px;color:#40b89a'>111.40u</td>
+  <td style='padding:8px 12px;color:#40b89a'>+11.40u</td>
+  <td style='padding:8px 12px;color:#40b89a'>+15.0%</td>
+  <td style='padding:8px 12px;color:#40b89a'>60.5%</td>
+  <td style='padding:8px 12px;color:#c9a030'>4.10u</td>
+  <td style='padding:8px 12px;color:#7a7670'>76</td>
+  <td style='padding:8px 12px;color:#40b89a'>+0.17</td>
+</tr>
+<tr>
+  <td style='padding:8px 12px;font-weight:600'>half_kelly</td>
+  <td style='padding:8px 12px;color:#40b89a'>129.84u</td>
+  <td style='padding:8px 12px;color:#40b89a'>+29.84u</td>
+  <td style='padding:8px 12px;color:#40b89a'>+14.7%</td>
+  <td style='padding:8px 12px;color:#40b89a'>60.5%</td>
+  <td style='padding:8px 12px;color:#c04539'>13.96u</td>
+  <td style='padding:8px 12px;color:#7a7670'>76</td>
+  <td style='padding:8px 12px;color:#40b89a'>+0.15</td>
+</tr>
+<tr>
+  <td style='padding:8px 12px;font-weight:600'>quarter_kelly</td>
+  <td style='padding:8px 12px;color:#40b89a'>131.93u</td>
+  <td style='padding:8px 12px;color:#40b89a'>+31.93u</td>
+  <td style='padding:8px 12px;color:#40b89a'>+16.3%</td>
+  <td style='padding:8px 12px;color:#40b89a'>60.5%</td>
+  <td style='padding:8px 12px;color:#c04539'>12.62u</td>
+  <td style='padding:8px 12px;color:#7a7670'>76</td>
+  <td style='padding:8px 12px;color:#40b89a'>+0.16</td>
+</tr>
+<tr>
+  <td style='padding:8px 12px;font-weight:600'>full_kelly</td>
+  <td style='padding:8px 12px;color:#40b89a'>129.01u</td>
+  <td style='padding:8px 12px;color:#40b89a'>+29.01u</td>
+  <td style='padding:8px 12px;color:#40b89a'>+14.1%</td>
+  <td style='padding:8px 12px;color:#40b89a'>60.5%</td>
+  <td style='padding:8px 12px;color:#c04539'>13.87u</td>
+  <td style='padding:8px 12px;color:#7a7670'>76</td>
+  <td style='padding:8px 12px;color:#40b89a'>+0.15</td>
+</tr></tbody></table>
+</div>
+</div>
+
+<div class="card">
+<h2>Evolução do Bankroll</h2>
+<canvas id="bankrollChart" height="100"></canvas>
+<script>
+(function(){
+  var ctx = document.getElementById('bankrollChart').getContext('2d');
+  new Chart(ctx, {
+    type: 'line',
+    data: { labels: [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25, 26, 27, 28, 29, 30, 31, 32, 33, 34, 35, 36, 37, 38, 39, 40, 41, 42, 43, 44, 45, 46, 47, 48, 49, 50, 51, 52, 53, 54, 55, 56, 57, 58, 59, 60, 61, 62, 63, 64, 65, 66, 67, 68, 69, 70, 71, 72, 73, 74, 75, 76, 77], datasets: [{"label": "flat", "data": [100.0, 99.0, 98.0, 98.9, 99.80000000000001, 100.70000000000002, 101.60000000000002, 102.50000000000003, 103.40000000000003, 102.40000000000003, 101.40000000000003, 100.40000000000003, 101.30000000000004, 102.20000000000005, 103.10000000000005, 102.10000000000005, 103.00000000000006, 102.00000000000006, 102.90000000000006, 103.80000000000007, 104.70000000000007, 103.70000000000007, 104.60000000000008, 105.50000000000009, 104.50000000000009, 105.40000000000009, 104.40000000000009, 105.3000000000001, 106.2000000000001, 107.10000000000011, 106.10000000000011, 107.00000000000011, 106.00000000000011, 106.90000000000012, 105.90000000000012, 106.80000000000013, 105.80000000000013, 106.70000000000013, 107.60000000000014, 108.50000000000014, 109.40000000000015, 108.40000000000015, 107.40000000000015, 106.40000000000015, 105.40000000000015, 106.30000000000015, 107.20000000000016, 106.20000000000016, 107.10000000000016, 106.10000000000016, 107.00000000000017, 107.90000000000018, 108.80000000000018, 109.70000000000019, 108.70000000000019, 107.70000000000019, 108.6000000000002, 109.5000000000002, 110.4000000000002, 111.30000000000021, 110.30000000000021, 111.20000000000022, 112.10000000000022, 111.10000000000022, 110.10000000000022, 111.00000000000023, 111.90000000000023, 112.80000000000024, 113.70000000000024, 114.60000000000025, 113.60000000000025, 112.60000000000025, 111.60000000000025, 110.60000000000025, 111.50000000000026, 110.50000000000026, 111.40000000000026], "borderColor": "#40b89a", "backgroundColor": "rgba(40b89a,0)", "fill": false, "tension": 0.1, "pointRadius": 0, "borderWidth": 2}, {"label": "half_kelly", "data": [100.0, 97.0, 94.09, 96.63040000000001, 96.63040000000001, 99.2394, 99.2394, 101.91890000000001, 104.67070000000001, 102.7168, 99.6353, 96.64620000000001, 99.2556, 101.9355, 104.68780000000001, 101.5472, 104.289, 101.1603, 103.89160000000001, 106.6967, 106.6967, 103.4958, 105.62780000000001, 108.47980000000001, 105.22540000000001, 108.0665, 104.8245, 107.6548, 110.5615, 113.5467, 110.1403, 113.1141, 110.52499999999999, 113.50919999999999, 110.1039, 112.372, 112.372, 115.406, 118.522, 121.72210000000001, 121.72210000000001, 118.0704, 114.5283, 111.0925, 107.7597, 110.66919999999999, 113.65729999999999, 113.65729999999999, 113.65729999999999, 113.65729999999999, 113.65729999999999, 116.726, 119.8776, 123.1143, 119.4209, 115.8383, 115.8383, 118.9659, 122.17800000000001, 125.47680000000001, 125.47680000000001, 128.8647, 132.344, 128.37369999999999, 124.52249999999998, 127.88459999999998, 131.33749999999998, 134.88359999999997, 138.52549999999997, 142.26569999999995, 137.99769999999995, 133.85779999999994, 133.85779999999994, 129.84209999999993, 129.84209999999993, 129.84209999999993, 129.84209999999993], "borderColor": "#c9a030", "backgroundColor": "rgba(c9a030,0)", "fill": false, "tension": 0.1, "pointRadius": 0, "borderWidth": 2}, {"label": "quarter_kelly", "data": [100.0, 97.0, 94.09, 96.63040000000001, 96.63040000000001, 99.2394, 99.2394, 101.91890000000001, 104.67070000000001, 103.69380000000001, 100.58300000000001, 97.56550000000001, 100.19980000000001, 102.90520000000001, 105.68360000000001, 102.51310000000001, 104.2994, 101.1704, 103.902, 106.7074, 106.7074, 103.5062, 104.57230000000001, 107.39580000000001, 104.1739, 106.98660000000001, 103.77700000000002, 106.57900000000002, 109.45660000000002, 112.41190000000002, 109.03950000000002, 111.98360000000002, 110.70200000000003, 113.69100000000003, 110.28030000000003, 111.41620000000003, 111.41620000000003, 114.42440000000003, 117.51390000000004, 120.68680000000003, 120.68680000000003, 118.28650000000003, 116.37090000000003, 112.87980000000003, 109.49340000000004, 112.44970000000004, 115.48580000000004, 115.48580000000004, 115.48580000000004, 115.48580000000004, 115.48580000000004, 118.60390000000004, 121.80620000000003, 125.09500000000003, 121.34210000000003, 117.70180000000003, 117.70180000000003, 120.87970000000003, 124.14350000000003, 127.49540000000003, 127.49540000000003, 130.93780000000004, 134.47310000000004, 130.43890000000005, 126.52570000000004, 129.94190000000003, 133.45030000000003, 137.0535, 140.75390000000002, 144.5543, 140.2177, 136.0112, 136.0112, 131.9309, 131.9309, 131.9309, 131.9309], "borderColor": "#6a90c4", "backgroundColor": "rgba(6a90c4,0)", "fill": false, "tension": 0.1, "pointRadius": 0, "borderWidth": 2}, {"label": "full_kelly", "data": [100.0, 97.0, 94.09, 96.63040000000001, 96.63040000000001, 99.2394, 99.2394, 101.91890000000001, 104.67070000000001, 101.5306, 98.4847, 95.53020000000001, 98.10950000000001, 100.75850000000001, 103.47900000000001, 100.37460000000002, 103.08470000000001, 99.99220000000001, 102.69200000000001, 105.46470000000001, 105.46470000000001, 102.30080000000001, 105.06290000000001, 107.8996, 104.66260000000001, 107.48850000000002, 104.26380000000002, 107.07890000000002, 109.97000000000001, 112.93920000000001, 109.55100000000002, 112.50890000000001, 109.13360000000002, 112.08020000000002, 108.71780000000003, 111.65320000000003, 111.65320000000003, 114.66780000000003, 117.76380000000003, 120.94340000000003, 120.94340000000003, 117.31510000000003, 113.79560000000004, 110.38170000000004, 107.07020000000004, 109.96110000000004, 112.93000000000005, 112.93000000000005, 112.93000000000005, 112.93000000000005, 112.93000000000005, 115.97910000000005, 119.11050000000004, 122.32650000000004, 118.65670000000004, 115.09700000000004, 115.09700000000004, 118.20460000000004, 121.39610000000005, 124.67380000000004, 124.67380000000004, 128.04000000000005, 131.49710000000005, 127.55220000000004, 123.72560000000004, 127.06620000000004, 130.49700000000004, 134.02040000000005, 137.63900000000004, 141.35530000000003, 137.11460000000002, 133.0012, 133.0012, 129.0112, 129.0112, 129.0112, 129.0112], "borderColor": "#c04539", "backgroundColor": "rgba(c04539,0)", "fill": false, "tension": 0.1, "pointRadius": 0, "borderWidth": 2}] },
+    options: {
+      responsive: true,
+      plugins: { legend: { labels: { color: '#c8c4be' } } },
+      scales: {
+        x: { ticks: { color: '#7a7670', maxTicksLimit: 15 }, grid: { color: '#232322' } },
+        y: { ticks: { color: '#7a7670' }, grid: { color: '#232322' } }
+      }
+    }
+  });
+})();
+</script>
+</div>
+
+<div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:20px">
+<div class="card">
+<h2>Por Mercado</h2>
+<table><thead><tr>
+  <th style="padding:6px 10px;text-align:left;border-bottom:1px solid #232322;color:#7a7670;font-size:.75rem">Mercado</th><th style="padding:6px 10px;text-align:left;border-bottom:1px solid #232322;color:#7a7670;font-size:.75rem">Bets</th>
+  <th style="padding:6px 10px;text-align:left;border-bottom:1px solid #232322;color:#7a7670;font-size:.75rem">WR</th><th style="padding:6px 10px;text-align:left;border-bottom:1px solid #232322;color:#7a7670;font-size:.75rem">ROI</th>
+</tr></thead><tbody><tr><td style='padding:6px 10px'>O25</td><td style='padding:6px 10px;color:#7a7670'>76</td><td style='padding:6px 10px;color:#40b89a'>60.5%</td><td style='padding:6px 10px;color:#40b89a'>+0.00u</td></tr></tbody></table>
+</div>
+<div class="card">
+<h2>Por Mês</h2>
+<table><thead><tr>
+  <th style="padding:6px 10px;text-align:left;border-bottom:1px solid #232322;color:#7a7670;font-size:.75rem">Mês</th><th style="padding:6px 10px;text-align:left;border-bottom:1px solid #232322;color:#7a7670;font-size:.75rem">Bets</th>
+  <th style="padding:6px 10px;text-align:left;border-bottom:1px solid #232322;color:#7a7670;font-size:.75rem">ROI</th><th style="padding:6px 10px;text-align:left;border-bottom:1px solid #232322;color:#7a7670;font-size:.75rem">WR</th>
+</tr></thead><tbody><tr><td style='padding:6px 10px'>2026-05</td><td style='padding:6px 10px;color:#7a7670'>74</td><td style='padding:6px 10px;color:#40b89a'>+0.00u</td><td style='padding:6px 10px;color:#40b89a'>60.8%</td></tr><tr><td style='padding:6px 10px'>2026-06</td><td style='padding:6px 10px;color:#7a7670'>2</td><td style='padding:6px 10px;color:#40b89a'>+0.00u</td><td style='padding:6px 10px;color:#c04539'>50.0%</td></tr></tbody></table>
+</div>
+<div class="card">
+<h2>Top Ligas</h2>
+<table><thead><tr>
+  <th style="padding:6px 10px;text-align:left;border-bottom:1px solid #232322;color:#7a7670;font-size:.75rem">Liga</th><th style="padding:6px 10px;text-align:left;border-bottom:1px solid #232322;color:#7a7670;font-size:.75rem">Bets</th>
+  <th style="padding:6px 10px;text-align:left;border-bottom:1px solid #232322;color:#7a7670;font-size:.75rem">WR</th><th style="padding:6px 10px;text-align:left;border-bottom:1px solid #232322;color:#7a7670;font-size:.75rem">ROI</th>
+</tr></thead><tbody><tr><td style='padding:6px 10px'>Eliteserien</td><td style='padding:6px 10px;color:#7a7670'>12</td><td style='padding:6px 10px;color:#40b89a'>75.0%</td><td style='padding:6px 10px;color:#40b89a'>+0.00u</td></tr><tr><td style='padding:6px 10px'>Chinese Super League</td><td style='padding:6px 10px;color:#7a7670'>10</td><td style='padding:6px 10px;color:#c04539'>50.0%</td><td style='padding:6px 10px;color:#40b89a'>+0.00u</td></tr><tr><td style='padding:6px 10px'>Segunda División</td><td style='padding:6px 10px;color:#7a7670'>7</td><td style='padding:6px 10px;color:#c04539'>42.9%</td><td style='padding:6px 10px;color:#40b89a'>+0.00u</td></tr><tr><td style='padding:6px 10px'>Pro League</td><td style='padding:6px 10px;color:#7a7670'>6</td><td style='padding:6px 10px;color:#40b89a'>66.7%</td><td style='padding:6px 10px;color:#40b89a'>+0.00u</td></tr><tr><td style='padding:6px 10px'>Allsvenskan</td><td style='padding:6px 10px;color:#7a7670'>6</td><td style='padding:6px 10px;color:#40b89a'>100.0%</td><td style='padding:6px 10px;color:#40b89a'>+0.00u</td></tr><tr><td style='padding:6px 10px'>International Friendly Games</td><td style='padding:6px 10px;color:#7a7670'>6</td><td style='padding:6px 10px;color:#c04539'>50.0%</td><td style='padding:6px 10px;color:#40b89a'>+0.00u</td></tr><tr><td style='padding:6px 10px'>Premier League</td><td style='padding:6px 10px;color:#7a7670'>3</td><td style='padding:6px 10px;color:#c04539'>0.0%</td><td style='padding:6px 10px;color:#40b89a'>+0.00u</td></tr><tr><td style='padding:6px 10px'>MLS</td><td style='padding:6px 10px;color:#7a7670'>3</td><td style='padding:6px 10px;color:#40b89a'>100.0%</td><td style='padding:6px 10px;color:#40b89a'>+0.00u</td></tr><tr><td style='padding:6px 10px'>Liga F</td><td style='padding:6px 10px;color:#7a7670'>3</td><td style='padding:6px 10px;color:#40b89a'>100.0%</td><td style='padding:6px 10px;color:#40b89a'>+0.00u</td></tr><tr><td style='padding:6px 10px'>Saudi Pro League</td><td style='padding:6px 10px;color:#7a7670'>2</td><td style='padding:6px 10px;color:#c04539'>0.0%</td><td style='padding:6px 10px;color:#40b89a'>+0.00u</td></tr></tbody></table>
+</div>
+</div>
+
+<p style="text-align:center;color:#7a7670;font-size:.72rem;margin-top:20px">
+  Analista · Backtesting Determinístico · nunovinhas-creator/Analista
+</p>
+</body>
+</html>
