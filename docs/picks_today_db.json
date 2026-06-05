@@ -190,17 +190,6 @@
     {
       "date": "2026-06-04",
       "home": "France",
-      "away": "Côte d'Ivoire",
-      "league": "International Friendly Games",
-      "conf": "MÉDIA",
-      "market": "1x2",
-      "edge": "strong",
-      "odds": 2.2,
-      "kelly_pct": 3.0
-    },
-    {
-      "date": "2026-06-04",
-      "home": "France",
       "away": "Côte d&#x27;Ivoire",
       "league": "International Friendly Games",
       "conf": "MÉDIA",
@@ -642,6 +631,17 @@
       "date": "2026-06-06",
       "home": "Cabo Verde",
       "away": "Bermuda",
+      "league": "International Friendly Games",
+      "conf": "ALTA",
+      "market": "1x2",
+      "edge": "strong",
+      "odds": 2.2,
+      "kelly_pct": 3.0
+    },
+    {
+      "date": "2026-06-05",
+      "home": "Benin",
+      "away": "Niger",
       "league": "International Friendly Games",
       "conf": "ALTA",
       "market": "1x2",
@@ -1716,6 +1716,19 @@
       "kelly_pct": 3.0,
       "hit": false,
       "resolved_at": "2026-06-04T08:13:22.995930+00:00"
+    },
+    {
+      "date": "2026-06-04",
+      "home": "France",
+      "away": "Côte d'Ivoire",
+      "league": "International Friendly Games",
+      "conf": "MÉDIA",
+      "market": "1x2",
+      "edge": "strong",
+      "odds": 2.2,
+      "kelly_pct": 3.0,
+      "hit": false,
+      "resolved_at": "2026-06-05T08:00:23.029351+00:00"
     }
   ]
 }
