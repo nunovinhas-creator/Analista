@@ -143,8 +143,8 @@ def portfolio_kelly(bets):
             options={"ftol": 1e-9, "maxiter": 1000},
         )
         stakes = [max(0.0, float(s)) for s in result.x]
-    except Exception:
-        # Fallback: Kelly individual fraccionário
+    except Exception as e:
+        print(f"[WARN] portfolio_kelly: optimizador falhou ({e}), usando Kelly fraccionário individual")
         stakes = [0.0] * n
         for i in active_idx:
             wp, odds = valid[i]

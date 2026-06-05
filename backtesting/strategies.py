@@ -93,7 +93,7 @@ class ProportionalKellyStrategy(Strategy):
         return max(0.0, centre - margin)
 
     def __call__(self, predicted_prob, odds, bankroll, history):
-        if odds <= 1.01 or predicted_prob <= 0.0 or bankroll <= 0.0:
+        if odds <= 1.01 or predicted_prob <= 0.0 or predicted_prob >= 1.0 or bankroll <= 0.0:
             return 0.0
 
         # Ajustar probabilidade com Wilson se tiver histórico suficiente

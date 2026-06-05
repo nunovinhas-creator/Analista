@@ -424,9 +424,7 @@ class BacktestEngine:
             return 0.0
 
         # Anualizar assumindo ~250 apostas/ano como benchmark razoável
-        annualized = mean_r * math.sqrt(250)
-        std_annual = std_r * math.sqrt(250)
-        return annualized / std_annual if std_annual > 0 else 0.0
+        return (mean_r / std_r) * math.sqrt(250) if std_r > 0 else 0.0
 
 
 # ── Funções auxiliares internas ────────────────────────────────────────────────

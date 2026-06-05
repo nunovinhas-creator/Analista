@@ -18,7 +18,7 @@ def brier_score(y_true, y_pred):
         float: Brier Score (0 = perfeito, 1 = terrível)
     """
     if not y_true or not y_pred or len(y_true) != len(y_pred):
-        return 0.0
+        return None
 
     n = len(y_true)
     total = sum((float(p) - float(t)) ** 2 for t, p in zip(y_true, y_pred))
@@ -39,7 +39,7 @@ def log_loss_score(y_true, y_pred, eps=1e-7):
         float: Log Loss (menor = melhor)
     """
     if not y_true or not y_pred or len(y_true) != len(y_pred):
-        return 0.0
+        return None
 
     n = len(y_true)
     total = 0.0
@@ -178,9 +178,11 @@ def calibration_from_records(records, prob_key, hit_key, scale=100.0):
             "n": 0,
         }
 
+    bs = brier_score(y_true, y_pred)
+    ll = log_loss_score(y_true, y_pred)
     return {
-        "brier": round(brier_score(y_true, y_pred), 6),
-        "log_loss": round(log_loss_score(y_true, y_pred), 6),
+        "brier": round(bs, 6) if bs is not None else None,
+        "log_loss": round(ll, 6) if ll is not None else None,
         "ece": round(expected_calibration_error(y_true, y_pred), 6),
         "reliability_diagram": reliability_diagram_data(y_true, y_pred),
         "n": len(y_true),

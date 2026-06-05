@@ -42,8 +42,8 @@ def run_all_checks(over25_stats: dict, football_stats: dict) -> dict:
     try:
         from data_quality.drift import run_drift_analysis
         drift_report = run_drift_analysis(over25_stats)
-        if drift_report.get("drift_detected"):
-            psi = drift_report.get("psi_score", 0)
+        if drift_report.get("drift", {}).get("drift_detected"):
+            psi = drift_report.get("drift", {}).get("psi_score", 0)
             alerts.append(f"🔴 Drift detectado! PSI={psi:.3f} — distribuição de picks mudou significativamente")
         if drift_report.get("concept_drift", {}).get("drift_detected"):
             alerts.append("🔴 Concept drift: win rate divergiu do baseline (CUSUM positivo)")
@@ -141,8 +141,9 @@ def format_monitor_report(monitor_dict: dict) -> str:
 
     dr = monitor_dict.get("drift", {})
     if dr and not dr.get("error"):
-        psi = dr.get("psi_score", 0)
-        lines.append(f"  Drift (PSI): {psi:.3f} — {dr.get('interpretation','?')}")
+        drift_inner = dr.get("drift", {})
+        psi = drift_inner.get("psi_score", 0)
+        lines.append(f"  Drift (PSI): {psi:.3f} — {drift_inner.get('summary','?')}")
 
     sv = monitor_dict.get("schema_validation", {})
     p_ok = "✅" if sv.get("picks_valid", True) else "❌"
