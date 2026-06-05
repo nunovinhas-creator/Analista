@@ -83,7 +83,7 @@ def label_error_score(predicted_prob, outcome, threshold=0.5):
 # Detecção de erros de label
 # ---------------------------------------------------------------------------
 
-def detect_label_errors(picks, threshold=0.3):
+def detect_label_errors(picks, threshold=0.65):
     """Encontra picks potencialmente mal-etiquetados.
 
     Um pick é suspeito se o error_score > threshold.
@@ -135,7 +135,7 @@ def quality_report(picks):
     n_resolved = len(resolved)
 
     # Erros suspeitos
-    suspected = detect_label_errors(picks, threshold=0.3)
+    suspected = detect_label_errors(picks, threshold=0.65)
     suspicious_wins   = [e for e in suspected if e["pick"]["result_over25"] == "WIN"]
     suspicious_losses = [e for e in suspected if e["pick"]["result_over25"] == "LOSS"]
 

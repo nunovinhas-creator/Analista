@@ -30,7 +30,7 @@ PICKS_SCHEMA = DataFrameSchema(
         ),
         "btts_prob": Column(
             float,
-            checks=[Check(lambda x: (x >= 0) & (x <= 1), element_wise=True)],
+            checks=[Check(lambda x: (x >= 0) & (x <= 100), element_wise=True)],
             nullable=True,
             coerce=True,
         ),
