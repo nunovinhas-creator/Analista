@@ -648,6 +648,116 @@
       "edge": "strong",
       "odds": 2.2,
       "kelly_pct": 3.0
+    },
+    {
+      "date": "2026-06-07",
+      "home": "Argentina",
+      "away": "Honduras",
+      "league": "International Friendly Games",
+      "conf": "ALTA",
+      "market": "o25",
+      "edge": "moderate",
+      "odds": 1.9,
+      "kelly_pct": 3.0
+    },
+    {
+      "date": "2026-06-07",
+      "home": "Argentina",
+      "away": "Honduras",
+      "league": "International Friendly Games",
+      "conf": "ALTA",
+      "market": "1x2",
+      "edge": "strong",
+      "odds": 2.2,
+      "kelly_pct": 3.0
+    },
+    {
+      "date": "2026-06-07",
+      "home": "Denmark",
+      "away": "Ukraine",
+      "league": "International Friendly Games",
+      "conf": "MÉDIA",
+      "market": "1x2",
+      "edge": "strong",
+      "odds": 2.2,
+      "kelly_pct": 3.0
+    },
+    {
+      "date": "2026-06-07",
+      "home": "Morocco",
+      "away": "Norway",
+      "league": "International Friendly Games",
+      "conf": "ALTA",
+      "market": "1x2",
+      "edge": "strong",
+      "odds": 2.2,
+      "kelly_pct": 3.0
+    },
+    {
+      "date": "2026-06-07",
+      "home": "Las Palmas",
+      "away": "Málaga CF",
+      "league": "Segunda División",
+      "conf": "BAIXA",
+      "market": "o25",
+      "edge": "moderate",
+      "odds": 1.9,
+      "kelly_pct": 3.0
+    },
+    {
+      "date": "2026-06-07",
+      "home": "Las Palmas",
+      "away": "Málaga CF",
+      "league": "Segunda División",
+      "conf": "BAIXA",
+      "market": "btts",
+      "edge": "moderate",
+      "odds": 1.85,
+      "kelly_pct": 3.0
+    },
+    {
+      "date": "2026-06-07",
+      "home": "Clube De Regatas Brasil",
+      "away": "São Bernardo",
+      "league": "Brasileirão Serie B",
+      "conf": "MÉDIA",
+      "market": "btts",
+      "edge": "moderate",
+      "odds": 1.85,
+      "kelly_pct": 3.0
+    },
+    {
+      "date": "2026-06-07",
+      "home": "Ecuador",
+      "away": "Guatemala",
+      "league": "International Friendly Games",
+      "conf": "MÉDIA",
+      "market": "btts",
+      "edge": "moderate",
+      "odds": 1.85,
+      "kelly_pct": 3.0
+    },
+    {
+      "date": "2026-06-07",
+      "home": "Colombia",
+      "away": "Jordan",
+      "league": "International Friendly Games",
+      "conf": "BAIXA",
+      "market": "o25",
+      "edge": "moderate",
+      "odds": 1.9,
+      "kelly_pct": 3.0
+    },
+    {
+      "date": "2026-06-07",
+      "home": "Colombia",
+      "away": "Jordan",
+      "league": "International Friendly Games",
+      "conf": "BAIXA",
+      "market": "btts",
+      "edge": "moderate",
+      "odds": 1.85,
+      "kelly_pct": 3.0
     }
   ],
   "resolved": [
