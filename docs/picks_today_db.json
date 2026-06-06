@@ -244,28 +244,6 @@
     },
     {
       "date": "2026-06-05",
-      "home": "Singapore",
-      "away": "China",
-      "league": "International Friendly Games",
-      "conf": "MÉDIA",
-      "market": "o25",
-      "edge": "moderate",
-      "odds": 1.9,
-      "kelly_pct": 3.0
-    },
-    {
-      "date": "2026-06-05",
-      "home": "Singapore",
-      "away": "China",
-      "league": "International Friendly Games",
-      "conf": "MÉDIA",
-      "market": "1x2",
-      "edge": "strong",
-      "odds": 2.2,
-      "kelly_pct": 3.0
-    },
-    {
-      "date": "2026-06-05",
       "home": "Angola",
       "away": "Botswana",
       "league": "International Friendly Games",
@@ -279,39 +257,6 @@
       "date": "2026-06-05",
       "home": "Angola",
       "away": "Botswana",
-      "league": "International Friendly Games",
-      "conf": "MÉDIA",
-      "market": "1x2",
-      "edge": "strong",
-      "odds": 2.2,
-      "kelly_pct": 3.0
-    },
-    {
-      "date": "2026-06-05",
-      "home": "Tajikistan",
-      "away": "India",
-      "league": "International Friendly Games",
-      "conf": "MÉDIA",
-      "market": "1x2",
-      "edge": "strong",
-      "odds": 2.2,
-      "kelly_pct": 3.0
-    },
-    {
-      "date": "2026-06-05",
-      "home": "Belarus",
-      "away": "Syria",
-      "league": "International Friendly Games",
-      "conf": "MÉDIA",
-      "market": "1x2",
-      "edge": "strong",
-      "odds": 2.2,
-      "kelly_pct": 3.0
-    },
-    {
-      "date": "2026-06-05",
-      "home": "Slovakia",
-      "away": "Montenegro",
       "league": "International Friendly Games",
       "conf": "MÉDIA",
       "market": "1x2",
@@ -325,39 +270,6 @@
       "away": "Saudi Arabia",
       "league": "International Friendly Games",
       "conf": "MÉDIA",
-      "market": "1x2",
-      "edge": "strong",
-      "odds": 2.2,
-      "kelly_pct": 3.0
-    },
-    {
-      "date": "2026-06-05",
-      "home": "Angola",
-      "away": "Mauritania",
-      "league": "International Friendly Games",
-      "conf": "ALTA",
-      "market": "o25",
-      "edge": "moderate",
-      "odds": 1.9,
-      "kelly_pct": 3.0
-    },
-    {
-      "date": "2026-06-05",
-      "home": "Angola",
-      "away": "Mauritania",
-      "league": "International Friendly Games",
-      "conf": "ALTA",
-      "market": "btts",
-      "edge": "moderate",
-      "odds": 1.85,
-      "kelly_pct": 3.0
-    },
-    {
-      "date": "2026-06-05",
-      "home": "Angola",
-      "away": "Mauritania",
-      "league": "International Friendly Games",
-      "conf": "ALTA",
       "market": "1x2",
       "edge": "strong",
       "odds": 2.2,
@@ -639,17 +551,6 @@
       "kelly_pct": 3.0
     },
     {
-      "date": "2026-06-05",
-      "home": "Benin",
-      "away": "Niger",
-      "league": "International Friendly Games",
-      "conf": "ALTA",
-      "market": "1x2",
-      "edge": "strong",
-      "odds": 2.2,
-      "kelly_pct": 3.0
-    },
-    {
       "date": "2026-06-07",
       "home": "Argentina",
       "away": "Honduras",
@@ -757,6 +658,17 @@
       "market": "btts",
       "edge": "moderate",
       "odds": 1.85,
+      "kelly_pct": 3.0
+    },
+    {
+      "date": "2026-06-06",
+      "home": "Jamaica",
+      "away": "South Africa",
+      "league": "International Friendly Games",
+      "conf": "ALTA",
+      "market": "1x2",
+      "edge": "strong",
+      "odds": 2.2,
       "kelly_pct": 3.0
     }
   ],
@@ -1839,6 +1751,123 @@
       "kelly_pct": 3.0,
       "hit": false,
       "resolved_at": "2026-06-05T08:00:23.029351+00:00"
+    },
+    {
+      "date": "2026-06-05",
+      "home": "Singapore",
+      "away": "China",
+      "league": "International Friendly Games",
+      "conf": "MÉDIA",
+      "market": "o25",
+      "edge": "moderate",
+      "odds": 1.9,
+      "kelly_pct": 3.0,
+      "hit": true,
+      "resolved_at": "2026-06-06T06:48:03.649851+00:00"
+    },
+    {
+      "date": "2026-06-05",
+      "home": "Singapore",
+      "away": "China",
+      "league": "International Friendly Games",
+      "conf": "MÉDIA",
+      "market": "1x2",
+      "edge": "strong",
+      "odds": 2.2,
+      "kelly_pct": 3.0,
+      "hit": false,
+      "resolved_at": "2026-06-06T06:48:03.649851+00:00"
+    },
+    {
+      "date": "2026-06-05",
+      "home": "Tajikistan",
+      "away": "India",
+      "league": "International Friendly Games",
+      "conf": "MÉDIA",
+      "market": "1x2",
+      "edge": "strong",
+      "odds": 2.2,
+      "kelly_pct": 3.0,
+      "hit": true,
+      "resolved_at": "2026-06-06T06:48:03.649851+00:00"
+    },
+    {
+      "date": "2026-06-05",
+      "home": "Belarus",
+      "away": "Syria",
+      "league": "International Friendly Games",
+      "conf": "MÉDIA",
+      "market": "1x2",
+      "edge": "strong",
+      "odds": 2.2,
+      "kelly_pct": 3.0,
+      "hit": true,
+      "resolved_at": "2026-06-06T06:48:03.649851+00:00"
+    },
+    {
+      "date": "2026-06-05",
+      "home": "Slovakia",
+      "away": "Montenegro",
+      "league": "International Friendly Games",
+      "conf": "MÉDIA",
+      "market": "1x2",
+      "edge": "strong",
+      "odds": 2.2,
+      "kelly_pct": 3.0,
+      "hit": false,
+      "resolved_at": "2026-06-06T06:48:03.649851+00:00"
+    },
+    {
+      "date": "2026-06-05",
+      "home": "Angola",
+      "away": "Mauritania",
+      "league": "International Friendly Games",
+      "conf": "ALTA",
+      "market": "o25",
+      "edge": "moderate",
+      "odds": 1.9,
+      "kelly_pct": 3.0,
+      "hit": false,
+      "resolved_at": "2026-06-06T06:48:03.649851+00:00"
+    },
+    {
+      "date": "2026-06-05",
+      "home": "Angola",
+      "away": "Mauritania",
+      "league": "International Friendly Games",
+      "conf": "ALTA",
+      "market": "btts",
+      "edge": "moderate",
+      "odds": 1.85,
+      "kelly_pct": 3.0,
+      "hit": true,
+      "resolved_at": "2026-06-06T06:48:03.649851+00:00"
+    },
+    {
+      "date": "2026-06-05",
+      "home": "Angola",
+      "away": "Mauritania",
+      "league": "International Friendly Games",
+      "conf": "ALTA",
+      "market": "1x2",
+      "edge": "strong",
+      "odds": 2.2,
+      "kelly_pct": 3.0,
+      "hit": false,
+      "resolved_at": "2026-06-06T06:48:03.649851+00:00"
+    },
+    {
+      "date": "2026-06-05",
+      "home": "Benin",
+      "away": "Niger",
+      "league": "International Friendly Games",
+      "conf": "ALTA",
+      "market": "1x2",
+      "edge": "strong",
+      "odds": 2.2,
+      "kelly_pct": 3.0,
+      "hit": false,
+      "resolved_at": "2026-06-06T06:48:03.649851+00:00"
     }
   ]
 }
