@@ -462,19 +462,24 @@ def gen_dashboard_today(today_stats):
         n_s = sum(g["n_strong"] for g in game_list)
         strong_note = f' · <span style="color:oklch(70% 0.12 188)">{n_s} fortes</span>' if n_s else ""
         return (f"<h2 style='color:oklch(84% 0.035 82);font-size:1rem;margin:24px 0 12px'>"
-                f"{label} <span style='color:oklch(55% 0.014 82);font-size:.82rem'>· {date_str}</span>"
+                f"<span class='day-type'>{label}</span>"
+                f" <span style='color:oklch(55% 0.014 82);font-size:.82rem'>· {date_str}</span>"
                 f" — {n_g} jogo{'s' if n_g != 1 else ''} com picks{strong_note}</h2>")
 
     today_pt_label    = datetime.strptime(today_str,    "%Y-%m-%d").strftime("%d/%m") if today_str    else ""
     tomorrow_pt_label = datetime.strptime(tomorrow_str, "%Y-%m-%d").strftime("%d/%m") if tomorrow_str else ""
 
+    # Cada secção tem data-date para o JS conseguir re-etiquetar e mostrar/esconder
+    # independentemente de quando o HTML foi gerado.
     games_html = (
-        f"<div id='section-hoje'>"
+        f"<div id='section-d0' data-date='{today_str}'>"
         + _section_header("Hoje", today_pt_label, games_today)
         + (_build_cards(games_today) or _empty_section("para hoje"))
         + "</div>"
+        + f"<div id='section-d1' data-date='{tomorrow_str}'>"
         + _section_header("Amanhã", tomorrow_pt_label, games_tomorrow)
         + (_build_cards(games_tomorrow) or _empty_section("para amanhã"))
+        + "</div>"
     )
 
     # --- Tracker KPIs ---
@@ -561,26 +566,55 @@ tr:last-child td{{border-bottom:none}}
 
 {tracker_section_html}
 
-{games_html}
-
 <div id="stale-banner" style="display:none;background:oklch(15% 0.010 80);border:1px solid oklch(84% 0.19 80.46 / 0.4);border-radius:2px;padding:14px 18px;margin-bottom:16px;font-size:.83rem">
-  <span style="color:oklch(84% 0.19 80.46);font-weight:600">⚠ Dashboard desatualizado</span>
-  <span style="color:oklch(63% 0.024 82);margin-left:8px">Os jogos de "Hoje" são de um dia anterior. A aguardar próxima actualização automática...</span>
+  <span style="color:oklch(84% 0.19 80.46);font-weight:600">⚠ A aguardar actualização</span>
+  <span style="color:oklch(63% 0.024 82);margin-left:8px">Dados de hoje ainda não disponíveis — o pipeline actualiza a cada 2 horas.</span>
 </div>
+
+{games_html}
 
 <p style='text-align:center;color:oklch(55% 0.014 82);font-size:.75rem;margin-top:20px'>
   Analista · Baseado no backtest do Matemática Da Bola · nunovinhas-creator/Analista
 </p>
 <script>
 (function(){{
-  var dashDate = "{today_str}";
-  var today = new Date().toLocaleDateString("en-CA", {{timeZone:"Europe/Lisbon"}});
-  if (dashDate !== today) {{
-    var banner = document.getElementById("stale-banner");
-    if (banner) banner.style.display = "block";
-    var s = document.getElementById("section-hoje");
-    if (s) s.style.display = "none";
+  // Data actual em Lisboa (YYYY-MM-DD)
+  var todayISO    = new Date().toLocaleDateString("en-CA", {{timeZone:"Europe/Lisbon"}});
+  var tomorrowISO = new Date(Date.now() + 86400000).toLocaleDateString("en-CA", {{timeZone:"Europe/Lisbon"}});
+
+  var secD0   = document.getElementById("section-d0");
+  var secD1   = document.getElementById("section-d1");
+  var banner  = document.getElementById("stale-banner");
+
+  function relabel(sec, label) {{
+    var span = sec.querySelector(".day-type");
+    if (span) span.textContent = label;
   }}
+
+  // Classificar cada secção pela sua data real
+  [secD0, secD1].forEach(function(sec) {{
+    if (!sec) return;
+    var d = sec.getAttribute("data-date");
+    if (d === todayISO) {{
+      relabel(sec, "Hoje");
+      sec.style.display = "";
+    }} else if (d === tomorrowISO) {{
+      relabel(sec, "Amanhã");
+      sec.style.display = "";
+    }} else if (d < todayISO) {{
+      // Data passada — esconder sem deixar rastro
+      sec.style.display = "none";
+    }} else {{
+      // Data futura além de amanhã — esconder
+      sec.style.display = "none";
+    }}
+  }});
+
+  // Se nenhuma secção corresponde a hoje, mostrar aviso
+  var hasToday = [secD0, secD1].some(function(s) {{
+    return s && s.getAttribute("data-date") === todayISO;
+  }});
+  if (!hasToday && banner) banner.style.display = "block";
 }})();
 </script>
 </body>
