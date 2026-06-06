@@ -99,6 +99,16 @@ def _record_and_resolve_locked(today_games, history_records):
     if newly_resolved:
         print(f"[tracker] {len(newly_resolved)} picks resolvidos")
 
+    # 1b. Auto-expirar picks de datas passadas que não têm resultado
+    #     — ocorre quando history.json não foi actualizado antes do fim do dia
+    db.setdefault("expired", [])
+    past_unresolved = [p for p in db["pending"] if p.get("date", today_str) < today_str]
+    current_pending = [p for p in db["pending"] if p.get("date", today_str) >= today_str]
+    if past_unresolved:
+        print(f"[tracker] {len(past_unresolved)} picks de dias anteriores expirados sem resultado")
+        db["expired"].extend(past_unresolved)
+        db["pending"] = current_pending
+
     # 2. Registar picks (dedup por data+equipas+mercado)
     existing = {
         (p["date"], _norm(p["home"]), _norm(p["away"]), p["market"])
@@ -133,7 +143,8 @@ def _record_and_resolve_locked(today_games, history_records):
 
 def tracker_stats(db):
     """Calcula estatísticas de performance do backtest próprio do Analista."""
-    resolved = db.get("resolved", [])
+    # Apenas picks com resultado real (True/False) — exclui expirados sem resultado
+    resolved = [p for p in db.get("resolved", []) if isinstance(p.get("hit"), bool)]
     pending  = db.get("pending",  [])
 
     if not resolved:

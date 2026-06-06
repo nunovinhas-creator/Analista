@@ -469,8 +469,10 @@ def gen_dashboard_today(today_stats):
     tomorrow_pt_label = datetime.strptime(tomorrow_str, "%Y-%m-%d").strftime("%d/%m") if tomorrow_str else ""
 
     games_html = (
-        _section_header("Hoje", today_pt_label, games_today)
+        f"<div id='section-hoje'>"
+        + _section_header("Hoje", today_pt_label, games_today)
         + (_build_cards(games_today) or _empty_section("para hoje"))
+        + "</div>"
         + _section_header("Amanhã", tomorrow_pt_label, games_tomorrow)
         + (_build_cards(games_tomorrow) or _empty_section("para amanhã"))
     )
@@ -561,9 +563,26 @@ tr:last-child td{{border-bottom:none}}
 
 {games_html}
 
+<div id="stale-banner" style="display:none;background:oklch(15% 0.010 80);border:1px solid oklch(84% 0.19 80.46 / 0.4);border-radius:2px;padding:14px 18px;margin-bottom:16px;font-size:.83rem">
+  <span style="color:oklch(84% 0.19 80.46);font-weight:600">⚠ Dashboard desatualizado</span>
+  <span style="color:oklch(63% 0.024 82);margin-left:8px">Os jogos de "Hoje" são de um dia anterior. A aguardar próxima actualização automática...</span>
+</div>
+
 <p style='text-align:center;color:oklch(55% 0.014 82);font-size:.75rem;margin-top:20px'>
   Analista · Baseado no backtest do Matemática Da Bola · nunovinhas-creator/Analista
 </p>
+<script>
+(function(){{
+  var dashDate = "{today_str}";
+  var today = new Date().toLocaleDateString("en-CA", {{timeZone:"Europe/Lisbon"}});
+  if (dashDate !== today) {{
+    var banner = document.getElementById("stale-banner");
+    if (banner) banner.style.display = "block";
+    var s = document.getElementById("section-hoje");
+    if (s) s.style.display = "none";
+  }}
+}})();
+</script>
 </body>
 </html>"""
 
