@@ -417,6 +417,160 @@
       "edge": "strong",
       "odds": 2.2,
       "kelly_pct": 3.0
+    },
+    {
+      "date": "2026-06-09",
+      "home": "Spain",
+      "away": "Peru",
+      "league": "International Friendly Games",
+      "conf": "MÉDIA",
+      "market": "1x2",
+      "edge": "strong",
+      "odds": 2.2,
+      "kelly_pct": 3.0
+    },
+    {
+      "date": "2026-06-09",
+      "home": "Angola",
+      "away": "Central African Republic",
+      "league": "International Friendly Games",
+      "conf": "ALTA",
+      "market": "o25",
+      "edge": "weak",
+      "odds": 1.9,
+      "kelly_pct": 0.0
+    },
+    {
+      "date": "2026-06-09",
+      "home": "Angola",
+      "away": "Central African Republic",
+      "league": "International Friendly Games",
+      "conf": "ALTA",
+      "market": "btts",
+      "edge": "moderate",
+      "odds": 1.85,
+      "kelly_pct": 3.0
+    },
+    {
+      "date": "2026-06-09",
+      "home": "Angola",
+      "away": "Central African Republic",
+      "league": "International Friendly Games",
+      "conf": "ALTA",
+      "market": "1x2",
+      "edge": "strong",
+      "odds": 2.2,
+      "kelly_pct": 3.0
+    },
+    {
+      "date": "2026-06-09",
+      "home": "Kyrgyzstan",
+      "away": "Palestine",
+      "league": "International Friendly Games",
+      "conf": "BAIXA",
+      "market": "o25",
+      "edge": "moderate",
+      "odds": 1.9,
+      "kelly_pct": 1.9
+    },
+    {
+      "date": "2026-06-09",
+      "home": "DR Congo",
+      "away": "Chile",
+      "league": "International Friendly Games",
+      "conf": "ALTA",
+      "market": "1x2",
+      "edge": "strong",
+      "odds": 2.2,
+      "kelly_pct": 3.0
+    },
+    {
+      "date": "2026-06-09",
+      "home": "Tajikistan",
+      "away": "India",
+      "league": "International Friendly Games",
+      "conf": "MÉDIA",
+      "market": "1x2",
+      "edge": "strong",
+      "odds": 2.2,
+      "kelly_pct": 3.0
+    },
+    {
+      "date": "2026-06-09",
+      "home": "Armenia",
+      "away": "Moldova",
+      "league": "International Friendly Games",
+      "conf": "BAIXA",
+      "market": "o25",
+      "edge": "moderate",
+      "odds": 1.9,
+      "kelly_pct": 1.9
+    },
+    {
+      "date": "2026-06-09",
+      "home": "Armenia",
+      "away": "Moldova",
+      "league": "International Friendly Games",
+      "conf": "BAIXA",
+      "market": "btts",
+      "edge": "moderate",
+      "odds": 1.85,
+      "kelly_pct": 3.0
+    },
+    {
+      "date": "2026-06-09",
+      "home": "FC Honka",
+      "away": "HJK",
+      "league": "Suomen Cup",
+      "conf": "BAIXA",
+      "market": "o25",
+      "edge": "moderate",
+      "odds": 1.9,
+      "kelly_pct": 1.9
+    },
+    {
+      "date": "2026-06-09",
+      "home": "Renaissance Zemamra",
+      "away": "Union Touarga Sport",
+      "league": "Botola Pro",
+      "conf": "MÉDIA",
+      "market": "1x2",
+      "edge": "strong",
+      "odds": 2.2,
+      "kelly_pct": 3.0
+    },
+    {
+      "date": "2026-06-09",
+      "home": "Almería",
+      "away": "CD Castellón",
+      "league": "Segunda División",
+      "conf": "BAIXA",
+      "market": "btts",
+      "edge": "moderate",
+      "odds": 1.85,
+      "kelly_pct": 3.0
+    },
+    {
+      "date": "2026-06-09",
+      "home": "Náutico",
+      "away": "Fortaleza",
+      "league": "Brasileirão Serie B",
+      "conf": "MÉDIA",
+      "market": "1x2",
+      "edge": "strong",
+      "odds": 2.2,
+      "kelly_pct": 3.0
+    },
+    {
+      "date": "2026-06-09",
+      "home": "Senegal",
+      "away": "Saudi Arabia",
+      "league": "International Friendly Games",
+      "conf": "ALTA",
+      "market": "1x2",
+      "edge": "strong",
+      "odds": 2.2,
+      "kelly_pct": 3.0
     }
   ],
   "resolved": [
