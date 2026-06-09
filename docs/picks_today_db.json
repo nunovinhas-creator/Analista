@@ -494,6 +494,138 @@
       "edge": "strong",
       "odds": 2.2,
       "kelly_pct": 3.0
+    },
+    {
+      "date": "2026-06-10",
+      "home": "Argentina",
+      "away": "Iceland",
+      "league": "International Friendly Games",
+      "conf": "ALTA",
+      "market": "o25",
+      "edge": "weak",
+      "odds": 1.9,
+      "kelly_pct": 0.0
+    },
+    {
+      "date": "2026-06-10",
+      "home": "Argentina",
+      "away": "Iceland",
+      "league": "International Friendly Games",
+      "conf": "ALTA",
+      "market": "1x2",
+      "edge": "strong",
+      "odds": 2.2,
+      "kelly_pct": 3.0
+    },
+    {
+      "date": "2026-06-10",
+      "home": "Iraq",
+      "away": "Venezuela",
+      "league": "International Friendly Games",
+      "conf": "MÉDIA",
+      "market": "1x2",
+      "edge": "strong",
+      "odds": 2.2,
+      "kelly_pct": 3.0
+    },
+    {
+      "date": "2026-06-10",
+      "home": "Kuopion Palloseura",
+      "away": "VPS",
+      "league": "Suomen Cup",
+      "conf": "MÉDIA",
+      "market": "o25",
+      "edge": "moderate",
+      "odds": 1.9,
+      "kelly_pct": 2.5
+    },
+    {
+      "date": "2026-06-10",
+      "home": "SJK",
+      "away": "Inter Turku",
+      "league": "Suomen Cup",
+      "conf": "MÉDIA",
+      "market": "o25",
+      "edge": "moderate",
+      "odds": 1.9,
+      "kelly_pct": 2.5
+    },
+    {
+      "date": "2026-06-10",
+      "home": "SJK",
+      "away": "Inter Turku",
+      "league": "Suomen Cup",
+      "conf": "MÉDIA",
+      "market": "1x2",
+      "edge": "strong",
+      "odds": 2.2,
+      "kelly_pct": 3.0
+    },
+    {
+      "date": "2026-06-10",
+      "home": "Ilves",
+      "away": "FC Lahti",
+      "league": "Suomen Cup",
+      "conf": "BAIXA",
+      "market": "o25",
+      "edge": "moderate",
+      "odds": 1.9,
+      "kelly_pct": 1.9
+    },
+    {
+      "date": "2026-06-10",
+      "home": "Málaga CF",
+      "away": "Las Palmas",
+      "league": "Segunda División",
+      "conf": "MÉDIA",
+      "market": "btts",
+      "edge": "moderate",
+      "odds": 1.85,
+      "kelly_pct": 3.0
+    },
+    {
+      "date": "2026-06-10",
+      "home": "Bolivia",
+      "away": "Algeria",
+      "league": "International Friendly Games",
+      "conf": "MÉDIA",
+      "market": "1x2",
+      "edge": "strong",
+      "odds": 2.2,
+      "kelly_pct": 3.0
+    },
+    {
+      "date": "2026-06-10",
+      "home": "FC Tampa Bay Rowdies",
+      "away": "Charleston Battery",
+      "league": "USL Championship",
+      "conf": "ALTA",
+      "market": "1x2",
+      "edge": "strong",
+      "odds": 2.2,
+      "kelly_pct": 3.0
+    },
+    {
+      "date": "2026-06-10",
+      "home": "Detroit City FC",
+      "away": "El Paso Locomotive FC",
+      "league": "USL Championship",
+      "conf": "ALTA",
+      "market": "btts",
+      "edge": "moderate",
+      "odds": 1.85,
+      "kelly_pct": 3.0
+    },
+    {
+      "date": "2026-06-10",
+      "home": "Detroit City FC",
+      "away": "El Paso Locomotive FC",
+      "league": "USL Championship",
+      "conf": "ALTA",
+      "market": "1x2",
+      "edge": "strong",
+      "odds": 2.2,
+      "kelly_pct": 3.0
     }
   ],
   "resolved": [
