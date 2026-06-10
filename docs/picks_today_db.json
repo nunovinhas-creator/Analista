@@ -626,6 +626,50 @@
       "edge": "strong",
       "odds": 2.2,
       "kelly_pct": 3.0
+    },
+    {
+      "date": "2026-06-11",
+      "home": "Monterey Bay FC",
+      "away": "SC Jacksonville",
+      "league": "USL Championship",
+      "conf": "MÉDIA",
+      "market": "1x2",
+      "edge": "strong",
+      "odds": 2.2,
+      "kelly_pct": 3.0
+    },
+    {
+      "date": "2026-06-11",
+      "home": "Phoenix Rising FC",
+      "away": "Louisville City FC",
+      "league": "USL Championship",
+      "conf": "ALTA",
+      "market": "o25",
+      "edge": "weak",
+      "odds": 1.9,
+      "kelly_pct": 0.0
+    },
+    {
+      "date": "2026-06-11",
+      "home": "Phoenix Rising FC",
+      "away": "Louisville City FC",
+      "league": "USL Championship",
+      "conf": "ALTA",
+      "market": "btts",
+      "edge": "moderate",
+      "odds": 1.85,
+      "kelly_pct": 3.0
+    },
+    {
+      "date": "2026-06-11",
+      "home": "Phoenix Rising FC",
+      "away": "Louisville City FC",
+      "league": "USL Championship",
+      "conf": "ALTA",
+      "market": "1x2",
+      "edge": "strong",
+      "odds": 2.2,
+      "kelly_pct": 3.0
     }
   ],
   "resolved": [
