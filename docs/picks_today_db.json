@@ -483,6 +483,83 @@
       "edge": "moderate",
       "odds": 1.85,
       "kelly_pct": 3.0
+    },
+    {
+      "date": "2026-06-13",
+      "home": "Inter Turku",
+      "away": "AC Oulu",
+      "league": "Veikkausliiga",
+      "conf": "MÉDIA",
+      "market": "1x2",
+      "edge": "strong",
+      "odds": 2.2,
+      "kelly_pct": 3.0
+    },
+    {
+      "date": "2026-06-13",
+      "home": "Qatar",
+      "away": "Switzerland",
+      "league": "World Cup 2026",
+      "conf": "MÉDIA",
+      "market": "1x2",
+      "edge": "strong",
+      "odds": 2.2,
+      "kelly_pct": 3.0
+    },
+    {
+      "date": "2026-06-13",
+      "home": "Loudoun United FC",
+      "away": "Rhode Island FC",
+      "league": "USL Championship",
+      "conf": "BAIXA",
+      "market": "btts",
+      "edge": "strong",
+      "odds": 1.85,
+      "kelly_pct": 3.0
+    },
+    {
+      "date": "2026-06-13",
+      "home": "Pittsburgh Riverhounds",
+      "away": "Indy Eleven",
+      "league": "USL Championship",
+      "conf": "MÉDIA",
+      "market": "1x2",
+      "edge": "strong",
+      "odds": 2.2,
+      "kelly_pct": 3.0
+    },
+    {
+      "date": "2026-06-13",
+      "home": "Lexington SC",
+      "away": "San Antonio FC",
+      "league": "USL Championship",
+      "conf": "BAIXA",
+      "market": "o25",
+      "edge": "moderate",
+      "odds": 1.9,
+      "kelly_pct": 3.0
+    },
+    {
+      "date": "2026-06-13",
+      "home": "Lexington SC",
+      "away": "San Antonio FC",
+      "league": "USL Championship",
+      "conf": "BAIXA",
+      "market": "btts",
+      "edge": "strong",
+      "odds": 1.85,
+      "kelly_pct": 3.0
+    },
+    {
+      "date": "2026-06-13",
+      "home": "FC Tampa Bay Rowdies",
+      "away": "Hartford Athletic",
+      "league": "USL Championship",
+      "conf": "ALTA",
+      "market": "1x2",
+      "edge": "strong",
+      "odds": 2.2,
+      "kelly_pct": 3.0
     }
   ],
   "resolved": [
