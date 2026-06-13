@@ -453,31 +453,9 @@
     },
     {
       "date": "2026-06-12",
-      "home": "Difaâ Hassani El-Jadidi",
-      "away": "Olympique Dcheira",
-      "league": "Botola Pro",
-      "conf": "MÉDIA",
-      "market": "btts",
-      "edge": "moderate",
-      "odds": 1.85,
-      "kelly_pct": 3.0
-    },
-    {
-      "date": "2026-06-12",
       "home": "Canada",
       "away": "Bosnia &amp; Herzegovina",
       "league": "World Cup 2026",
-      "conf": "BAIXA",
-      "market": "btts",
-      "edge": "moderate",
-      "odds": 1.85,
-      "kelly_pct": 3.0
-    },
-    {
-      "date": "2026-06-12",
-      "home": "Atlético Goianiense",
-      "away": "Clube De Regatas Brasil",
-      "league": "Brasileirão Serie B",
       "conf": "BAIXA",
       "market": "btts",
       "edge": "moderate",
@@ -2635,6 +2613,32 @@
       "kelly_pct": 3.0,
       "hit": false,
       "resolved_at": "2026-06-11T08:28:27.675402+00:00"
+    },
+    {
+      "date": "2026-06-12",
+      "home": "Difaâ Hassani El-Jadidi",
+      "away": "Olympique Dcheira",
+      "league": "Botola Pro",
+      "conf": "MÉDIA",
+      "market": "btts",
+      "edge": "moderate",
+      "odds": 1.85,
+      "kelly_pct": 3.0,
+      "hit": true,
+      "resolved_at": "2026-06-13T07:40:14.816492+00:00"
+    },
+    {
+      "date": "2026-06-12",
+      "home": "Atlético Goianiense",
+      "away": "Clube De Regatas Brasil",
+      "league": "Brasileirão Serie B",
+      "conf": "BAIXA",
+      "market": "btts",
+      "edge": "moderate",
+      "odds": 1.85,
+      "kelly_pct": 3.0,
+      "hit": true,
+      "resolved_at": "2026-06-13T07:40:14.816492+00:00"
     }
   ]
 }
